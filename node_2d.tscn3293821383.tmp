@@ -1,0 +1,75 @@
+[gd_scene format=3 uid="uid://cadmoamodlc43"]
+
+[ext_resource type="Script" uid="uid://bshnon5umqxs1" path="res://node_2d.gd" id="1_wtcfe"]
+[ext_resource type="Texture2D" uid="uid://bbo8jcjos7p5i" path="res://Player.png" id="2_0hol4"]
+[ext_resource type="Texture2D" uid="uid://dg3eejrpb03tp" path="res://Enemy1.png" id="3_q6r6c"]
+[ext_resource type="Texture2D" uid="uid://dhnibcb8yilnk" path="res://Enemy2.png" id="4_kdubu"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0e48y"]
+
+[node name="Node2D" type="Node2D" unique_id=1464865492]
+script = ExtResource("1_wtcfe")
+
+[node name="Label2" type="Label" parent="." unique_id=1834539644]
+offset_left = 256.0
+offset_top = 68.0
+offset_right = 372.0
+offset_bottom = 98.0
+text = "Chosen Target:"
+label_settings = SubResource("LabelSettings_0e48y")
+
+[node name="Stats" type="Label" parent="." unique_id=160704359]
+offset_left = 541.0
+offset_top = 39.0
+offset_right = 631.0
+offset_bottom = 69.0
+text = "Didn't work"
+label_settings = SubResource("LabelSettings_0e48y")
+
+[node name="Label" type="Label" parent="." unique_id=1889316297]
+offset_left = 300.0
+offset_top = 100.0
+offset_right = 390.0
+offset_bottom = 130.0
+text = "Didn't work"
+label_settings = SubResource("LabelSettings_0e48y")
+
+[node name="Attack" type="Button" parent="." unique_id=234359202]
+offset_left = 403.0
+offset_top = 404.0
+offset_right = 512.0
+offset_bottom = 446.0
+text = "Attack"
+
+[node name="Skill" type="Button" parent="." unique_id=272516047]
+offset_left = 280.0
+offset_top = 404.0
+offset_right = 389.0
+offset_bottom = 446.0
+text = "Skill"
+
+[node name="Back" type="Button" parent="." unique_id=908078719]
+offset_left = 200.0
+offset_top = 368.0
+offset_right = 258.0
+offset_bottom = 399.0
+text = "Back"
+
+[node name="ChosenEnemy" type="TextureRect" parent="." unique_id=1880444238]
+offset_left = 410.0
+offset_top = 78.0
+offset_right = 491.0
+offset_bottom = 156.0
+scale = Vector2(1, 1.04)
+
+[node name="Player" type="Sprite2D" parent="." unique_id=2125332684]
+position = Vector2(880, 243)
+texture = ExtResource("2_0hol4")
+
+[node name="Nem1" type="Sprite2D" parent="." unique_id=1703458101]
+position = Vector2(831, 165)
+texture = ExtResource("3_q6r6c")
+
+[node name="Nem2" type="Sprite2D" parent="." unique_id=1573422826]
+position = Vector2(930, 165)
+texture = ExtResource("4_kdubu")
