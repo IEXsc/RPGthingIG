@@ -1,5 +1,5 @@
-## TO DO: MAKE SKILLS A LIST TOO
-## GIVE THE ENEMIES COOL MOVES
+## FINALLY ADD WEAKNESSES
+## MAYBE UPDATE THE WAY DAMAGE IS CALCULATED FFS
 
 ## https://docs.google.com/spreadsheets/d/1moa-AuzmRn1FMVouLuWMqBgxDgxjbl1clZQZNK0O6sg/edit?gid=0#gid=0
 ## FOR SKILL TYPES
@@ -432,10 +432,11 @@ func _singleenemyturn():
 				SkillBeingUsed.play("default")
 				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Casted " + arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Name") + " on " + choosenattacktarget.get_meta("Name")+ " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
 				_update_battle_log()
-				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
 				var newhp = choosenattacktarget.get_meta("HP") - int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") / choosenattacktarget.get_meta("Defense"))))
 				choosenattacktarget.set_meta("HP", newhp)
-				
+				if(choosenattacktarget.get_meta("HP")<=0):
+					choosenattacktarget.play("Faint")
+				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
 			add_child(enemytimer)
 			enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
 			enemytimer.start()	

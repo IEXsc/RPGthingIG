@@ -243,7 +243,7 @@ position = Vector2(928, 263)
 sprite_frames = SubResource("SpriteFrames_fs4d3")
 animation = &"waiting"
 autoplay = "waiting"
-frame_progress = 0.49519694
+frame_progress = 0.2339648
 
 [node name="Summary" type="Label" parent="." unique_id=955753794]
 offset_left = 647.0
