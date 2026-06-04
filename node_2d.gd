@@ -77,8 +77,10 @@ var currentusedskill = 0
 var currentturn = 0
 var alliedtarget = 0
 var currentuseditem = 0
+var enemyaction = 0
 var atleastonecharalive = true
 func _ready() -> void:
+	randomize()
 	BattleLog.text = "Summary: 
 	"
 	
@@ -115,7 +117,7 @@ func _ready() -> void:
 	OlympusPunch.set_meta("AnimationTime", 0.5)
 	OlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
-	var movesets = [[Rebirth, LightBlind],[ThunderSwords, LightBlind, OlympusPunch]]
+	var movesets = [ [Rebirth, LightBlind] , [ThunderSwords, LightBlind, OlympusPunch] , [OlympusPunch] ]
 	
 	var Potion = Node.new()
 	Potion.set_meta("Name", "Small Potion")
@@ -141,16 +143,19 @@ func _ready() -> void:
 	nem1.set_meta("HP", 50)
 	nem1.set_meta("Name", "Marco")
 	nem1.set_meta("Damage", 20)
+	nem1.set_meta("SpecialMoves", movesets[2])
 	
 	nem2.play("waiting")
 	nem2.set_meta("HP", 75)
 	nem2.set_meta("Name", "Aurelio")
 	nem2.set_meta("Damage", 25)
+	nem2.set_meta("SpecialMoves", movesets[2])
 	
 	nem3.play("waiting")
 	nem3.set_meta("HP", 50)
 	nem3.set_meta("Name", "Marco")
 	nem3.set_meta("Damage", 20)
+	nem3.set_meta("SpecialMoves", movesets[2])
 	
 	arrayenemies = [nem1, nem2, nem3]
 	arrayalleati = [Giocatore, Ally]
@@ -406,15 +411,32 @@ func _singleenemyturn():
 			choosenattacktarget = arrayalleati.pick_random()
 		var enemytimer = Timer.new()
 		if(currentenemymove<len(arrayenemies)):
-			arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
-			var newhp = choosenattacktarget.get_meta("HP") - round(( arrayenemies[currentenemymove].get_meta("Damage") / choosenattacktarget.get_meta("Defense")))
-			choosenattacktarget.set_meta("HP", newhp)
-			battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + choosenattacktarget.get_meta("Name")  + " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
-			if(choosenattacktarget.get_meta("HP")<=0):
-				choosenattacktarget.play("Faint")
-			_update_battle_log()
+						
+			enemyaction = randi_range(1, 2) 
+			if(enemyaction== 1):
+				arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
+				var newhp = choosenattacktarget.get_meta("HP") - int(round(( arrayenemies[currentenemymove].get_meta("Damage") / choosenattacktarget.get_meta("Defense"))))
+				choosenattacktarget.set_meta("HP", newhp)
+				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + choosenattacktarget.get_meta("Name")  + " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
+				_update_battle_log()
+				if(choosenattacktarget.get_meta("HP")<=0):
+					choosenattacktarget.play("Faint")
+				enemytimer.wait_time = 0.2
+			if(enemyaction==2):
+				var SkillBeingUsed = AnimatedSprite2D.new()
+				currentusedskill = SkillBeingUsed
+				add_child(SkillBeingUsed)
+				SkillBeingUsed.position = Vector2(choosenattacktarget.position.x, choosenattacktarget.position.y)
+				var currentmove = randi_range(0, len(arrayenemies[currentenemymove].get_meta("SpecialMoves"))-1)
+				SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
+				SkillBeingUsed.play("default")
+				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Casted " + arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Name") + " on " + choosenattacktarget.get_meta("Name")+ " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
+				_update_battle_log()
+				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
+				var newhp = choosenattacktarget.get_meta("HP") - int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") / choosenattacktarget.get_meta("Defense"))))
+				choosenattacktarget.set_meta("HP", newhp)
+				
 			add_child(enemytimer)
-			enemytimer.wait_time = 0.5
 			enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
 			enemytimer.start()	
 		else:
@@ -422,10 +444,21 @@ func _singleenemyturn():
 			_update_battle_log()
 			_reset_ally_positions()
 			enemytimer.queue_free()
+			currentusedskill = 0
 			currentenemymove = 0
 	elif(atleastonecharalive==false):
 		_losing_the_battle()
 		
+func _timer_moving_back(timerx):
+	#for i in len(arrayenemies):
+	if(enemyaction==1):
+		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
+	elif(enemyaction==2):
+		currentusedskill.queue_free()
+	currentenemymove = currentenemymove + 1
+	_singleenemyturn()
+	timerx.queue_free()
+
 
 func _reset_ally_positions():
 	for i in len(arrayalleati):
@@ -481,13 +514,7 @@ func _on_timer_timeout():
 		_enemyturn()
 	timer.stop()
 
-func _timer_moving_back(timerx):
-	#for i in len(arrayenemies):
-		
-	arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
-	currentenemymove = currentenemymove + 1
-	_singleenemyturn()
-	timerx.queue_free()
+
 	
 
 
