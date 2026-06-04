@@ -19,8 +19,10 @@
 [ext_resource type="Texture2D" uid="uid://uxjq3hi64gw7" path="res://TestAllyCharge2.png" id="16_fs4d3"]
 [ext_resource type="Texture2D" uid="uid://cgqsmk8sb0cwc" path="res://TestAlly2.png" id="16_k73cj"]
 [ext_resource type="Texture2D" uid="uid://cwiafio3dprgf" path="res://TestAlly3.png" id="17_rjqkl"]
+[ext_resource type="Texture2D" uid="uid://d3x2c3q4xyqtj" path="res://AllyFaint1.png" id="19_2nhjh"]
 [ext_resource type="Texture2D" uid="uid://bay177npuqkb7" path="res://AllyParry1.png" id="19_e8dv2"]
 [ext_resource type="Texture2D" uid="uid://da7pjug81sfag" path="res://AllyParry2.png" id="20_2nhjh"]
+[ext_resource type="Texture2D" uid="uid://25vr5phu3u8v" path="res://AllyFaint2.png" id="20_bjha6"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_0e48y"]
 
@@ -123,6 +125,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": ExtResource("19_2nhjh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_bjha6")
+}],
+"loop": true,
+"name": &"Faint",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": ExtResource("15_flf07")
 }, {
 "duration": 1.0,
@@ -216,9 +229,9 @@ frame_progress = 0.17354222
 [node name="Ally" type="AnimatedSprite2D" parent="." unique_id=2052588819]
 position = Vector2(928, 263)
 sprite_frames = SubResource("SpriteFrames_fs4d3")
-animation = &"Defend"
+animation = &"waiting"
 autoplay = "waiting"
-frame_progress = 0.3726201
+frame_progress = 0.6885931
 
 [node name="Summary" type="Label" parent="." unique_id=955753794]
 offset_left = 647.0

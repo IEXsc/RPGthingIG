@@ -29,9 +29,11 @@ extends Node2D
 
 var timer = Timer.new()
 ### TEXTURES
-var LightBlindTexture = "res://BlindLight.png"
-var ThunderSwordsTexture = "res://LightSword.png"
-var RebirthTexture = "res://Rebirth.png"
+var LightBlindTexture = load("res://MovesSprites/LightBlindAnim.tres")
+var ThunderSwordsTexture = load("res://MovesSprites/ThunderSwordsAnim.tres")
+var RebirthTexture = load("res://MovesSprites/RebirthAnim.tres")
+var OlympusPunchAnim = load("res://MovesSprites/OlympusPunchAnim.tres")
+
 
 var MessiahTexture1 = load("res://God1.png")
 var MessiahTexture2 = load("res://God2.png")
@@ -75,6 +77,7 @@ var currentusedskill = 0
 var currentturn = 0
 var alliedtarget = 0
 var currentuseditem = 0
+var atleastonecharalive = true
 func _ready() -> void:
 	BattleLog.text = "Summary: 
 	"
@@ -85,6 +88,7 @@ func _ready() -> void:
 	ThunderSwords.set_meta("Damage", 35)
 	ThunderSwords.set_meta("Cost", 12)
 	ThunderSwords.set_meta("Type", 10)
+	ThunderSwords.set_meta("AnimationTime", 1)
 	ThunderSwords.set_meta("Image", ThunderSwordsTexture)
 	var LightBlind = Node.new()
 	LightBlind.set_meta("Name", "LightBlind")
@@ -92,6 +96,7 @@ func _ready() -> void:
 	LightBlind.set_meta("Damage", 35)
 	LightBlind.set_meta("Cost", 8)
 	LightBlind.set_meta("Type", 9)
+	LightBlind.set_meta("AnimationTime", 0.5)
 	LightBlind.set_meta("Image", LightBlindTexture)
 	var Rebirth = Node.new()
 	Rebirth.set_meta("Name", "Rebirth")
@@ -99,6 +104,7 @@ func _ready() -> void:
 	Rebirth.set_meta("Damage", -35)
 	Rebirth.set_meta("Cost", 7)
 	Rebirth.set_meta("Type", 11)
+	Rebirth.set_meta("AnimationTime", 0.5)
 	Rebirth.set_meta("Image", RebirthTexture)
 	var OlympusPunch = Node.new()
 	OlympusPunch.set_meta("Name", "Olympus Punch")
@@ -106,7 +112,8 @@ func _ready() -> void:
 	OlympusPunch.set_meta("Damage", 35)
 	OlympusPunch.set_meta("Cost", 15)
 	OlympusPunch.set_meta("Type", 0)
-	OlympusPunch.set_meta("Image", RebirthTexture)
+	OlympusPunch.set_meta("AnimationTime", 0.5)
+	OlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
 	var movesets = [[Rebirth, LightBlind],[ThunderSwords, LightBlind, OlympusPunch]]
 	
@@ -236,11 +243,14 @@ func _target_button_pressed(pulsanteid):
 				alliedtarget[targetenemy].set_meta("HP", newhp)
 			else:
 				alliedtarget[targetenemy].set_meta("HP", newhp)
-		var SkillBeingUsed = Sprite2D.new()
+				if(alliedtarget[targetenemy].get_meta("HP")>0):
+					alliedtarget[targetenemy].play("waiting")
+		var SkillBeingUsed = AnimatedSprite2D.new()
 		skillbuttons.append(SkillBeingUsed)
 		add_child(SkillBeingUsed)
-		SkillBeingUsed.position = Vector2(Giocatore.position.x, Giocatore.position.y - 100)
-		SkillBeingUsed.texture = load(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+		SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
+		SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+		SkillBeingUsed.play("default")
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
 			alliedtarget = arrayalleati
@@ -250,6 +260,8 @@ func _target_button_pressed(pulsanteid):
 				alliedtarget[targetenemy].set_meta("HP", newhp)
 			else:
 				alliedtarget[targetenemy].set_meta("HP", newhp)	
+				if(alliedtarget[targetenemy].get_meta("HP")>0):
+					alliedtarget[targetenemy].play("waiting")
 		elif(Items[currentuseditem].get_meta("Type")==1):
 			alliedtarget = arrayalleati
 			for i in range(len(alliedtarget)):
@@ -259,6 +271,11 @@ func _target_button_pressed(pulsanteid):
 					alliedtarget[i].set_meta("HP", newhp)
 				else:
 					alliedtarget[i].set_meta("HP", newhp)	
+					if(alliedtarget[i].get_meta("HP")>0):
+						alliedtarget[i].play("waiting")
+	for i in len(enemytargetbuttons):
+		enemytargetbuttons[i].queue_free()
+	enemytargetbuttons = []
 	_start_le_timer()
 
 func _attack_button_pressed():
@@ -288,7 +305,6 @@ func _item_button_pressed():
 			itemList.item_selected.connect(_on_itemList_item_selected)
 			for i in range(len(Items)):
 				itemList.add_item(Items[i].get_meta("Name") + "|" + Items[i].get_meta("Description"), Items[i].get_meta("Image"))
-				itemList
 			recentaction = 5
 		else:
 			_back_button_pressed()
@@ -308,6 +324,13 @@ func _on_itemList_item_selected(index):
 
 func _skill_button_pressed():
 	if(recentaction==0):
+		var skillList = ItemList.new()
+		skillbuttons.append(skillList)
+		add_child(skillList)
+		skillList.custom_minimum_size = Vector2(500, 200)
+		skillList.position = Vector2(50, 320+(40*((i+1)*1.5)))
+		skillList.item_selected.connect(_on_skillList_item_selected)
+		
 		var PERSONA = AnimatedSprite2D.new()
 		skillbuttons.append(PERSONA)
 		add_child(PERSONA)
@@ -315,32 +338,21 @@ func _skill_button_pressed():
 		PERSONA.play("waiting")
 		arrayalleati[currentpartymember].play("Charging")
 		PERSONA.position = Vector2(arrayalleati[currentpartymember].position.x+55, arrayalleati[currentpartymember].position.y+5)
-		for i in range(len(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves"))): #for(i>0, var i = 0, i += 1):
-			var buttonskillz = Button.new()
-			skillbuttons.append(buttonskillz)
-			add_child(buttonskillz)
-			buttonskillz.custom_minimum_size = Vector2(100, 50)
-			buttonskillz.position = Vector2(50, 320+(40*((i+1)*1.5)))
-			buttonskillz.text = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Name") + "|" + str(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Cost"))
-			buttonskillz.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Type")])
-			buttonskillz.pressed.connect(_choosen_a_skill_button.bind(i))
-			var skilldesc = Label.new()
-			skillbuttons.append(skilldesc)
-			add_child(skilldesc)
-			skilldesc.text = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Description")
-			skilldesc.position = Vector2(buttonskillz.get_minimum_size().x+60, 334+(40*((i+1)*1.5)))
+		for i in range(len(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves"))):
+			skillList.add_item(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Name") + "|" + arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Description"), arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Type")])
 		recentaction = 3
-	
-func _choosen_a_skill_button(skillnumber):
+
+func _on_skillList_item_selected(index):
 	if(recentaction==3):
-		if(arrayalleati[currentpartymember].get_meta("SP")>=arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[skillnumber].get_meta("Cost")):
-			currentusedskill = skillnumber
-			timer.wait_time = 0.5
+		timer.wait_time = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[index].get_meta("AnimationTime")
+		currentusedskill = index
+		for i in range(skillbuttons[0].get_item_count()):
+			skillbuttons[0].set_item_selectable(i, false)
+		if(arrayalleati[currentpartymember].get_meta("SP")>=arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[index].get_meta("Cost")):
 			recentaction = 4
 			_create_targeting_buttons()
 		else:
 			_back_button_pressed()
-		
 
 func _back_button_pressed():
 	for i in len(enemytargetbuttons):
@@ -357,6 +369,9 @@ func _back_button_pressed():
 			skillbuttons = []
 			recentaction = 0
 		if(recentaction==4):
+			for i in range(skillbuttons[0].get_item_count()):
+				skillbuttons[0].set_item_selectable(i, true)
+			skillbuttons[0].deselect_all()
 			recentaction = 3
 		if(recentaction==5):
 			for i in len(itembuttons):
@@ -379,29 +394,45 @@ func _enemyturn():
 	_singleenemyturn()
 		
 func _singleenemyturn():
-	var choosenattacktarget = arrayalleati.pick_random()
-	var enemytimer = Timer.new()
-	if(currentenemymove<len(arrayenemies)):
-		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
-		var newhp = choosenattacktarget.get_meta("HP") - round(( arrayenemies[currentenemymove].get_meta("Damage") / choosenattacktarget.get_meta("Defense")))
-		choosenattacktarget.set_meta("HP", newhp)
-		battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + choosenattacktarget.get_meta("Name")  + " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
-		_update_battle_log()
-		add_child(enemytimer)
-		enemytimer.wait_time = 0.5
-		enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
-		enemytimer.start()	
-	else:
-		battlelogarray.append("-------------------------------------")
-		_update_battle_log()
-		_reset_ally_positions()
-		enemytimer.queue_free()
-		currentenemymove = 0
+	for i in range(len(arrayalleati)):
+		if(arrayalleati[i].get_meta("HP")>0):
+			atleastonecharalive = true
+			break
+		else:
+			atleastonecharalive = false
+	if(atleastonecharalive==true):
+		var choosenattacktarget = arrayalleati.pick_random()
+		while(choosenattacktarget.get_meta("HP")<=0):
+			choosenattacktarget = arrayalleati.pick_random()
+		var enemytimer = Timer.new()
+		if(currentenemymove<len(arrayenemies)):
+			arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
+			var newhp = choosenattacktarget.get_meta("HP") - round(( arrayenemies[currentenemymove].get_meta("Damage") / choosenattacktarget.get_meta("Defense")))
+			choosenattacktarget.set_meta("HP", newhp)
+			battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + choosenattacktarget.get_meta("Name")  + " (New Hp) " + str(choosenattacktarget.get_meta("HP")))
+			if(choosenattacktarget.get_meta("HP")<=0):
+				choosenattacktarget.play("Faint")
+			_update_battle_log()
+			add_child(enemytimer)
+			enemytimer.wait_time = 0.5
+			enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
+			enemytimer.start()	
+		else:
+			battlelogarray.append("-------------------------------------")
+			_update_battle_log()
+			_reset_ally_positions()
+			enemytimer.queue_free()
+			currentenemymove = 0
+	elif(atleastonecharalive==false):
+		_losing_the_battle()
 		
 
 func _reset_ally_positions():
 	for i in len(arrayalleati):
-		arrayalleati[i].play("waiting")
+		if(arrayalleati[i].get_meta("HP")>0):
+			arrayalleati[i].play("waiting")
+		else:
+			arrayalleati[i].play("Faint")
 		arrayalleati[i].set_meta("Defense", 1)
 		arrayalleati[i].set_meta("Attack", 1)
 	_show_button()
@@ -409,7 +440,8 @@ func _reset_ally_positions():
 	
 	
 func _on_timer_timeout():
-	arrayalleati[currentpartymember].play("waiting")
+	if(arrayalleati[currentpartymember].get_meta("HP")>0):
+		arrayalleati[currentpartymember].play("waiting")
 	for i in len(enemytargetbuttons):
 		enemytargetbuttons[i].queue_free()
 	enemytargetbuttons = []
@@ -436,9 +468,11 @@ func _on_timer_timeout():
 	_calculate_total_enemies_buttons()
 	recentaction = 0
 	_update_battle_log()
-	if(currentpartymember<len(arrayalleati)-1):
-		currentturn = currentturn + 1
-		currentpartymember = currentturn
+	if(currentturn<len(arrayalleati)-1):
+		currentpartymember = currentpartymember + 1
+		currentturn = currentpartymember
+		if(arrayalleati[currentturn].get_meta("HP")<=0):
+			_on_timer_timeout()
 		AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
 	else:
 		currentturn = 0
@@ -532,3 +566,11 @@ func _update_battle_log():
 		"
 	BattleLog.text = "Summary: 
 	" + battlelogtext
+
+
+func _losing_the_battle():
+	_hide_button()
+	var youlostdork = Label.new()
+	add_child(youlostdork)
+	youlostdork.position = Vector2(150, 150)
+	youlostdork.text = "you lost dork haha"

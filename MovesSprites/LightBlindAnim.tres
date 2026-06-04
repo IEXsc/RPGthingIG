@@ -1,0 +1,31 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://b851xj5x882tf"]
+
+[ext_resource type="Texture2D" uid="uid://c8p224nhpjugq" path="res://MovesSprites/LightBlind1.png" id="1_esg2h"]
+[ext_resource type="Texture2D" uid="uid://dq8o56ltj01ga" path="res://MovesSprites/LightBlind2.png" id="2_w5h2m"]
+[ext_resource type="Texture2D" uid="uid://fl02nvwncplq" path="res://MovesSprites/LightBlind3.png" id="3_4q74v"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_esg2h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_w5h2m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_4q74v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_4q74v")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_w5h2m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_esg2h")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]
