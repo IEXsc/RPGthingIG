@@ -465,6 +465,7 @@ func _reset_ally_positions():
 		if(arrayalleati[i].get_meta("HP")>0):
 			arrayalleati[i].play("waiting")
 		else:
+			_on_timer_timeout()
 			arrayalleati[i].play("Faint")
 		arrayalleati[i].set_meta("Defense", 1)
 		arrayalleati[i].set_meta("Attack", 1)
