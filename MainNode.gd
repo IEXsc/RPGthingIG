@@ -3,12 +3,15 @@ extends Node
 @onready var StartingLabel = $StartingLabel
 @onready var StartGame = $StartGame
 
+var BattleScene = preload("res://Sceenes/Battle.tscn")
+
 var LightBlindTexture = load("res://MovesSprites/LightBlindAnim.tres")
 var ThunderSwordsTexture = load("res://MovesSprites/ThunderSwordsAnim.tres")
 var RebirthTexture = load("res://MovesSprites/RebirthAnim.tres")
 var OlympusPunchAnim = load("res://MovesSprites/OlympusPunchAnim.tres")
 
-var BattleScene = preload("res://Sceenes/Battle.tscn")
+var PlayerAnim = load("res://AlliesorYourself/PlayerAnim.tres")
+var AllyAnim = load("res://AlliesorYourself/AllyAnim.tres")
 
 var MessiahAnim = load("res://Messiah.tres")
 var ZeusAnim = load("res://Zeus.tres")
@@ -19,6 +22,8 @@ var AngelTungTungAnim = load("res://Enemies/TripleTAnim.tres")
 var PotionTexture = load("res://Potion.png")
 var FatPotionTexture = load("res://PotionObese.png")
 var WeirdPotionTexture = load("res://PotionWeird.png")
+
+
 
 @export var ThunderSwords = Node.new()
 @export var LightBlind = Node.new()
@@ -37,9 +42,10 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var TungTung = AnimatedSprite2D.new()
 @export var AngelTungTung = AnimatedSprite2D.new()
 
-
+@export var Giocatore = AnimatedSprite2D.new()
+@export var Ally = AnimatedSprite2D.new()
 func _ready() -> void:
-	
+	## MOVES
 	ThunderSwords.set_meta("Name", "ThunderSwords")
 	ThunderSwords.set_meta("Description", "Small Arcane Damage To One Enemy")
 	ThunderSwords.set_meta("Damage", 35)
@@ -72,6 +78,32 @@ func _ready() -> void:
 	OlympusPunch.set_meta("AnimationTime", 0.5)
 	OlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
+	## ALLIES
+	Giocatore.set_meta("HP", 135)
+	Giocatore.set_meta("SP", 65)
+	Giocatore.set_meta("maxHP", 135)
+	Giocatore.set_meta("maxSP", 65)
+	Giocatore.set_meta("Damage", 5)
+	Giocatore.set_meta("DamageType", 0)
+	Giocatore.set_meta("Defense", 1.0)
+	Giocatore.set_meta("Attack", 1.0)
+	Giocatore.set_meta("Name", "Ren")
+	Giocatore.set_meta("Animation", PlayerAnim)
+	Giocatore.set_meta("CharacterGod", Messiah)
+	
+	Ally.set_meta("HP", 100)
+	Ally.set_meta("SP", 80)
+	Ally.set_meta("maxHP", 100)
+	Ally.set_meta("maxSP", 80)
+	Ally.set_meta("Damage", 10)
+	Ally.set_meta("DamageType", 2)
+	Ally.set_meta("Defense", 1.0)
+	Ally.set_meta("Attack", 1.0)
+	Ally.set_meta("Name", "Loki")
+	Ally.set_meta("Animation", AllyAnim)
+	Ally.set_meta("CharacterGod", Zeus)
+	
+	## GODS? I HAVE TO COME UP WITH A NAME DAMN
 	Messiah.set_meta("Name", "Messiah")
 	Messiah.set_meta("SpecialMoves", movesets[0])
 	Messiah.set_meta("Animation", MessiahAnim)
@@ -79,6 +111,8 @@ func _ready() -> void:
 	Zeus.set_meta("Name", "Zeus")
 	Zeus.set_meta("SpecialMoves", movesets[1])
 	Zeus.set_meta("Animation", ZeusAnim)
+	
+	## ITEMS
 	
 	Potion.set_meta("Name", "Small Potion")
 	Potion.set_meta("Description", "Slightly Heals One Ally")
@@ -98,6 +132,7 @@ func _ready() -> void:
 	WeirdPotion.set_meta("Type", 1)
 	WeirdPotion.set_meta("Image", WeirdPotionTexture)
 	
+	## ENEMIES
 	
 	TungTung.set_meta("HP", 50)
 	TungTung.set_meta("Name", "TTT")
@@ -112,7 +147,9 @@ func _ready() -> void:
 	AngelTungTung.set_meta("SpecialMoves", movesets[2])
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	
-
+	
+	
+	
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

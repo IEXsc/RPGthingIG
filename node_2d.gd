@@ -5,26 +5,23 @@
 ## FOR SKILL TYPES
 
 extends Node2D
-
-@onready var Text = $Label
-@onready var Pulsante = $Button
-@onready var Giocatore = $Player
-@onready var Ally = $Ally
-@onready var stats = $Stats
-
 @onready var BackButton = $Back
 @onready var PlayerInfo = $PlayerInfo
 @onready var BattleLog = $Summary
 
 @onready var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
 
-
-
+@onready var PlayerProgressBar = $PlayerProgressBar
+@onready var AllyProgressBar = $AllyProgressBar
+@onready var PlayerHpIndicator = $PlayerHpIndicator
+@onready var AllyHpIndicator = $AllyHpIndicator
 
 var timer = Timer.new()
 ### TEXTURES
-
-
+var AllyHPIndicatorTexture = load("res://AlliesorYourself/HPindicators/AllyHPIndicator.png")
+var AllyHPIndicatorDEADTexture = load("res://AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png")
+var PlayerHPIndicatorTexture = load("res://AlliesorYourself/HPindicators/PlayerHPIndicator.png")
+var PlayerHPIndicatorDEADTexture = load("res://AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png")
 
 var BluntTexture = load("res://Blunt.png")
 var PierceTexture = load("res://Pierce.png")
@@ -52,6 +49,9 @@ var battlelogarray = []
 var enemytargetbuttons = []
 var Items = []
 
+var AlliedHealthBars = [PlayerProgressBar, PlayerHpIndicator]
+var AlliedHpIndicator = [PlayerHpIndicator, AllyHpIndicator]
+
 var targetenemy = 0
 var i = 0
 var text = ""
@@ -71,47 +71,29 @@ func _ready() -> void:
 	"
 	Items = get_parent().Items
 	
-	var Rebirth = get_parent().Rebirth
-	var LightBlind = get_parent().LightBlind
-	var ThunderSwords = get_parent().ThunderSwords
-	var OlympusPunch = get_parent().OlympusPunch
-	
+	add_child(timer)
+	timer.timeout.connect(_on_timer_timeout)
 	_setting_up_enemies()
 	
-	arrayalleati = [Giocatore, Ally]
+	var Player = get_parent().Giocatore
+	Player.set_sprite_frames(Player.get_meta("Animation"))
+	Player.position = Vector2(830, 260)
+	add_child(Player)
 	
+	var Ally1 = get_parent().Ally
+	Ally1.set_sprite_frames(Ally1.get_meta("Animation"))
+	Ally1.position = Vector2(930, 260)
+	add_child(Ally1)
 	
+	arrayalleati = [Player, Ally1]
+	Player.play("waiting")
+	Ally1.play("waiting")
 	
+	PlayerProgressBar.set_max(Player.get_meta("maxHP"))
+	PlayerProgressBar.set_value(Player.get_meta("HP"))
 	
-	Giocatore.play("waiting")
-	Giocatore.set_meta("HP", 135)
-	Giocatore.set_meta("SP", 65)
-	Giocatore.set_meta("maxHP", 135)
-	Giocatore.set_meta("maxSP", 65)
-	Giocatore.set_meta("Damage", 5)
-	Giocatore.set_meta("DamageType", 0)
-	Giocatore.set_meta("Defense", 1.0)
-	Giocatore.set_meta("Attack", 1.0)
-	Giocatore.set_meta("Name", "Ren")
-	Giocatore.set_meta("CharacterGod", get_parent().Messiah)
-	
-	
-	
-	
-	
-	Ally.play("waiting")
-	Ally.set_meta("HP", 100)
-	Ally.set_meta("SP", 80)
-	Ally.set_meta("maxHP", 100)
-	Ally.set_meta("maxSP", 80)
-	Ally.set_meta("Damage", 10)
-	Ally.set_meta("DamageType", 2)
-	Ally.set_meta("Defense", 1.0)
-	Ally.set_meta("Attack", 1.0)
-	Ally.set_meta("Name", "Loki")
-	Ally.set_meta("CharacterGod", get_parent().Zeus)
-		
-		
+	AllyProgressBar.set_max(Ally1.get_meta("maxHP"))
+	AllyProgressBar.set_value(Ally1.get_meta("HP"))
 	_show_button()
 	
 	BackButton.pressed.connect(_back_button_pressed)
@@ -119,14 +101,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	for i in len(arrayalleati):
-		text = text + arrayalleati[i].get_meta("Name") + "
-		"+ str(arrayalleati[i].get_meta("HP")) + " HP remaining" +"
-		"+ str(arrayalleati[i].get_meta("SP")) + " SP remaining" +"
-		
-		"
-	PlayerInfo.text = text 
-	text = ""
+	pass
+	
 	
 		
 func _calculate_total_enemies_buttons():
@@ -379,7 +355,6 @@ func _reset_ally_positions():
 		if(arrayalleati[i].get_meta("HP")>0):
 			arrayalleati[i].play("waiting")
 		else:
-			_on_timer_timeout()
 			arrayalleati[i].play("Faint")
 		arrayalleati[i].set_meta("Defense", 1)
 		arrayalleati[i].set_meta("Attack", 1)
@@ -413,21 +388,33 @@ func _on_timer_timeout():
 		elif(Items[currentuseditem].get_meta("Type")==1):
 			battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " used " + Items[currentuseditem].get_meta("Name") + " on the whole team")
 		Items.remove_at(currentuseditem)
+	
+	
 	_calculate_total_enemies_buttons()
 	recentaction = 0
 	_update_battle_log()
-	if(currentturn<len(arrayalleati)-1):
-		currentpartymember = currentpartymember + 1
+	timer.stop()
+	
+	var next_turn_found = false
+	
+	while currentpartymember < len(arrayalleati) - 1:
+		currentpartymember += 1
 		currentturn = currentpartymember
-		if(arrayalleati[currentturn].get_meta("HP")<=0):
-			_on_timer_timeout()
+		
+		if arrayalleati[currentpartymember].get_meta("HP") > 0:
+			next_turn_found = true
+			break
+			
+	if next_turn_found:
 		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+		# If you need to trigger an animation or update visual UI state for the next ally, do it here
 	else:
+		# No more living allies have a move this turn, pass to enemies
 		currentturn = 0
 		currentpartymember = 0
 		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
 		_enemyturn()
-	timer.stop()
+	
 
 
 	
@@ -489,9 +476,7 @@ func _show_button():
 	
 	
 func _start_le_timer():
-	add_child(timer)
 	timer.start()
-	timer.timeout.connect(_on_timer_timeout)
 
 func _update_battle_log():
 	if(len(battlelogarray)>10):

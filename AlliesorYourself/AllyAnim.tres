@@ -1,0 +1,61 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://e4l3ittat4mr"]
+
+[ext_resource type="Texture2D" uid="uid://b662s2lo61oog" path="res://TestAllyCharge1.png" id="1_xa1d0"]
+[ext_resource type="Texture2D" uid="uid://uxjq3hi64gw7" path="res://TestAllyCharge2.png" id="2_ik5tu"]
+[ext_resource type="Texture2D" uid="uid://bay177npuqkb7" path="res://AllyParry1.png" id="3_5temy"]
+[ext_resource type="Texture2D" uid="uid://da7pjug81sfag" path="res://AllyParry2.png" id="4_iflmy"]
+[ext_resource type="Texture2D" uid="uid://d3x2c3q4xyqtj" path="res://AllyFaint1.png" id="5_2qg2c"]
+[ext_resource type="Texture2D" uid="uid://25vr5phu3u8v" path="res://AllyFaint2.png" id="6_74sou"]
+[ext_resource type="Texture2D" uid="uid://egsbnu7kkhm7" path="res://TestAlly1.png" id="7_jq5ey"]
+[ext_resource type="Texture2D" uid="uid://cgqsmk8sb0cwc" path="res://TestAlly2.png" id="8_502o6"]
+[ext_resource type="Texture2D" uid="uid://cwiafio3dprgf" path="res://TestAlly3.png" id="9_go18p"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_xa1d0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ik5tu")
+}],
+"loop": true,
+"name": &"Charging",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_5temy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_iflmy")
+}],
+"loop": true,
+"name": &"Defend",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_2qg2c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_74sou")
+}],
+"loop": true,
+"name": &"Faint",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_jq5ey")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_502o6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_go18p")
+}],
+"loop": true,
+"name": &"waiting",
+"speed": 5.0
+}]
