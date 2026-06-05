@@ -1,0 +1,199 @@
+[gd_scene format=3 uid="uid://su3ik8xyhn1s"]
+
+[ext_resource type="Script" uid="uid://bshnon5umqxs1" path="res://node_2d.gd" id="1_6pyww"]
+[ext_resource type="Script" uid="uid://bva1n61vmw6rg" path="res://ButtonConrainer.gd" id="2_elbsv"]
+[ext_resource type="Texture2D" uid="uid://cqip1tp3vjaem" path="res://Charging1.png" id="3_i2m2o"]
+[ext_resource type="Texture2D" uid="uid://brankjsqle1ek" path="res://Charging2.png" id="4_mhipf"]
+[ext_resource type="Texture2D" uid="uid://m5hwyfmcywy8" path="res://PlayerParry1.png" id="5_xhibn"]
+[ext_resource type="Texture2D" uid="uid://crgeaihcq8fec" path="res://PlayerParry2.png" id="6_5psof"]
+[ext_resource type="Texture2D" uid="uid://gyalpql2dyw5" path="res://PlayerFaint1.png" id="7_subic"]
+[ext_resource type="Texture2D" uid="uid://cxeskhadid7yh" path="res://PlayerFaint2.png" id="8_kfd4w"]
+[ext_resource type="Texture2D" uid="uid://dvob02y1lrwt3" path="res://Player1.png" id="9_4oa5k"]
+[ext_resource type="Texture2D" uid="uid://f22x4023n7mt" path="res://Player2.png" id="10_hsmum"]
+[ext_resource type="Texture2D" uid="uid://cyna41ig8i5w7" path="res://Player3.png" id="11_rcboq"]
+[ext_resource type="Texture2D" uid="uid://b662s2lo61oog" path="res://TestAllyCharge1.png" id="12_72wgt"]
+[ext_resource type="Texture2D" uid="uid://uxjq3hi64gw7" path="res://TestAllyCharge2.png" id="13_mye37"]
+[ext_resource type="Texture2D" uid="uid://bay177npuqkb7" path="res://AllyParry1.png" id="14_m3ec5"]
+[ext_resource type="Texture2D" uid="uid://da7pjug81sfag" path="res://AllyParry2.png" id="15_71vem"]
+[ext_resource type="Texture2D" uid="uid://d3x2c3q4xyqtj" path="res://AllyFaint1.png" id="16_eg0gl"]
+[ext_resource type="Texture2D" uid="uid://25vr5phu3u8v" path="res://AllyFaint2.png" id="17_ssepp"]
+[ext_resource type="Texture2D" uid="uid://egsbnu7kkhm7" path="res://TestAlly1.png" id="18_egydh"]
+[ext_resource type="Texture2D" uid="uid://cgqsmk8sb0cwc" path="res://TestAlly2.png" id="19_mappt"]
+[ext_resource type="Texture2D" uid="uid://cwiafio3dprgf" path="res://TestAlly3.png" id="20_tcjo8"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_0e48y"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hqns4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_i2m2o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_mhipf")
+}],
+"loop": true,
+"name": &"Charging",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_xhibn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_5psof")
+}],
+"loop": true,
+"name": &"Defend",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_subic")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_kfd4w")
+}],
+"loop": true,
+"name": &"Faint",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_4oa5k")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_hsmum")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_rcboq")
+}],
+"loop": true,
+"name": &"waiting",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fs4d3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("12_72wgt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_mye37")
+}],
+"loop": true,
+"name": &"Charging",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("14_m3ec5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_71vem")
+}],
+"loop": true,
+"name": &"Defend",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("16_eg0gl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_ssepp")
+}],
+"loop": true,
+"name": &"Faint",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("18_egydh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_mappt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_tcjo8")
+}],
+"loop": true,
+"name": &"waiting",
+"speed": 5.0
+}]
+
+[node name="Node2D" type="Node2D" unique_id=1901797313]
+script = ExtResource("1_6pyww")
+
+[node name="BoxContainer" type="BoxContainer" parent="." unique_id=742351134]
+offset_left = 11.0
+offset_top = 52.0
+offset_right = 238.0
+offset_bottom = 188.0
+vertical = true
+script = ExtResource("2_elbsv")
+
+[node name="Defend" type="Button" parent="BoxContainer" unique_id=1995234548]
+layout_mode = 2
+text = "Defend"
+
+[node name="Items" type="Button" parent="BoxContainer" unique_id=1711540584]
+layout_mode = 2
+text = "Items"
+
+[node name="Attack" type="Button" parent="BoxContainer" unique_id=612518415]
+layout_mode = 2
+text = "Attack"
+
+[node name="Skill" type="Button" parent="BoxContainer" unique_id=1384287260]
+layout_mode = 2
+text = "Skill"
+
+[node name="Stats" type="Label" parent="." unique_id=334475505]
+offset_left = 301.0
+offset_top = 130.0
+offset_right = 391.0
+offset_bottom = 160.0
+label_settings = SubResource("LabelSettings_0e48y")
+
+[node name="Label" type="Label" parent="." unique_id=376023744]
+offset_left = 300.0
+offset_top = 100.0
+offset_right = 390.0
+offset_bottom = 130.0
+label_settings = SubResource("LabelSettings_0e48y")
+
+[node name="Back" type="Button" parent="." unique_id=195918441]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 70.0
+offset_bottom = 43.0
+text = "Back"
+
+[node name="Player" type="AnimatedSprite2D" parent="." unique_id=1500505529]
+position = Vector2(830, 261)
+sprite_frames = SubResource("SpriteFrames_hqns4")
+animation = &"waiting"
+autoplay = "waiting"
+
+[node name="Ally" type="AnimatedSprite2D" parent="." unique_id=1653959607]
+position = Vector2(928, 263)
+sprite_frames = SubResource("SpriteFrames_fs4d3")
+animation = &"waiting"
+autoplay = "waiting"
+frame_progress = 0.2339648
+
+[node name="Summary" type="Label" parent="." unique_id=1602243691]
+offset_left = 647.0
+offset_top = 316.0
+offset_right = 739.0
+offset_bottom = 339.0
+text = "Summary:"
+
+[node name="PlayerInfo" type="Label" parent="." unique_id=1454274357]
+offset_left = 257.0
+offset_top = 10.0
+offset_right = 349.0
+offset_bottom = 33.0
+text = "XXXXXXXXX"

@@ -1,9 +1,14 @@
 extends Node
 
+@onready var StartingLabel = $StartingLabel
+@onready var StartGame = $StartGame
+
 var LightBlindTexture = load("res://MovesSprites/LightBlindAnim.tres")
 var ThunderSwordsTexture = load("res://MovesSprites/ThunderSwordsAnim.tres")
 var RebirthTexture = load("res://MovesSprites/RebirthAnim.tres")
 var OlympusPunchAnim = load("res://MovesSprites/OlympusPunchAnim.tres")
+
+var BattleScene = preload("res://Sceenes/Battle.tscn")
 
 var MessiahAnim = load("res://Messiah.tres")
 var ZeusAnim = load("res://Zeus.tres")
@@ -107,9 +112,16 @@ func _ready() -> void:
 	AngelTungTung.set_meta("SpecialMoves", movesets[2])
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	
-	$Node2D._setting_up_enemies()
 
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+
+func _on_start_game_pressed() -> void:
+	StartGame.queue_free()
+	StartingLabel.queue_free()
+	var Battle = BattleScene.instantiate()
+	add_child(Battle)

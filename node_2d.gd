@@ -76,16 +76,7 @@ func _ready() -> void:
 	var ThunderSwords = get_parent().ThunderSwords
 	var OlympusPunch = get_parent().OlympusPunch
 	
-	
-	
-	
-
-	var nem2 = get_parent().AngelTungTung 
-	nem2.play("waiting")
-	
-	var nem3 = get_parent().TungTung
-	nem3.play("waiting")
-	
+	_setting_up_enemies()
 	
 	arrayalleati = [Giocatore, Ally]
 	
