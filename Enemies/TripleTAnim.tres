@@ -1,0 +1,22 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cyvoh5tlnwmc4"]
+
+[ext_resource type="Texture2D" uid="uid://ncdhj650tpnj" path="res://Enemies/TripleT1.png" id="1_qhylu"]
+[ext_resource type="Texture2D" uid="uid://5sgwj43dy81j" path="res://Enemies/TripleT2.png" id="2_olvpp"]
+[ext_resource type="Texture2D" uid="uid://cxbvrej8oxfda" path="res://Enemies/TripleT3.png" id="3_bebc0"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_qhylu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_olvpp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_bebc0")
+}],
+"loop": true,
+"name": &"waiting",
+"speed": 5.0
+}]

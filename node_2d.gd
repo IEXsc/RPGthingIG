@@ -8,35 +8,23 @@ extends Node2D
 
 @onready var Text = $Label
 @onready var Pulsante = $Button
-@onready var nem1 = $Nem1
-@onready var nem2 = $Nem2
-@onready var nem3 = $Nem3
 @onready var Giocatore = $Player
 @onready var Ally = $Ally
 @onready var stats = $Stats
-@onready var AttackButton = $Attack
-@onready var SkillButton = $Skill
-@onready var DefendButton = $Defend
+
 @onready var BackButton = $Back
-@onready var ItemsButton = $Items
 @onready var PlayerInfo = $PlayerInfo
 @onready var BattleLog = $Summary
 
 @onready var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
-@onready var MessiahAnim = load("res://Messiah.tres")
-@onready var ZeusAnim = load("res://Zeus.tres")
+
+
 
 
 var timer = Timer.new()
 ### TEXTURES
-var LightBlindTexture = load("res://MovesSprites/LightBlindAnim.tres")
-var ThunderSwordsTexture = load("res://MovesSprites/ThunderSwordsAnim.tres")
-var RebirthTexture = load("res://MovesSprites/RebirthAnim.tres")
-var OlympusPunchAnim = load("res://MovesSprites/OlympusPunchAnim.tres")
 
 
-var MessiahTexture1 = load("res://God1.png")
-var MessiahTexture2 = load("res://God2.png")
 
 var BluntTexture = load("res://Blunt.png")
 var PierceTexture = load("res://Pierce.png")
@@ -53,9 +41,7 @@ var ArcaneTexture = load("res://Arcane.png")
 var HealingTexture = load("res://Healing.png")
 
 
-var PotionTexture = load("res://Potion.png")
-var FatPotionTexture = load("res://PotionObese.png")
-var WeirdPotionTexture = load("res://PotionWeird.png")
+
 ##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing
 var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture]
 var arrayenemies = []
@@ -83,87 +69,28 @@ func _ready() -> void:
 	randomize()
 	BattleLog.text = "Summary: 
 	"
+	Items = get_parent().Items
 	
-	var ThunderSwords = Node.new()
-	ThunderSwords.set_meta("Name", "ThunderSwords")
-	ThunderSwords.set_meta("Description", "Small Arcane Damage To One Enemy")
-	ThunderSwords.set_meta("Damage", 35)
-	ThunderSwords.set_meta("Cost", 12)
-	ThunderSwords.set_meta("Type", 10)
-	ThunderSwords.set_meta("AnimationTime", 1)
-	ThunderSwords.set_meta("Image", ThunderSwordsTexture)
-	var LightBlind = Node.new()
-	LightBlind.set_meta("Name", "LightBlind")
-	LightBlind.set_meta("Description", "Small Holy Damage To One Enemy")
-	LightBlind.set_meta("Damage", 35)
-	LightBlind.set_meta("Cost", 8)
-	LightBlind.set_meta("Type", 9)
-	LightBlind.set_meta("AnimationTime", 0.5)
-	LightBlind.set_meta("Image", LightBlindTexture)
-	var Rebirth = Node.new()
-	Rebirth.set_meta("Name", "Rebirth")
-	Rebirth.set_meta("Description", "Slightly Heals One Ally")
-	Rebirth.set_meta("Damage", -35)
-	Rebirth.set_meta("Cost", 7)
-	Rebirth.set_meta("Type", 11)
-	Rebirth.set_meta("AnimationTime", 0.5)
-	Rebirth.set_meta("Image", RebirthTexture)
-	var OlympusPunch = Node.new()
-	OlympusPunch.set_meta("Name", "Olympus Punch")
-	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
-	OlympusPunch.set_meta("Damage", 35)
-	OlympusPunch.set_meta("Cost", 15)
-	OlympusPunch.set_meta("Type", 0)
-	OlympusPunch.set_meta("AnimationTime", 0.5)
-	OlympusPunch.set_meta("Image", OlympusPunchAnim)
+	var Rebirth = get_parent().Rebirth
+	var LightBlind = get_parent().LightBlind
+	var ThunderSwords = get_parent().ThunderSwords
+	var OlympusPunch = get_parent().OlympusPunch
 	
-	var movesets = [ [Rebirth, LightBlind] , [ThunderSwords, LightBlind, OlympusPunch] , [OlympusPunch] ]
 	
-	var Potion = Node.new()
-	Potion.set_meta("Name", "Small Potion")
-	Potion.set_meta("Description", "Slightly Heals One Ally")
-	Potion.set_meta("Damage", -35)
-	Potion.set_meta("Type", 0)
-	Potion.set_meta("Image", PotionTexture)
-	var BigPotion = Node.new()
-	BigPotion.set_meta("Name", "Big Potion")
-	BigPotion.set_meta("Description", "Decently Heals One Ally")
-	BigPotion.set_meta("Damage", -85)
-	BigPotion.set_meta("Type", 0)
-	BigPotion.set_meta("Image", FatPotionTexture)
-	var WeirdPotion = Node.new()
-	WeirdPotion.set_meta("Name", "Weird Potion")
-	WeirdPotion.set_meta("Description", "Slightly Heals the whole Team")
-	WeirdPotion.set_meta("Damage", -35)
-	WeirdPotion.set_meta("Type", 1)
-	WeirdPotion.set_meta("Image", WeirdPotionTexture)
-	Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
-	 
-	nem1.play("waiting")
-	nem1.set_meta("HP", 50)
-	nem1.set_meta("Name", "Marco")
-	nem1.set_meta("Damage", 20)
-	nem1.set_meta("SpecialMoves", movesets[2])
 	
+	
+
+	var nem2 = get_parent().AngelTungTung 
 	nem2.play("waiting")
-	nem2.set_meta("HP", 75)
-	nem2.set_meta("Name", "Aurelio")
-	nem2.set_meta("Damage", 25)
-	nem2.set_meta("SpecialMoves", movesets[2])
 	
+	var nem3 = get_parent().TungTung
 	nem3.play("waiting")
-	nem3.set_meta("HP", 50)
-	nem3.set_meta("Name", "Marco")
-	nem3.set_meta("Damage", 20)
-	nem3.set_meta("SpecialMoves", movesets[2])
 	
-	arrayenemies = [nem1, nem2, nem3]
+	
 	arrayalleati = [Giocatore, Ally]
 	
-	var Messiah = Node.new()
-	Messiah.set_meta("Name", "Messiah")
-	Messiah.set_meta("SpecialMoves", movesets[0])
-	Messiah.set_meta("Animation", MessiahAnim)
+	
+	
 	
 	Giocatore.play("waiting")
 	Giocatore.set_meta("HP", 135)
@@ -175,13 +102,11 @@ func _ready() -> void:
 	Giocatore.set_meta("Defense", 1.0)
 	Giocatore.set_meta("Attack", 1.0)
 	Giocatore.set_meta("Name", "Ren")
-	Giocatore.set_meta("CharacterGod", Messiah)
+	Giocatore.set_meta("CharacterGod", get_parent().Messiah)
 	
 	
-	var Zeus = Node.new()
-	Zeus.set_meta("Name", "Zeus")
-	Zeus.set_meta("SpecialMoves", movesets[1])
-	Zeus.set_meta("Animation", ZeusAnim)
+	
+	
 	
 	Ally.play("waiting")
 	Ally.set_meta("HP", 100)
@@ -193,16 +118,13 @@ func _ready() -> void:
 	Ally.set_meta("Defense", 1.0)
 	Ally.set_meta("Attack", 1.0)
 	Ally.set_meta("Name", "Loki")
-	Ally.set_meta("CharacterGod", Zeus)
+	Ally.set_meta("CharacterGod", get_parent().Zeus)
 		
 		
 	_show_button()
-	AttackButton.pressed.connect(_attack_button_pressed)
-	AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
-	SkillButton.pressed.connect(_skill_button_pressed)
+	
 	BackButton.pressed.connect(_back_button_pressed)
-	DefendButton.pressed.connect(_defend_button_pressed)
-	ItemsButton.pressed.connect(_item_button_pressed)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -508,11 +430,11 @@ func _on_timer_timeout():
 		currentturn = currentpartymember
 		if(arrayalleati[currentturn].get_meta("HP")<=0):
 			_on_timer_timeout()
-		AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
 	else:
 		currentturn = 0
 		currentpartymember = 0
-		AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
 		_enemyturn()
 	timer.stop()
 
@@ -566,19 +488,14 @@ func _create_targeting_buttons():
 ## ADD SOME LABELS THAT DESCRIBE SHIT HERE AND THERE
 
 func _hide_button():
-	AttackButton.visible = false
-	SkillButton.visible = false
+	$BoxContainer._hide_buttons()
 	BackButton.visible = false
-	DefendButton.visible = false 
-	ItemsButton.visible = false
 	
 	
 func _show_button():
-	AttackButton.visible = true
-	SkillButton.visible = true
+	$BoxContainer._show_buttons()
 	BackButton.visible = true
-	DefendButton.visible = true
-	ItemsButton.visible = true
+	
 	
 func _start_le_timer():
 	add_child(timer)
@@ -596,6 +513,21 @@ func _update_battle_log():
 	BattleLog.text = "Summary: 
 	" + battlelogtext
 
+func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
+	var TungTungEnemy = get_parent().TungTung
+	var AngelTungTung = get_parent().AngelTungTung
+	var nem1type = AngelTungTung
+	
+	var nem1 = AnimatedSprite2D.new()
+	add_child(nem1)
+	nem1.set_meta("HP", nem1type.get_meta("HP"))
+	nem1.set_meta("Name", nem1type.get_meta("Name"))
+	nem1.set_meta("Damage", nem1type.get_meta("Damage"))
+	nem1.set_meta("SpecialMoves", nem1type.get_meta("SpecialMoves"))
+	nem1.set_sprite_frames(nem1type.get_sprite_frames())
+	nem1.position = Vector2(880, 150)
+	nem1.play("waiting")
+	arrayenemies = [nem1]
 
 func _losing_the_battle():
 	_hide_button()

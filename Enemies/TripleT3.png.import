@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ncdhj650tpnj"
-path="res://.godot/imported/TripleT1.png-c4236d28c74d162c143b78f57fd15c9d.ctex"
+uid="uid://cxbvrej8oxfda"
+path="res://.godot/imported/TripleT3.png-4c574f14672177dc1026b2b988703f89.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://TripleT1.png"
-dest_files=["res://.godot/imported/TripleT1.png-c4236d28c74d162c143b78f57fd15c9d.ctex"]
+source_file="res://Enemies/TripleT3.png"
+dest_files=["res://.godot/imported/TripleT3.png-4c574f14672177dc1026b2b988703f89.ctex"]
 
 [params]
 
