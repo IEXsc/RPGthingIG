@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://beg4gtnb55y0r"
-path="res://.godot/imported/Titan2.png-be01b1675f50b898645d8435bb68df77.ctex"
+uid="uid://ci184540rrmsr"
+path="res://.godot/imported/EnemyEmptyHealth.png-d3ffd04d754acca5e7755ebba6ea3bb6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Titan2.png"
-dest_files=["res://.godot/imported/Titan2.png-be01b1675f50b898645d8435bb68df77.ctex"]
+source_file="res://Enemies/HealthBars/EnemyEmptyHealth.png"
+dest_files=["res://.godot/imported/EnemyEmptyHealth.png-d3ffd04d754acca5e7755ebba6ea3bb6.ctex"]
 
 [params]
 

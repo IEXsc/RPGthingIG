@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bm6gjmtckju85" path="res://AlliesorYourself/HPindicators/AllyHPIndicator.png" id="4_jd0xq"]
 [ext_resource type="Texture2D" uid="uid://b3r8qh0uv0xn3" path="res://AlliesorYourself/HPindicators/HPbar(s)/HPBAREMPTY.png" id="5_ublxr"]
 [ext_resource type="Texture2D" uid="uid://u6ne6das34hh" path="res://AlliesorYourself/HPindicators/HPbar(s)/HPBARFULL.png" id="6_jdm50"]
+[ext_resource type="AudioStream" uid="uid://lrqgponbltkb" path="res://MusicWhileWeWaitLikeChuds.mp3" id="7_ublxr"]
 
 [node name="Node2D" type="Node2D" unique_id=1901797313]
 script = ExtResource("1_6pyww")
@@ -73,3 +74,8 @@ offset_bottom = 118.0
 value = 100.0
 texture_under = ExtResource("5_ublxr")
 texture_progress = ExtResource("6_jdm50")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=500493195]
+stream = ExtResource("7_ublxr")
+autoplay = true
+parameters/looping = true

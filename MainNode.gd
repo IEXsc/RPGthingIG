@@ -4,6 +4,8 @@ extends Node
 @onready var StartGame = $StartGame
 
 var BattleScene = preload("res://Sceenes/Battle.tscn")
+var LosingScene = preload("res://Sceenes/failure_screen.tscn")
+var WinningScene = preload("res://Sceenes/victory_screen.tscn")
 
 var LightBlindTexture = load("res://MovesSprites/LightBlindAnim.tres")
 var ThunderSwordsTexture = load("res://MovesSprites/ThunderSwordsAnim.tres")
@@ -135,6 +137,7 @@ func _ready() -> void:
 	## ENEMIES
 	
 	TungTung.set_meta("HP", 50)
+	TungTung.set_meta("maxHP", 50)
 	TungTung.set_meta("Name", "TTT")
 	TungTung.set_meta("Damage", 20)
 	TungTung.set_meta("Animation", 20)
@@ -142,6 +145,7 @@ func _ready() -> void:
 	TungTung.set_sprite_frames(TungTungAnim)
 	
 	AngelTungTung.set_meta("HP", 75)
+	AngelTungTung.set_meta("maxHP", 50)
 	AngelTungTung.set_meta("Name", "Angel TTT")
 	AngelTungTung.set_meta("Damage", 25)
 	AngelTungTung.set_meta("SpecialMoves", movesets[2])

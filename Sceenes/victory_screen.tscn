@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://2ba8uijrjiya"]
+
+[node name="VictoryScreen" type="Node2D" unique_id=2074972334]
+
+[node name="Label" type="Label" parent="." unique_id=60239196]
+offset_left = 41.0
+offset_top = 32.0
+offset_right = 81.0
+offset_bottom = 55.0
+text = "Congrats ig you don't suck ass at clicking buttons"
