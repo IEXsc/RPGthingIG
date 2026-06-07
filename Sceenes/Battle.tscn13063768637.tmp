@@ -5,7 +5,9 @@
 [ext_resource type="Texture2D" uid="uid://c5ej5io01jvj3" path="res://AlliesorYourself/HPindicators/PlayerHPIndicator.png" id="3_ncxj6"]
 [ext_resource type="Texture2D" uid="uid://do01fl225gtmo" path="res://AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png" id="4_2eky3"]
 [ext_resource type="Texture2D" uid="uid://bm6gjmtckju85" path="res://AlliesorYourself/HPindicators/AllyHPIndicator.png" id="4_jd0xq"]
+[ext_resource type="Texture2D" uid="uid://b3r8qh0uv0xn3" path="res://AlliesorYourself/HPindicators/HPbar(s)/HPBAREMPTY.png" id="5_ublxr"]
 [ext_resource type="Texture2D" uid="uid://cwinf8y5vh50x" path="res://AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png" id="6_4sr1x"]
+[ext_resource type="Texture2D" uid="uid://u6ne6das34hh" path="res://AlliesorYourself/HPindicators/HPbar(s)/HPBARFULL.png" id="6_jdm50"]
 [ext_resource type="AudioStream" uid="uid://lrqgponbltkb" path="res://MusicWhileWeWaitLikeChuds.mp3" id="7_ublxr"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_bc5cn"]
@@ -96,6 +98,15 @@ animation = &"Alive"
 position = Vector2(363, 75)
 sprite_frames = SubResource("SpriteFrames_q7hnr")
 animation = &"Alive"
+
+[node name="AllyProgressBar" type="TextureProgressBar" parent="." unique_id=1899978441]
+offset_left = 331.0
+offset_top = 107.0
+offset_right = 395.0
+offset_bottom = 115.0
+value = 100.0
+texture_under = ExtResource("5_ublxr")
+texture_progress = ExtResource("6_jdm50")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=500493195]
 stream = ExtResource("7_ublxr")

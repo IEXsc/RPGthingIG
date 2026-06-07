@@ -11,17 +11,17 @@ extends Node2D
 
 @onready var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
 
-@onready var PlayerProgressBar = $PlayerProgressBar
+
 @onready var AllyProgressBar = $AllyProgressBar
 @onready var PlayerHpIndicator = $PlayerHpIndicator
 @onready var AllyHpIndicator = $AllyHpIndicator
 
 var timer = Timer.new()
 ### TEXTURES
-var AllyHPIndicatorTexture = load("res://AlliesorYourself/HPindicators/AllyHPIndicator.png")
-var AllyHPIndicatorDEADTexture = load("res://AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png")
-var PlayerHPIndicatorTexture = load("res://AlliesorYourself/HPindicators/PlayerHPIndicator.png")
-var PlayerHPIndicatorDEADTexture = load("res://AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png")
+
+var EmptyBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBAREMPTY.png")
+var FullHPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBARFULL.png")
+var FullSPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/SPBARFULL.png")
 
 var EnemyHPFull = load("res://Enemies/HealthBars/EnemyFullHealth.png")
 var EnemyHPEmpty = load("res://Enemies/HealthBars/EnemyEmptyHealth.png")
@@ -54,7 +54,7 @@ var Items = []
 
 var AlliedHealthBars = []
 var AlliedHpIndicator = []
-
+var AlliedManaBars = []
 var targetenemy = 0
 var i = 0
 var text = ""
@@ -71,8 +71,8 @@ var damagethatwillbedone = 0
 
 var atleastonecharalive = true
 func _ready() -> void:
-	AlliedHealthBars = [PlayerProgressBar, AllyProgressBar]
-	AlliedHpIndicator = [PlayerHpIndicator, AllyHpIndicator]
+	
+	
 	randomize()
 	BattleLog.text = "Summary: 
 	"
@@ -89,18 +89,15 @@ func _ready() -> void:
 	
 	var Ally1 = get_parent().Ally
 	Ally1.set_sprite_frames(Ally1.get_meta("Animation"))
-	Ally1.position = Vector2(930, 260)
+	Ally1.position = Vector2(894, 260)
 	add_child(Ally1)
 	
 	arrayalleati = [Player, Ally1]
 	Player.play("waiting")
 	Ally1.play("waiting")
 	
-	PlayerProgressBar.set_max(Player.get_meta("maxHP"))
-	PlayerProgressBar.set_value(Player.get_meta("HP"))
 	
-	AllyProgressBar.set_max(Ally1.get_meta("maxHP"))
-	AllyProgressBar.set_value(Ally1.get_meta("HP"))
+	_create_health_bars()
 	_show_button()
 	
 	BackButton.pressed.connect(_back_button_pressed)
@@ -134,6 +131,7 @@ func _target_button_pressed(pulsanteid):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
 		arrayalleati[currentpartymember].set_meta("SP", newsp)
+		AlliedManaBars[currentpartymember].set_value(newsp)
 		if(movetype<11):
 			alliedtarget = arrayenemies
 			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
@@ -489,7 +487,7 @@ func _update_battle_log():
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung, TungTungEnemy]
+	var Enemies = [AngelTungTung,TungTungEnemy,TungTungEnemy,TungTungEnemy]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
@@ -500,7 +498,7 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.set_meta("Damage", nemtype.get_meta("Damage"))
 		nem.set_meta("SpecialMoves", nemtype.get_meta("SpecialMoves"))
 		nem.set_sprite_frames(nemtype.get_sprite_frames())
-		nem.position = Vector2(830+50*i, 150)
+		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
 		arrayenemies.append(nem) 
 
@@ -511,10 +509,14 @@ func _calculate_damage():
 		alliedtarget[targetenemy].set_meta("HP", newhp)
 	elif(newhp<=0):
 		alliedtarget[targetenemy].set_meta("HP", 0)
-		alliedtarget[targetenemy].play("Faint")
+		
+		if(alliedtarget == arrayalleati):
+			AlliedHpIndicator[targetenemy].play("Dead")
+			alliedtarget[targetenemy].play("Faint")
 	else:
 		alliedtarget[targetenemy].set_meta("HP", newhp)
 		if(alliedtarget[targetenemy].get_meta("HP")>0):
+			AlliedHpIndicator[targetenemy].play("Alive")
 			alliedtarget[targetenemy].play("waiting")
 	if(alliedtarget == arrayalleati):
 		AlliedHealthBars[targetenemy].set_value(newhp)
@@ -523,6 +525,46 @@ func _calculate_damage():
 
 
 
+func _create_health_bars():
+	var PlayerHealthBar = TextureProgressBar.new()
+	add_child(PlayerHealthBar)
+	PlayerHealthBar.position = Vector2(267, 107)
+	PlayerHealthBar.set_under_texture(EmptyBar)
+	PlayerHealthBar.set_progress_texture(FullHPBar) 
+	
+	var PlayerManaBar = TextureProgressBar.new()
+	add_child(PlayerManaBar)
+	PlayerManaBar.position = Vector2(267, 115)
+	PlayerManaBar.set_under_texture(EmptyBar)
+	PlayerManaBar.set_progress_texture(FullSPBar) 
+	
+	var AllyHealthBar = TextureProgressBar.new()
+	add_child(AllyHealthBar)
+	AllyHealthBar.position = Vector2(PlayerHealthBar.position.x+67, 107)
+	AllyHealthBar.set_under_texture(EmptyBar)
+	AllyHealthBar.set_progress_texture(FullHPBar) 
+	
+	var AllyManaBar = TextureProgressBar.new()
+	add_child(AllyManaBar)
+	AllyManaBar.position = Vector2(PlayerHealthBar.position.x+67, 115)
+	AllyManaBar.set_under_texture(EmptyBar)
+	AllyManaBar.set_progress_texture(FullSPBar) 
+
+	AlliedManaBars = [PlayerManaBar, AllyManaBar]
+	AlliedHealthBars = [PlayerHealthBar, AllyHealthBar]
+	AlliedHpIndicator = [PlayerHpIndicator, AllyHpIndicator]
+	
+	PlayerHealthBar.set_max(arrayalleati[0].get_meta("maxHP"))
+	PlayerHealthBar.set_value(arrayalleati[0].get_meta("HP"))
+	
+	PlayerManaBar.set_max(arrayalleati[0].get_meta("maxSP"))
+	PlayerManaBar.set_value(arrayalleati[0].get_meta("SP"))
+	
+	AllyHealthBar.set_max(arrayalleati[1].get_meta("maxHP"))
+	AllyHealthBar.set_value(arrayalleati[1].get_meta("HP"))
+	
+	AllyManaBar.set_max(arrayalleati[1].get_meta("maxSP"))
+	AllyManaBar.set_value(arrayalleati[1].get_meta("SP"))
 
 func _losing_the_battle():
 	var Losing = get_parent().LosingScene.instantiate()
