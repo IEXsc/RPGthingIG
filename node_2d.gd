@@ -410,9 +410,10 @@ func _on_timer_timeout():
 			currentpartymember = currentturn
 			if(cangetalloutattack==true):
 				_delete_self(alloutattackbutton)
-			for i in range(len(shiftingbuttonsarray)):
-				_delete_self(shiftingbuttonsarray[i])
-			shiftingbuttonsarray.clear()
+			if(recentaction!=7):
+				for i in range(len(shiftingbuttonsarray)):
+					_delete_self(shiftingbuttonsarray[i])
+				shiftingbuttonsarray.clear()
 			if arrayalleati[currentpartymember].get_meta("HP") > 0:
 				next_turn_found = true
 				break
@@ -611,6 +612,10 @@ func _all_out_attack_pressed(buttontodelete):
 		AllOutAttack.play("default")
 		enemytargetbuttons.append(AllOutAttack)
 		cangetalloutattack==false
+		recentaction==7
+		for i in range(len(shiftingbuttonsarray)):
+			_delete_self(shiftingbuttonsarray[i])
+		shiftingbuttonsarray.clear()
 		timer.wait_time = 2
 		_start_le_timer()
 
@@ -629,7 +634,7 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung,AngelTungTung]
+	var Enemies = [AngelTungTung,TungTungEnemy,AngelTungTung,TungTungEnemy,AngelTungTung]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
