@@ -6,13 +6,11 @@
 
 extends Node2D
 @onready var BackButton = $Back
-@onready var PlayerInfo = $PlayerInfo
 @onready var BattleLog = $Summary
 
 @onready var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
 
 
-@onready var AllyProgressBar = $AllyProgressBar
 @onready var PlayerHpIndicator = $PlayerHpIndicator
 @onready var AllyHpIndicator = $AllyHpIndicator
 
@@ -68,6 +66,7 @@ var alliedtarget = 0
 var currentuseditem = 0
 var enemyaction = 0
 var damagethatwillbedone = 0
+var ONEMORE = 0
 
 var atleastonecharalive = true
 func _ready() -> void:
@@ -126,7 +125,7 @@ func _target_button_pressed(pulsanteid):
 	if(recentaction==1):
 		alliedtarget = arrayenemies
 		damagethatwillbedone = arrayalleati[currentpartymember].get_meta("Damage")
-		_calculate_damage()
+		_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), arrayalleati[currentpartymember].get_meta("DamageType"))
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
@@ -135,11 +134,11 @@ func _target_button_pressed(pulsanteid):
 		if(movetype<11):
 			alliedtarget = arrayenemies
 			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
-			_calculate_damage()
+			_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), movetype)
 		elif(movetype==11):
 			alliedtarget = arrayalleati
 			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
-			_calculate_damage()
+			_calculate_damage(1, movetype)
 		var SkillBeingUsed = AnimatedSprite2D.new()
 		skillbuttons.append(SkillBeingUsed)
 		add_child(SkillBeingUsed)
@@ -150,13 +149,13 @@ func _target_button_pressed(pulsanteid):
 		if(Items[currentuseditem].get_meta("Type")==0):
 			alliedtarget = arrayalleati
 			damagethatwillbedone = Items[currentuseditem].get_meta("Damage")
-			_calculate_damage()
+			_calculate_damage(1, 11)
 		elif(Items[currentuseditem].get_meta("Type")==1):
 			alliedtarget = arrayalleati
 			for i in range(len(alliedtarget)):
 				targetenemy = i
 				damagethatwillbedone = Items[currentuseditem].get_meta("Damage")
-				_calculate_damage()
+				_calculate_damage(1, 11)
 	for i in len(enemytargetbuttons):
 		enemytargetbuttons[i].queue_free()
 	enemytargetbuttons = []
@@ -291,13 +290,14 @@ func _singleenemyturn():
 			targetenemy =  randi_range(0, len(arrayalleati)-1) 
 		var enemytimer = Timer.new()
 		if(currentenemymove<len(arrayenemies)):
-						
+			arrayenemies[currentenemymove].play("waiting")
+			arrayenemies[currentenemymove].set_meta("Status", "Alive")
 			enemyaction = randi_range(1, 2) 
 			if(enemyaction== 1):
 				
 				arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
-				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("Damage") / alliedtarget[targetenemy].get_meta("Defense"))))
-				_calculate_damage()
+				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("Damage"))))
+				_calculate_damage(arrayenemies[currentenemymove].get_meta("Attack"), arrayenemies[currentenemymove].get_meta("DamageType"))
 				
 				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + alliedtarget[targetenemy].get_meta("Name")  + " (New Hp) " + str(alliedtarget[targetenemy].get_meta("HP")))
 				_update_battle_log()
@@ -311,8 +311,8 @@ func _singleenemyturn():
 				SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
 				SkillBeingUsed.play("default")
 				
-				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") / alliedtarget[targetenemy].get_meta("Defense"))))
-				_calculate_damage()
+				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
+				_calculate_damage(arrayenemies[currentenemymove].get_meta("Attack"), arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Type"))
 				
 				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Casted " + arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Name") + " on " + alliedtarget[targetenemy].get_meta("Name")+ " (New Hp) " + str(alliedtarget[targetenemy].get_meta("HP")))
 				_update_battle_log()
@@ -388,24 +388,27 @@ func _on_timer_timeout():
 	timer.stop()
 	
 	var next_turn_found = false
-	
-	while currentpartymember < len(arrayalleati) - 1:
-		currentpartymember += 1
-		currentturn = currentpartymember
-		
-		if arrayalleati[currentpartymember].get_meta("HP") > 0:
-			next_turn_found = true
-			break
+	if(ONEMORE == 0):
+		while currentpartymember < len(arrayalleati) - 1:
+			currentpartymember += 1
+			currentturn = currentpartymember
 			
-	if next_turn_found:
-		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
-		# If you need to trigger an animation or update visual UI state for the next ally, do it here
+			if arrayalleati[currentpartymember].get_meta("HP") > 0:
+				next_turn_found = true
+				break
+				
+		if next_turn_found:
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+			# If you need to trigger an animation or update visual UI state for the next ally, do it here
+		else:
+			# No more living allies have a move this turn, pass to enemies
+			currentturn = 0
+			currentpartymember = 0
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+			_enemyturn()
 	else:
-		# No more living allies have a move this turn, pass to enemies
-		currentturn = 0
-		currentpartymember = 0
-		$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
-		_enemyturn()
+		ONEMORE = ONEMORE - 1
+	
 	
 
 
@@ -487,7 +490,7 @@ func _update_battle_log():
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung,TungTungEnemy,TungTungEnemy,TungTungEnemy]
+	var Enemies = [AngelTungTung,TungTungEnemy]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
@@ -496,17 +499,34 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.set_meta("maxHP", nemtype.get_meta("maxHP"))
 		nem.set_meta("Name", nemtype.get_meta("Name"))
 		nem.set_meta("Damage", nemtype.get_meta("Damage"))
+		nem.set_meta("DamageType", nemtype.get_meta("DamageType"))
+		nem.set_meta("Defense", nemtype.get_meta("Defense"))
+		nem.set_meta("Attack",nemtype.get_meta("Attack"))
+		nem.set_meta("Status", nemtype.get_meta("Status"))
 		nem.set_meta("SpecialMoves", nemtype.get_meta("SpecialMoves"))
+		nem.set_meta("Affinities", nemtype.get_meta("Affinities") )
 		nem.set_sprite_frames(nemtype.get_sprite_frames())
 		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
 		arrayenemies.append(nem) 
 
-func _calculate_damage():
-	var newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+
+
+
+
+func _calculate_damage(attackbonus,attacktype):
+	var newhp = 0
+
+	if(alliedtarget == arrayenemies):
+		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
+	
+	if(alliedtarget == arrayalleati):
+		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype])
+	
 	if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
 		newhp = alliedtarget[targetenemy].get_meta("maxHP")
 		alliedtarget[targetenemy].set_meta("HP", newhp)
+	
 	elif(newhp<=0):
 		alliedtarget[targetenemy].set_meta("HP", 0)
 		
@@ -515,13 +535,30 @@ func _calculate_damage():
 			alliedtarget[targetenemy].play("Faint")
 	else:
 		alliedtarget[targetenemy].set_meta("HP", newhp)
-		if(alliedtarget[targetenemy].get_meta("HP")>0):
+		if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
+			
 			AlliedHpIndicator[targetenemy].play("Alive")
 			alliedtarget[targetenemy].play("waiting")
+			
 	if(alliedtarget == arrayalleati):
 		AlliedHealthBars[targetenemy].set_value(newhp)
+		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
+			alliedtarget[targetenemy].play("downed")
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+				ONEMORE = ONEMORE + 1 
+			alliedtarget[targetenemy].set_meta("Status", "Downed")
 		if(alliedtarget[0].get_meta("HP")<=0):
 			_losing_the_battle()
+	
+	elif(alliedtarget == arrayenemies):
+		if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
+			alliedtarget[targetenemy].play("downed")
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+				ONEMORE = ONEMORE + 1 
+			alliedtarget[targetenemy].set_meta("Status", "Downed")
+
+
+
 
 
 

@@ -5,8 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://c5ej5io01jvj3" path="res://AlliesorYourself/HPindicators/PlayerHPIndicator.png" id="3_ncxj6"]
 [ext_resource type="Texture2D" uid="uid://do01fl225gtmo" path="res://AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png" id="4_2eky3"]
 [ext_resource type="Texture2D" uid="uid://bm6gjmtckju85" path="res://AlliesorYourself/HPindicators/AllyHPIndicator.png" id="4_jd0xq"]
+[ext_resource type="Texture2D" uid="uid://c8aok1xn1ym0j" path="res://AlliesorYourself/HPindicators/PlayerHPIndicatorDowned.png" id="5_2eky3"]
 [ext_resource type="Texture2D" uid="uid://cwinf8y5vh50x" path="res://AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png" id="6_4sr1x"]
 [ext_resource type="AudioStream" uid="uid://lrqgponbltkb" path="res://MusicWhileWeWaitLikeChuds.mp3" id="7_ublxr"]
+[ext_resource type="Texture2D" uid="uid://c12pnc2n707ts" path="res://AlliesorYourself/HPindicators/AllyHPIndicatorDowned.png" id="8_4sr1x"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_bc5cn"]
 animations = [{
@@ -24,6 +26,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_2eky3")
+}],
+"loop": true,
+"name": &"Downed",
 "speed": 5.0
 }]
 
@@ -43,6 +53,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_4sr1x")
+}],
+"loop": true,
+"name": &"Downed",
 "speed": 5.0
 }]
 

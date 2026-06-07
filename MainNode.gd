@@ -31,14 +31,14 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var LightBlind = Node.new()
 @export var Rebirth = Node.new()
 @export var OlympusPunch = Node.new()
-
+@export var TestOlympusPunch = Node.new()
 @export var Potion = Node.new()
 @export var BigPotion = Node.new()
 @export var WeirdPotion = Node.new()
 
 @export var Messiah = Node.new()
 @export var Zeus = Node.new()
-@export var movesets = [ [Rebirth, LightBlind] , [ThunderSwords, LightBlind, OlympusPunch] , [OlympusPunch] ]
+@export var movesets = [ [Rebirth, LightBlind] , [ThunderSwords, LightBlind, OlympusPunch] , [TestOlympusPunch] ]
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
 @export var TungTung = AnimatedSprite2D.new()
@@ -80,6 +80,14 @@ func _ready() -> void:
 	OlympusPunch.set_meta("AnimationTime", 0.5)
 	OlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
+	TestOlympusPunch.set_meta("Name", "Olympus Punch")  # MADE FOR ENEMIES SO THEY DON'T INSTANTLY RAPE THE PLAYER
+	TestOlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
+	TestOlympusPunch.set_meta("Damage", 10)
+	TestOlympusPunch.set_meta("Cost", 0)
+	TestOlympusPunch.set_meta("Type", 0)
+	TestOlympusPunch.set_meta("AnimationTime", 0.5)
+	TestOlympusPunch.set_meta("Image", OlympusPunchAnim)
+	
 	## ALLIES
 	Giocatore.set_meta("HP", 135)
 	Giocatore.set_meta("SP", 65)
@@ -89,6 +97,7 @@ func _ready() -> void:
 	Giocatore.set_meta("DamageType", 0)
 	Giocatore.set_meta("Defense", 1.0)
 	Giocatore.set_meta("Attack", 1.0)
+	Giocatore.set_meta("Status", "Alive")
 	Giocatore.set_meta("Name", "Ren")
 	Giocatore.set_meta("Animation", PlayerAnim)
 	Giocatore.set_meta("CharacterGod", Messiah)
@@ -101,16 +110,19 @@ func _ready() -> void:
 	Ally.set_meta("DamageType", 2)
 	Ally.set_meta("Defense", 1.0)
 	Ally.set_meta("Attack", 1.0)
+	Ally.set_meta("Status", "Alive")
 	Ally.set_meta("Name", "Loki")
 	Ally.set_meta("Animation", AllyAnim)
 	Ally.set_meta("CharacterGod", Zeus)
 	
 	## GODS? I HAVE TO COME UP WITH A NAME DAMN
 	Messiah.set_meta("Name", "Messiah")
+	Messiah.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
 	Messiah.set_meta("SpecialMoves", movesets[0])
 	Messiah.set_meta("Animation", MessiahAnim)
 	
 	Zeus.set_meta("Name", "Zeus")
+	Zeus.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
 	Zeus.set_meta("SpecialMoves", movesets[1])
 	Zeus.set_meta("Animation", ZeusAnim)
 	
@@ -139,16 +151,25 @@ func _ready() -> void:
 	TungTung.set_meta("HP", 50)
 	TungTung.set_meta("maxHP", 50)
 	TungTung.set_meta("Name", "TTT")
-	TungTung.set_meta("Damage", 20)
-	TungTung.set_meta("Animation", 20)
+	TungTung.set_meta("Damage", 5)
+	TungTung.set_meta("DamageType", 0)
+	TungTung.set_meta("Defense", 1.0)
+	TungTung.set_meta("Attack", 1.0)
+	TungTung.set_meta("Status", "Alive")
 	TungTung.set_meta("SpecialMoves", movesets[2])
+	TungTung.set_meta("Affinities", [1,1,2,1,1,1,1,1,1,1,1,1] )
 	TungTung.set_sprite_frames(TungTungAnim)
 	
 	AngelTungTung.set_meta("HP", 75)
-	AngelTungTung.set_meta("maxHP", 50)
+	AngelTungTung.set_meta("maxHP", 75)
 	AngelTungTung.set_meta("Name", "Angel TTT")
-	AngelTungTung.set_meta("Damage", 25)
+	AngelTungTung.set_meta("Damage", 10)
+	AngelTungTung.set_meta("DamageType", 0)
+	AngelTungTung.set_meta("Defense", 1.0)
+	AngelTungTung.set_meta("Attack", 1.0)
+	AngelTungTung.set_meta("Status", "Alive")
 	AngelTungTung.set_meta("SpecialMoves", movesets[2])
+	AngelTungTung.set_meta("Affinities", [2,1,1,1,1,1,1,1,1,1,1,1] )
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	
 	
