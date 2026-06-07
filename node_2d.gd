@@ -13,6 +13,7 @@ var SelectingAllyAnim = load("res://HoveringTextures/ShiftingAnimTexture.tres")
 @onready var PlayerHpIndicator = $PlayerHpIndicator
 @onready var AllyHpIndicator = $AllyHpIndicator
 
+var alloutattackbutton = Button.new()
 var timer = Timer.new()
 ### TEXTURES
 
@@ -21,6 +22,13 @@ var FullHPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBARFULL.png
 var FullSPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/SPBARFULL.png")
 
 var HittingWeaknessTexture = load("res://Cutaways/HitAWeaknessGeneric.tres")
+var AllOutAttackTexture = load("res://Cutaways/AlloutAttackSprite.tres")
+
+var AbsorbsTexture = load("res://Enemies/HealthBars/Absorbe.png")
+var ResistsTexture = load("res://Enemies/HealthBars/Resists.png")
+var WeakTexture = load("res://Enemies/HealthBars/Weak.png")
+
+##var TypeTextures = [AbsorbsTexture, ResistsTexture, WeakTexture]
 
 var EnemyHPFull = load("res://Enemies/HealthBars/EnemyFullHealth.png")
 var EnemyHPEmpty = load("res://Enemies/HealthBars/EnemyEmptyHealth.png")
@@ -55,7 +63,6 @@ var AlliedHpIndicator = []
 var AlliedManaBars = []
 var targetenemy = 0
 var i = 0
-var text = ""
 var recentaction = 0
 var currentenemymove = 0
 var currentpartymember = 0
@@ -66,8 +73,10 @@ var currentuseditem = 0
 var enemyaction = 0
 var damagethatwillbedone = 0
 var ONEMORE = 0
-
+var totalenemiesup = 0
 var atleastonecharalive = true
+var cangetalloutattack = true
+
 func _ready() -> void:
 	
 	
@@ -112,6 +121,7 @@ func _calculate_total_enemies_buttons():
 			if enemy.get_meta("HP") <= 0:
 				enemy.queue_free()
 				arrayenemies.remove_at(i) # Removes it from the array so it's not checked next time
+				totalenemiesup = totalenemiesup - 1 # 1 LESS ENEMY NEEDED FOR AN ALL OUT ATTACK
 	if(len(arrayenemies)==0):
 		_winning_the_battle()
 
@@ -270,9 +280,12 @@ func _back_button_pressed():
 	
 
 func _enemyturn():
+	for i in range(len(shiftingbuttonsarray)):
+		_delete_self(shiftingbuttonsarray[i])
+	shiftingbuttonsarray.clear()
 	for i in len(enemytargetbuttons):
-		enemytargetbuttons[i].queue_free()
-	enemytargetbuttons = []
+		_delete_self(enemytargetbuttons[i])
+	enemytargetbuttons.clear()
 	_hide_button()
 	_singleenemyturn()
 		
@@ -292,6 +305,7 @@ func _singleenemyturn():
 		if(currentenemymove<len(arrayenemies)):
 			arrayenemies[currentenemymove].play("waiting")
 			arrayenemies[currentenemymove].set_meta("Status", "Alive")
+			totalenemiesup = totalenemiesup + 1
 			enemyaction = randi_range(1, 2) 
 			if(enemyaction== 1):
 				
@@ -351,6 +365,7 @@ func _reset_ally_positions():
 	
 	
 func _on_timer_timeout():
+	
 	if(arrayalleati[currentpartymember].get_meta("HP")>0):
 		arrayalleati[currentpartymember].play("waiting")
 	for i in len(enemytargetbuttons):
@@ -383,7 +398,10 @@ func _on_timer_timeout():
 		while currentturn < len(arrayalleati) - 1:
 			currentturn += 1
 			currentpartymember = currentturn
-			
+			_delete_self(alloutattackbutton)
+			for i in range(len(shiftingbuttonsarray)):
+				_delete_self(shiftingbuttonsarray[i])
+			shiftingbuttonsarray.clear()
 			if arrayalleati[currentpartymember].get_meta("HP") > 0:
 				next_turn_found = true
 				break
@@ -405,7 +423,7 @@ func _create_targeting_buttons():
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		if(movetype < 11):
 			for i in len(arrayenemies):
-				_create_target_button_enemies(i)
+				_create_target_button_enemies(i, movetype)
 		if(movetype == 11):
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
@@ -415,8 +433,9 @@ func _create_targeting_buttons():
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
 	else:
+		var movetype = arrayalleati[currentpartymember].get_meta("DamageType")
 		for i in len(arrayenemies):
-			_create_target_button_enemies(i)
+			_create_target_button_enemies(i, movetype)
 
 func _create_target_button_allies(i):
 	var buttonx = Button.new()
@@ -427,7 +446,7 @@ func _create_target_button_allies(i):
 	buttonx.set_button_icon(SelectingAllyAnim)
 	buttonx.pressed.connect(_target_button_pressed.bind(i))
 
-func _create_target_button_enemies(i):
+func _create_target_button_enemies(i, movetype):
 	var buttonx = Button.new()
 	add_child(buttonx)
 	enemytargetbuttons.append(buttonx)
@@ -443,7 +462,26 @@ func _create_target_button_enemies(i):
 	hbr.set_progress_texture(EnemyHPFull) 
 	hbr.set_max(arrayenemies[i].get_meta("maxHP"))
 	hbr.set_value(arrayenemies[i].get_meta("HP"))
-
+	
+	var positioninfo = arrayenemies[i].position.x + 0
+	if(arrayenemies[i].get_meta("Affinities")[movetype] > 1 ):
+		var weak = Sprite2D.new()
+		add_child(weak)
+		enemytargetbuttons.append(weak)
+		weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
+		weak.set_texture(WeakTexture)
+	elif(arrayenemies[i].get_meta("Affinities")[movetype] < 0 ):
+		var weak = Sprite2D.new()
+		add_child(weak)
+		enemytargetbuttons.append(weak)
+		weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
+		weak.set_texture(AbsorbsTexture)
+	elif(arrayenemies[i].get_meta("Affinities")[movetype] < 1 ):
+		var weak = Sprite2D.new()
+		add_child(weak)
+		enemytargetbuttons.append(weak)
+		weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
+		weak.set_texture(ResistsTexture)
 ## DA FARE DOMANI: SKILL BUTTONS THAT DO SOMETHING
 ## ADD SOME LABELS THAT DESCRIBE SHIT HERE AND THERE
 
@@ -521,16 +559,47 @@ func _calculate_damage(attackbonus,attacktype):
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
 		if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
 			alliedtarget[targetenemy].play("downed")
-			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+			
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
 				_create_shifting_button()
 				_create_weakness_cutaway()
 				ONEMORE = 1 
+				totalenemiesup = totalenemiesup - 1
+				cangetalloutattack = false ## you can't always all out attack, you either take you chance or you dont, retard
+				if(totalenemiesup == 0):
+					cangetalloutattack = true ## since you've recently killed downed someone, you can allout attack
+					_create_all_out_attack_button()
+				alliedtarget[targetenemy].set_meta("Status", "Downed")
+				
 			elif(len(shiftingbuttonsarray)>0 and currentpartymember == currentturn):
 				for i in range(len(shiftingbuttonsarray)):
 					_delete_self(shiftingbuttonsarray[i])
 				shiftingbuttonsarray = []
-			alliedtarget[targetenemy].set_meta("Status", "Downed")
+			
 
+func _create_all_out_attack_button():
+	if(cangetalloutattack == true):
+		alloutattackbutton = Button.new()
+		add_child(alloutattackbutton)
+		alloutattackbutton.position = Vector2(400, 500)
+		alloutattackbutton.text = "AllOutAttack"
+		alloutattackbutton.pressed.connect(_all_out_attack_pressed.bind(alloutattackbutton))
+
+func _all_out_attack_pressed(buttontodelete):
+	if(recentaction==0):
+		alliedtarget = arrayenemies
+		for i in range(len(alliedtarget)):
+			targetenemy = i
+			damagethatwillbedone = 100
+			_calculate_damage(1, 10)  #ARCANE SO NO ONE RESISTS THEM
+		var AllOutAttack = AnimatedSprite2D.new()
+		add_child(AllOutAttack)
+		AllOutAttack.position = Vector2(862, 160)
+		AllOutAttack.set_sprite_frames(AllOutAttackTexture)
+		AllOutAttack.play("default")
+		enemytargetbuttons.append(AllOutAttack)
+		timer.wait_time = 2
+		_start_le_timer()
 
 func _create_weakness_cutaway():
 	var WaeknessCutaway = AnimatedSprite2D.new()
@@ -547,7 +616,7 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung,AngelTungTung,AngelTungTung,TungTungEnemy,TungTungEnemy]
+	var Enemies = [AngelTungTung,AngelTungTung]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
@@ -566,6 +635,7 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
 		arrayenemies.append(nem) 
+	totalenemiesup = len(arrayenemies)
 
 func _create_health_bars():
 	var PlayerHealthBar = TextureProgressBar.new()
