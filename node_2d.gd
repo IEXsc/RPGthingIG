@@ -120,8 +120,9 @@ func _calculate_total_enemies_buttons():
 		if is_instance_valid(enemy):
 			if enemy.get_meta("HP") <= 0:
 				enemy.queue_free()
+				if(!arrayenemies[i].get_meta("Status", "Downed")):
+					totalenemiesup = totalenemiesup - 1 # 1 LESS ENEMY NEEDED FOR AN ALL OUT ATTACK
 				arrayenemies.remove_at(i) # Removes it from the array so it's not checked next time
-				totalenemiesup = totalenemiesup - 1 # 1 LESS ENEMY NEEDED FOR AN ALL OUT ATTACK
 	if(len(arrayenemies)==0):
 		_winning_the_battle()
 
