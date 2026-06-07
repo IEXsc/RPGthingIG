@@ -6,10 +6,9 @@
 
 extends Node2D
 @onready var BackButton = $Back
-@onready var BattleLog = $Summary
 
-@onready var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
-
+var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
+var SelectingAllyAnim = load("res://HoveringTextures/ShiftingAnimTexture.tres")
 
 @onready var PlayerHpIndicator = $PlayerHpIndicator
 @onready var AllyHpIndicator = $AllyHpIndicator
@@ -20,6 +19,8 @@ var timer = Timer.new()
 var EmptyBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBAREMPTY.png")
 var FullHPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBARFULL.png")
 var FullSPBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/SPBARFULL.png")
+
+var HittingWeaknessTexture = load("res://Cutaways/HitAWeaknessGeneric.tres")
 
 var EnemyHPFull = load("res://Enemies/HealthBars/EnemyFullHealth.png")
 var EnemyHPEmpty = load("res://Enemies/HealthBars/EnemyEmptyHealth.png")
@@ -46,17 +47,15 @@ var arrayenemies = []
 var arrayalleati = []
 var skillbuttons = []
 var itembuttons = []
-var battlelogarray = []
 var enemytargetbuttons = []
 var Items = []
-
+var shiftingbuttonsarray = []
 var AlliedHealthBars = []
 var AlliedHpIndicator = []
 var AlliedManaBars = []
 var targetenemy = 0
 var i = 0
 var text = ""
-var battlelogtext = ""
 var recentaction = 0
 var currentenemymove = 0
 var currentpartymember = 0
@@ -73,8 +72,6 @@ func _ready() -> void:
 	
 	
 	randomize()
-	BattleLog.text = "Summary: 
-	"
 	Items = get_parent().Items
 	
 	add_child(timer)
@@ -140,10 +137,10 @@ func _target_button_pressed(pulsanteid):
 			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
 			_calculate_damage(1, movetype)
 		var SkillBeingUsed = AnimatedSprite2D.new()
-		skillbuttons.append(SkillBeingUsed)
 		add_child(SkillBeingUsed)
 		SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
 		SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+		SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
 		SkillBeingUsed.play("default")
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
@@ -160,6 +157,9 @@ func _target_button_pressed(pulsanteid):
 		enemytargetbuttons[i].queue_free()
 	enemytargetbuttons = []
 	_start_le_timer()
+
+func _delete_self(Self):
+	Self.queue_free()
 
 func _attack_button_pressed():
 	if(recentaction==0):
@@ -299,8 +299,7 @@ func _singleenemyturn():
 				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("Damage"))))
 				_calculate_damage(arrayenemies[currentenemymove].get_meta("Attack"), arrayenemies[currentenemymove].get_meta("DamageType"))
 				
-				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Attacked " + alliedtarget[targetenemy].get_meta("Name")  + " (New Hp) " + str(alliedtarget[targetenemy].get_meta("HP")))
-				_update_battle_log()
+			
 				enemytimer.wait_time = 0.2
 			if(enemyaction==2):
 				var SkillBeingUsed = AnimatedSprite2D.new()
@@ -314,16 +313,13 @@ func _singleenemyturn():
 				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
 				_calculate_damage(arrayenemies[currentenemymove].get_meta("Attack"), arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Type"))
 				
-				battlelogarray.append(arrayenemies[currentenemymove].get_meta("Name") + " Casted " + arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Name") + " on " + alliedtarget[targetenemy].get_meta("Name")+ " (New Hp) " + str(alliedtarget[targetenemy].get_meta("HP")))
-				_update_battle_log()
+				
 				
 				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
 			add_child(enemytimer)
 			enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
 			enemytimer.start()	
 		else:
-			battlelogarray.append("-------------------------------------")
-			_update_battle_log()
 			_reset_ally_positions()
 			enemytimer.queue_free()
 			currentusedskill = 0
@@ -362,12 +358,11 @@ func _on_timer_timeout():
 	enemytargetbuttons = []
 	if(recentaction==1):
 		arrayalleati[currentpartymember].position = Vector2(arrayalleati[currentpartymember].position.x, arrayalleati[currentpartymember].position.y + 50)
-		battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " Attacked " + arrayenemies[targetenemy].get_meta("Name")  + " (New Hp) " + str(arrayenemies[targetenemy].get_meta("HP")))
+		
 	if(recentaction==2):
 		arrayalleati[currentpartymember].play("Defend")
-		battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " is Defending ")
+		
 	if(recentaction==4):
-		battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " Casted " + arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Name") + " on " + alliedtarget[targetenemy].get_meta("Name")+ " (New Hp) " + str(alliedtarget[targetenemy].get_meta("HP")))
 		for i in len(skillbuttons):
 			skillbuttons[i].queue_free()
 		skillbuttons = []
@@ -375,23 +370,19 @@ func _on_timer_timeout():
 		for i in len(itembuttons):
 			itembuttons[i].queue_free()
 		itembuttons = []
-		if(Items[currentuseditem].get_meta("Type")==0):
-			battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " used " + Items[currentuseditem].get_meta("Name") + " on " + alliedtarget[targetenemy].get_meta("Name"))
-		elif(Items[currentuseditem].get_meta("Type")==1):
-			battlelogarray.append(arrayalleati[currentpartymember].get_meta("Name") + " used " + Items[currentuseditem].get_meta("Name") + " on the whole team")
 		Items.remove_at(currentuseditem)
 	
 	
 	_calculate_total_enemies_buttons()
 	recentaction = 0
-	_update_battle_log()
+	
 	timer.stop()
 	
 	var next_turn_found = false
 	if(ONEMORE == 0):
-		while currentpartymember < len(arrayalleati) - 1:
-			currentpartymember += 1
-			currentturn = currentpartymember
+		while currentturn < len(arrayalleati) - 1:
+			currentturn += 1
+			currentpartymember = currentturn
 			
 			if arrayalleati[currentpartymember].get_meta("HP") > 0:
 				next_turn_found = true
@@ -408,13 +399,6 @@ func _on_timer_timeout():
 			_enemyturn()
 	else:
 		ONEMORE = ONEMORE - 1
-	
-	
-
-
-	
-
-
 
 func _create_targeting_buttons():
 	if(recentaction==4):
@@ -440,7 +424,7 @@ func _create_target_button_allies(i):
 	enemytargetbuttons.append(buttonx)
 	buttonx.flat = true
 	buttonx.position = Vector2(arrayalleati[i].position.x -36, arrayalleati[i].position.y - 36)
-	buttonx.set_button_icon(SelectingEnemyAnim)
+	buttonx.set_button_icon(SelectingAllyAnim)
 	buttonx.pressed.connect(_target_button_pressed.bind(i))
 
 func _create_target_button_enemies(i):
@@ -476,21 +460,94 @@ func _show_button():
 func _start_le_timer():
 	timer.start()
 
-func _update_battle_log():
-	if(len(battlelogarray)>10):
-		battlelogarray.remove_at(0)
-	battlelogtext = ""
-	for i in len(battlelogarray):
-		battlelogtext = battlelogtext + battlelogarray[i]
-		battlelogtext = battlelogtext + "
-		"
-	BattleLog.text = "Summary: 
-	" + battlelogtext
+
+func _create_shifting_button():
+	for i in len(arrayalleati):
+		if(i!=currentpartymember):
+			var ShiftingButton = Button.new()
+			add_child(ShiftingButton)
+			shiftingbuttonsarray.append(ShiftingButton)
+			ShiftingButton.flat = true
+			ShiftingButton.position = Vector2(arrayalleati[i].position.x -36, arrayalleati[i].position.y - 36)
+			ShiftingButton.set_button_icon(SelectingAllyAnim)
+			ShiftingButton.pressed.connect(_shifting_button_pressed.bind(i, ShiftingButton))
+
+func _shifting_button_pressed(index, ShiftingButton):
+	if(recentaction==0):
+		currentpartymember = index
+		
+		for i in range(len(shiftingbuttonsarray)):
+			_delete_self(shiftingbuttonsarray[i])
+		shiftingbuttonsarray.clear()
+		_show_button()
+
+func _calculate_damage(attackbonus,attacktype):
+	var newhp = 0
+
+	if(alliedtarget == arrayenemies):
+		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
+	
+	if(alliedtarget == arrayalleati):
+		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype])
+	
+	if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
+		newhp = alliedtarget[targetenemy].get_meta("maxHP")
+		alliedtarget[targetenemy].set_meta("HP", newhp)
+	
+	elif(newhp<=0):          ## WILL ONLY TRIGGER FOR PLAYABLE CHARACTERS
+		alliedtarget[targetenemy].set_meta("HP", 0)
+		
+		if(alliedtarget == arrayalleati):
+			AlliedHpIndicator[targetenemy].play("Dead")
+			alliedtarget[targetenemy].play("Faint")
+	else:
+		alliedtarget[targetenemy].set_meta("HP", newhp)
+		if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
+			
+			AlliedHpIndicator[targetenemy].play("Alive")
+			alliedtarget[targetenemy].play("waiting")
+			
+	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING
+		AlliedHealthBars[targetenemy].set_value(newhp)
+		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
+			alliedtarget[targetenemy].play("downed")
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+				ONEMORE = 1 
+			alliedtarget[targetenemy].set_meta("Status", "Downed")
+		if(alliedtarget[0].get_meta("HP")<=0):
+			_losing_the_battle()
+
+	
+	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
+		if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
+			alliedtarget[targetenemy].play("downed")
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+				_create_shifting_button()
+				_create_weakness_cutaway()
+				ONEMORE = 1 
+			elif(len(shiftingbuttonsarray)>0 and currentpartymember == currentturn):
+				for i in range(len(shiftingbuttonsarray)):
+					_delete_self(shiftingbuttonsarray[i])
+				shiftingbuttonsarray = []
+			alliedtarget[targetenemy].set_meta("Status", "Downed")
+
+
+func _create_weakness_cutaway():
+	var WaeknessCutaway = AnimatedSprite2D.new()
+	add_child(WaeknessCutaway)
+	WaeknessCutaway.position = Vector2(arrayalleati[i].position.x -36, arrayalleati[i].position.y - 36)
+	WaeknessCutaway.set_sprite_frames(HittingWeaknessTexture)
+	WaeknessCutaway.play("default")
+	WaeknessCutaway.animation_looped.connect(_deleteweaknesscutaway.bind(WaeknessCutaway))
+	timer.wait_time = timer.wait_time + 1
+
+func _deleteweaknesscutaway(WaeknessCutaway):
+	WaeknessCutaway.queue_free()
 
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung,TungTungEnemy]
+	var Enemies = [AngelTungTung,AngelTungTung,AngelTungTung,TungTungEnemy,TungTungEnemy]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
@@ -509,58 +566,6 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
 		arrayenemies.append(nem) 
-
-
-
-
-
-func _calculate_damage(attackbonus,attacktype):
-	var newhp = 0
-
-	if(alliedtarget == arrayenemies):
-		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
-	
-	if(alliedtarget == arrayalleati):
-		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype])
-	
-	if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
-		newhp = alliedtarget[targetenemy].get_meta("maxHP")
-		alliedtarget[targetenemy].set_meta("HP", newhp)
-	
-	elif(newhp<=0):
-		alliedtarget[targetenemy].set_meta("HP", 0)
-		
-		if(alliedtarget == arrayalleati):
-			AlliedHpIndicator[targetenemy].play("Dead")
-			alliedtarget[targetenemy].play("Faint")
-	else:
-		alliedtarget[targetenemy].set_meta("HP", newhp)
-		if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
-			
-			AlliedHpIndicator[targetenemy].play("Alive")
-			alliedtarget[targetenemy].play("waiting")
-			
-	if(alliedtarget == arrayalleati):
-		AlliedHealthBars[targetenemy].set_value(newhp)
-		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
-			alliedtarget[targetenemy].play("downed")
-			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
-				ONEMORE = ONEMORE + 1 
-			alliedtarget[targetenemy].set_meta("Status", "Downed")
-		if(alliedtarget[0].get_meta("HP")<=0):
-			_losing_the_battle()
-	
-	elif(alliedtarget == arrayenemies):
-		if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
-			alliedtarget[targetenemy].play("downed")
-			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
-				ONEMORE = ONEMORE + 1 
-			alliedtarget[targetenemy].set_meta("Status", "Downed")
-
-
-
-
-
 
 func _create_health_bars():
 	var PlayerHealthBar = TextureProgressBar.new()
