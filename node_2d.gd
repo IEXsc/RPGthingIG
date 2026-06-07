@@ -75,7 +75,7 @@ var damagethatwillbedone = 0
 var ONEMORE = 0
 var totalenemiesup = 0
 var atleastonecharalive = true
-var cangetalloutattack = true
+var cangetalloutattack = false
 
 func _ready() -> void:
 	
@@ -183,6 +183,7 @@ func _defend_button_pressed():
 	if(recentaction==0):
 		var newdefence = arrayalleati[currentpartymember].get_meta("Defense") + 0.5 
 		arrayalleati[currentpartymember].set_meta("Defense", newdefence) 
+		arrayalleati[currentpartymember].set_meta("Status", "Defending")
 		recentaction = 2
 		timer.wait_time = 0.2
 		_start_le_timer()
@@ -290,6 +291,7 @@ func _enemyturn():
 	_singleenemyturn()
 		
 func _singleenemyturn():
+	
 	alliedtarget = arrayalleati
 	for i in range(len(arrayalleati)):
 		if(arrayalleati[i].get_meta("HP")>0):
@@ -298,11 +300,13 @@ func _singleenemyturn():
 		else:
 			atleastonecharalive = false
 	if(atleastonecharalive==true):
-		targetenemy = randi_range(0, len(arrayalleati)-1) 
+		targetenemy =  randi_range(0, len(arrayalleati)-1) 
 		while(alliedtarget[targetenemy].get_meta("HP")<=0):
 			targetenemy =  randi_range(0, len(arrayalleati)-1) 
+			
 		var enemytimer = Timer.new()
 		if(currentenemymove<len(arrayenemies)):
+			print("Enemy index ", currentenemymove, " is taking a turn! ONEMORE value is: ", ONEMORE)
 			arrayenemies[currentenemymove].play("waiting")
 			arrayenemies[currentenemymove].set_meta("Status", "Alive")
 			totalenemiesup = totalenemiesup + 1
@@ -347,7 +351,10 @@ func _timer_moving_back(timerx):
 		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
 	elif(enemyaction==2):
 		currentusedskill.queue_free()
-	currentenemymove = currentenemymove + 1
+	if(ONEMORE == 0):
+		currentenemymove = currentenemymove + 1
+	else:
+		ONEMORE = ONEMORE - 1
 	_singleenemyturn()
 	timerx.queue_free()
 
@@ -360,6 +367,8 @@ func _reset_ally_positions():
 			arrayalleati[i].play("Faint")
 		arrayalleati[i].set_meta("Defense", 1)
 		arrayalleati[i].set_meta("Attack", 1)
+	arrayalleati[0].play("waiting")
+	arrayalleati[0].set_meta("Status", "Alive")
 	_show_button()
 	
 	
@@ -398,7 +407,8 @@ func _on_timer_timeout():
 		while currentturn < len(arrayalleati) - 1:
 			currentturn += 1
 			currentpartymember = currentturn
-			_delete_self(alloutattackbutton)
+			if(cangetalloutattack==true):
+				_delete_self(alloutattackbutton)
 			for i in range(len(shiftingbuttonsarray)):
 				_delete_self(shiftingbuttonsarray[i])
 			shiftingbuttonsarray.clear()
@@ -408,7 +418,8 @@ func _on_timer_timeout():
 				
 		if next_turn_found:
 			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
-			# If you need to trigger an animation or update visual UI state for the next ally, do it here
+			arrayalleati[currentpartymember].play("waiting")
+			arrayalleati[currentpartymember].set_meta("Status", "Alive")
 		else:
 			# No more living allies have a move this turn, pass to enemies
 			currentturn = 0
@@ -549,9 +560,9 @@ func _calculate_damage(attackbonus,attacktype):
 		AlliedHealthBars[targetenemy].set_value(newhp)
 		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
 			alliedtarget[targetenemy].play("downed")
-			if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):
+			if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
 				ONEMORE = 1 
-			alliedtarget[targetenemy].set_meta("Status", "Downed")
+				alliedtarget[targetenemy].set_meta("Status", "Downed")
 		if(alliedtarget[0].get_meta("HP")<=0):
 			_losing_the_battle()
 
@@ -598,6 +609,7 @@ func _all_out_attack_pressed(buttontodelete):
 		AllOutAttack.set_sprite_frames(AllOutAttackTexture)
 		AllOutAttack.play("default")
 		enemytargetbuttons.append(AllOutAttack)
+		cangetalloutattack==false
 		timer.wait_time = 2
 		_start_le_timer()
 

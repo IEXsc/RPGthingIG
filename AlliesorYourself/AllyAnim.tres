@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://da7pjug81sfag" path="res://AllyParry2.png" id="4_iflmy"]
 [ext_resource type="Texture2D" uid="uid://d3x2c3q4xyqtj" path="res://AllyFaint1.png" id="5_2qg2c"]
 [ext_resource type="Texture2D" uid="uid://25vr5phu3u8v" path="res://AllyFaint2.png" id="6_74sou"]
+[ext_resource type="Texture2D" uid="uid://bxyjkt3pin7tn" path="res://AlliesorYourself/AllyDowned.png" id="7_ik5tu"]
 [ext_resource type="Texture2D" uid="uid://egsbnu7kkhm7" path="res://TestAlly1.png" id="7_jq5ey"]
 [ext_resource type="Texture2D" uid="uid://cgqsmk8sb0cwc" path="res://TestAlly2.png" id="8_502o6"]
 [ext_resource type="Texture2D" uid="uid://cwiafio3dprgf" path="res://TestAlly3.png" id="9_go18p"]
@@ -43,6 +44,14 @@ animations = [{
 }],
 "loop": true,
 "name": &"Faint",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_ik5tu")
+}],
+"loop": true,
+"name": &"downed",
 "speed": 5.0
 }, {
 "frames": [{
