@@ -46,6 +46,9 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 @export var Giocatore = AnimatedSprite2D.new()
 @export var Ally = AnimatedSprite2D.new()
+
+@export var ShortSword = Node.new()
+@export var Shuriken = Node.new()
 func _ready() -> void:
 	## MOVES
 	ThunderSwords.set_meta("Name", "ThunderSwords")
@@ -93,8 +96,7 @@ func _ready() -> void:
 	Giocatore.set_meta("SP", 65)
 	Giocatore.set_meta("maxHP", 135)
 	Giocatore.set_meta("maxSP", 65)
-	Giocatore.set_meta("Damage", 5)
-	Giocatore.set_meta("DamageType", 0)
+	Giocatore.set_meta("Weapon", ShortSword)
 	Giocatore.set_meta("Defense", 1.0)
 	Giocatore.set_meta("Attack", 1.0)
 	Giocatore.set_meta("Status", "Alive")
@@ -106,14 +108,20 @@ func _ready() -> void:
 	Ally.set_meta("SP", 80)
 	Ally.set_meta("maxHP", 100)
 	Ally.set_meta("maxSP", 80)
-	Ally.set_meta("Damage", 10)
-	Ally.set_meta("DamageType", 2)
+	Ally.set_meta("Weapon", Shuriken)
 	Ally.set_meta("Defense", 1.0)
 	Ally.set_meta("Attack", 1.0)
 	Ally.set_meta("Status", "Alive")
 	Ally.set_meta("Name", "Loki")
 	Ally.set_meta("Animation", AllyAnim)
 	Ally.set_meta("CharacterGod", Zeus)
+	
+	## WEAPONS
+	ShortSword.set_meta("Damage", 10)
+	ShortSword.set_meta("DamageType", 2)
+	Shuriken.set_meta("Damage", 5)
+	Shuriken.set_meta("DamageType", 1)
+	
 	
 	## GODS? I HAVE TO COME UP WITH A NAME DAMN
 	Messiah.set_meta("Name", "Messiah")
@@ -171,7 +179,6 @@ func _ready() -> void:
 	AngelTungTung.set_meta("SpecialMoves", movesets[2])
 	AngelTungTung.set_meta("Affinities", [2,1,-1,2,1,1,1,1,1,0.5,1,1] )
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
-	
 	
 	
 	

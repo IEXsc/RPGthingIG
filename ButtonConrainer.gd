@@ -22,7 +22,7 @@ func _hide_buttons():
 	ItemsButton.visible = false
 	DefendButton.visible = false 
 func _show_buttons():
-	AttackButton.set_button_icon(get_parent().arrayAttackTypesIcons[get_parent().arrayalleati[get_parent().currentpartymember].get_meta("DamageType")])
+	AttackButton.set_button_icon(get_parent().arrayAttackTypesIcons[get_parent().arrayalleati[get_parent().currentpartymember].get_meta("Weapon").get_meta("DamageType")])
 	AttackButton.visible = true
 	SkillButton.visible = true
 	DefendButton.visible = true

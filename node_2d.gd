@@ -9,7 +9,7 @@ extends Node2D
 
 var SelectingEnemyAnim = load("res://SelectingEnemyButton.tres")
 var SelectingAllyAnim = load("res://HoveringTextures/ShiftingAnimTexture.tres")
-
+var AllOutAttackAnim = load("res://Cutaways/AllOutAttackButton/AllOutAttackButton.tres")
 @onready var PlayerHpIndicator = $PlayerHpIndicator
 @onready var AllyHpIndicator = $AllyHpIndicator
 
@@ -76,11 +76,11 @@ var ONEMORE = 0
 var totalenemiesup = 0
 var atleastonecharalive = true
 var cangetalloutattack = false
-
+var rng = RandomNumberGenerator.new()
 func _ready() -> void:
 	
 	
-	randomize()
+	rng.randomize()
 	Items = get_parent().Items
 	
 	add_child(timer)
@@ -132,8 +132,8 @@ func _target_button_pressed(pulsanteid):
 	targetenemy = pulsanteid
 	if(recentaction==1):
 		alliedtarget = arrayenemies
-		damagethatwillbedone = arrayalleati[currentpartymember].get_meta("Damage")
-		_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), arrayalleati[currentpartymember].get_meta("DamageType"))
+		damagethatwillbedone = arrayalleati[currentpartymember].get_meta("Weapon").get_meta("Damage")
+		_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType"))
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
@@ -301,9 +301,10 @@ func _singleenemyturn():
 		else:
 			atleastonecharalive = false
 	if(atleastonecharalive==true):
-		targetenemy =  randi_range(0, len(arrayalleati)-1) 
+		
+		targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
 		while(alliedtarget[targetenemy].get_meta("HP")<=0):
-			targetenemy =  randi_range(0, len(arrayalleati)-1) 
+			targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
 			
 		var enemytimer = Timer.new()
 		if(currentenemymove<len(arrayenemies)):
@@ -419,14 +420,14 @@ func _on_timer_timeout():
 				break
 				
 		if next_turn_found:
-			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")])
 			arrayalleati[currentpartymember].play("waiting")
 			arrayalleati[currentpartymember].set_meta("Status", "Alive")
 		else:
 			# No more living allies have a move this turn, pass to enemies
 			currentturn = 0
 			currentpartymember = 0
-			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("DamageType")])
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")])
 			_enemyturn()
 	else:
 		ONEMORE = ONEMORE - 1
@@ -446,7 +447,7 @@ func _create_targeting_buttons():
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
 	else:
-		var movetype = arrayalleati[currentpartymember].get_meta("DamageType")
+		var movetype = arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")
 		for i in len(arrayenemies):
 			_create_target_button_enemies(i, movetype)
 
@@ -526,7 +527,8 @@ func _create_shifting_button():
 func _shifting_button_pressed(index, ShiftingButton):
 	if(recentaction==0):
 		currentpartymember = index
-		
+		cangetalloutattack = false
+		_delete_self(alloutattackbutton)
 		for i in range(len(shiftingbuttonsarray)):
 			_delete_self(shiftingbuttonsarray[i])
 		shiftingbuttonsarray.clear()
@@ -534,7 +536,7 @@ func _shifting_button_pressed(index, ShiftingButton):
 
 func _calculate_damage(attackbonus,attacktype):
 	var newhp = 0
-
+	damagethatwillbedone = int(damagethatwillbedone * rng.randf_range(0.8, 1.2))
 	if(alliedtarget == arrayenemies):
 		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
 	
@@ -594,12 +596,14 @@ func _create_all_out_attack_button():
 	if(cangetalloutattack == true):
 		alloutattackbutton = Button.new()
 		add_child(alloutattackbutton)
-		alloutattackbutton.position = Vector2(400, 500)
-		alloutattackbutton.text = "AllOutAttack"
+		alloutattackbutton.flat = true
+		alloutattackbutton.position = Vector2(862-64, 160-32)
+		alloutattackbutton.set_button_icon(AllOutAttackAnim)
 		alloutattackbutton.pressed.connect(_all_out_attack_pressed.bind(alloutattackbutton))
+		alloutattackbutton.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 
 func _all_out_attack_pressed(buttontodelete):
-	if(recentaction==0):
+	if(recentaction==0 and cangetalloutattack == true):
 		alliedtarget = arrayenemies
 		for i in range(len(alliedtarget)):
 			targetenemy = i
@@ -612,7 +616,7 @@ func _all_out_attack_pressed(buttontodelete):
 		AllOutAttack.play("default")
 		enemytargetbuttons.append(AllOutAttack)
 		cangetalloutattack==false
-		recentaction==7
+		recentaction=7
 		for i in range(len(shiftingbuttonsarray)):
 			_delete_self(shiftingbuttonsarray[i])
 		shiftingbuttonsarray.clear()
@@ -634,7 +638,7 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [AngelTungTung,TungTungEnemy,AngelTungTung,TungTungEnemy,AngelTungTung]
+	var Enemies = [TungTungEnemy]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()

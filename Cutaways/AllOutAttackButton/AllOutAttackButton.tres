@@ -1,0 +1,47 @@
+[gd_resource type="AnimatedTexture" format=3 uid="uid://cevdb2hf8erw4"]
+
+[ext_resource type="Texture2D" uid="uid://bk21yglivfoxj" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton1.png" id="1_pkhq1"]
+[ext_resource type="Texture2D" uid="uid://b2ink2e4nxtvk" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton2.png" id="2_deqsa"]
+[ext_resource type="Texture2D" uid="uid://dg8u7ttk3n6bt" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton11.png" id="3_cft2y"]
+[ext_resource type="Texture2D" uid="uid://dpqabyn5yeecs" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton12.png" id="4_sgmcm"]
+[ext_resource type="Texture2D" uid="uid://b1fuyydwsq2mi" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton13.png" id="5_dsxs2"]
+[ext_resource type="Texture2D" uid="uid://ctbp16t70om3s" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton14.png" id="6_fdie5"]
+[ext_resource type="Texture2D" uid="uid://doihjf7lk5dew" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton15.png" id="7_7f03e"]
+[ext_resource type="Texture2D" uid="uid://dsth08stm4u0p" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton3.png" id="8_tfigb"]
+[ext_resource type="Texture2D" uid="uid://1aw3iyssfj8w" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton4.png" id="9_cnl8a"]
+[ext_resource type="Texture2D" uid="uid://dkiwd5d7vgpxr" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton5.png" id="10_50b0u"]
+[ext_resource type="Texture2D" uid="uid://ok2xb0nv052c" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton6.png" id="11_smdhw"]
+[ext_resource type="Texture2D" uid="uid://cgun1jcwenhf0" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton7.png" id="12_as0cf"]
+[ext_resource type="Texture2D" uid="uid://b7ujgmgm1bsy6" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton8.png" id="13_inp2g"]
+[ext_resource type="Texture2D" uid="uid://ef1lpetbn2cw" path="res://Cutaways/AllOutAttackButton/AlloutAttackButton10.png" id="15_aagu8"]
+
+[resource]
+frames = 14
+frame_0/texture = ExtResource("1_pkhq1")
+frame_0/duration = 0.1
+frame_1/texture = ExtResource("2_deqsa")
+frame_1/duration = 0.1
+frame_2/texture = ExtResource("8_tfigb")
+frame_2/duration = 0.1
+frame_3/texture = ExtResource("9_cnl8a")
+frame_3/duration = 0.1
+frame_4/texture = ExtResource("10_50b0u")
+frame_4/duration = 0.1
+frame_5/texture = ExtResource("11_smdhw")
+frame_5/duration = 0.1
+frame_6/texture = ExtResource("12_as0cf")
+frame_6/duration = 0.1
+frame_7/texture = ExtResource("13_inp2g")
+frame_7/duration = 0.1
+frame_8/texture = ExtResource("15_aagu8")
+frame_8/duration = 0.1
+frame_9/texture = ExtResource("3_cft2y")
+frame_9/duration = 0.1
+frame_10/texture = ExtResource("4_sgmcm")
+frame_10/duration = 0.1
+frame_11/texture = ExtResource("5_dsxs2")
+frame_11/duration = 0.1
+frame_12/texture = ExtResource("6_fdie5")
+frame_12/duration = 0.1
+frame_13/texture = ExtResource("7_7f03e")
+frame_13/duration = 0.1
