@@ -51,7 +51,7 @@ var movesets: Dictionary = {
 @export var AngelTungTung = AnimatedSprite2D.new()
 
 @export var Giocatore = AnimatedSprite2D.new()
-@export var Ally = AnimatedSprite2D.new()
+@export var Beatrice = AnimatedSprite2D.new()
 
 @export var ShortSword = Node.new()
 @export var Shuriken = Node.new()
@@ -117,17 +117,17 @@ func _ready() -> void:
 	Giocatore.set_meta("Animation", PlayerAnim)
 	Giocatore.set_meta("CharacterGod", Messiah)
 	
-	Ally.set_meta("HP", 100)
-	Ally.set_meta("SP", 80)
-	Ally.set_meta("maxHP", 100)
-	Ally.set_meta("maxSP", 80)
-	Ally.set_meta("Weapon", Shuriken)
-	Ally.set_meta("Defense", 1.0)
-	Ally.set_meta("Attack", 1.0)
-	Ally.set_meta("Status", "Alive")
-	Ally.set_meta("Name", "Loki")
-	Ally.set_meta("Animation", AllyAnim)
-	Ally.set_meta("CharacterGod", Zeus)
+	Beatrice.set_meta("HP", 100)
+	Beatrice.set_meta("SP", 80)
+	Beatrice.set_meta("maxHP", 100)
+	Beatrice.set_meta("maxSP", 80)
+	Beatrice.set_meta("Weapon", Shuriken)
+	Beatrice.set_meta("Defense", 1.0)
+	Beatrice.set_meta("Attack", 1.0)
+	Beatrice.set_meta("Status", "Alive")
+	Beatrice.set_meta("Name", "Loki")
+	Beatrice.set_meta("Animation", AllyAnim)
+	Beatrice.set_meta("CharacterGod", Zeus)
 	
 	## WEAPONS
 	ShortSword.set_meta("Damage", 10)
@@ -169,7 +169,7 @@ func _ready() -> void:
 	
 	## ENEMIES
 	
-	TungTung.set_meta("HP", 50)
+	TungTung.set_meta("HP", 165)
 	TungTung.set_meta("maxHP", 50)
 	TungTung.set_meta("Name", "TTT")
 	TungTung.set_meta("Damage", 5)
@@ -181,7 +181,7 @@ func _ready() -> void:
 	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
 	TungTung.set_sprite_frames(TungTungAnim)
 	
-	AngelTungTung.set_meta("HP", 75)
+	AngelTungTung.set_meta("HP", 125)
 	AngelTungTung.set_meta("maxHP", 75)
 	AngelTungTung.set_meta("Name", "Angel TTT")
 	AngelTungTung.set_meta("Damage", 10)
@@ -190,7 +190,7 @@ func _ready() -> void:
 	AngelTungTung.set_meta("Attack", 1.0)
 	AngelTungTung.set_meta("Status", "Alive")
 	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
-	AngelTungTung.set_meta("Affinities", [2,1,-1,2,1,1,1,1,1,0.5,1,1] )
+	AngelTungTung.set_meta("Affinities", [1,2,-1,2,1,1,1,1,1,0.5,1,1] )
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	
 	

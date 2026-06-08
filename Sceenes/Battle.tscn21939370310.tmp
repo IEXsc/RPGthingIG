@@ -1,0 +1,127 @@
+[gd_scene format=3 uid="uid://su3ik8xyhn1s"]
+
+[ext_resource type="Script" uid="uid://bshnon5umqxs1" path="res://node_2d.gd" id="1_6pyww"]
+[ext_resource type="Script" uid="uid://bva1n61vmw6rg" path="res://ButtonConrainer.gd" id="2_elbsv"]
+[ext_resource type="Texture2D" uid="uid://c5ej5io01jvj3" path="res://AlliesorYourself/HPindicators/PlayerHPIndicator.png" id="3_ncxj6"]
+[ext_resource type="Texture2D" uid="uid://do01fl225gtmo" path="res://AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png" id="4_2eky3"]
+[ext_resource type="Texture2D" uid="uid://bm6gjmtckju85" path="res://AlliesorYourself/HPindicators/AllyHPIndicator.png" id="4_jd0xq"]
+[ext_resource type="Texture2D" uid="uid://c8aok1xn1ym0j" path="res://AlliesorYourself/HPindicators/PlayerHPIndicatorDowned.png" id="5_2eky3"]
+[ext_resource type="Texture2D" uid="uid://cwinf8y5vh50x" path="res://AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png" id="6_4sr1x"]
+[ext_resource type="AudioStream" uid="uid://lrqgponbltkb" path="res://MusicWhileWeWaitLikeChuds.mp3" id="7_ublxr"]
+[ext_resource type="Texture2D" uid="uid://c12pnc2n707ts" path="res://AlliesorYourself/HPindicators/AllyHPIndicatorDowned.png" id="8_4sr1x"]
+[ext_resource type="Script" uid="uid://cjxascllea2hy" path="res://CustomRichTextLebelEffects/CustomPopOutEffect.gd" id="10_4sr1x"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bc5cn"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_ncxj6")
+}],
+"loop": true,
+"name": &"Alive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_2eky3")
+}],
+"loop": true,
+"name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_2eky3")
+}],
+"loop": true,
+"name": &"Downed",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_q7hnr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_jd0xq")
+}],
+"loop": true,
+"name": &"Alive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_4sr1x")
+}],
+"loop": true,
+"name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_4sr1x")
+}],
+"loop": true,
+"name": &"Downed",
+"speed": 5.0
+}]
+
+[sub_resource type="RichTextEffect" id="RichTextEffect_bc5cn"]
+script = ExtResource("10_4sr1x")
+metadata/_custom_type_script = "uid://cjxascllea2hy"
+
+[node name="Node2D" type="Node2D" unique_id=1901797313]
+script = ExtResource("1_6pyww")
+
+[node name="BoxContainer" type="BoxContainer" parent="." unique_id=742351134]
+offset_left = 11.0
+offset_top = 52.0
+offset_right = 238.0
+offset_bottom = 188.0
+vertical = true
+script = ExtResource("2_elbsv")
+
+[node name="Defend" type="Button" parent="BoxContainer" unique_id=1995234548]
+layout_mode = 2
+text = "Defend"
+
+[node name="Items" type="Button" parent="BoxContainer" unique_id=1711540584]
+layout_mode = 2
+text = "Items"
+
+[node name="Attack" type="Button" parent="BoxContainer" unique_id=612518415]
+layout_mode = 2
+text = "Attack"
+
+[node name="Skill" type="Button" parent="BoxContainer" unique_id=1384287260]
+layout_mode = 2
+text = "Skill"
+
+[node name="Back" type="Button" parent="." unique_id=195918441]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 70.0
+offset_bottom = 43.0
+text = "Back"
+
+[node name="PlayerHpIndicator" type="AnimatedSprite2D" parent="." unique_id=702781825]
+position = Vector2(299, 75)
+sprite_frames = SubResource("SpriteFrames_bc5cn")
+animation = &"Alive"
+
+[node name="AllyHpIndicator" type="AnimatedSprite2D" parent="." unique_id=782797314]
+position = Vector2(363, 75)
+sprite_frames = SubResource("SpriteFrames_q7hnr")
+animation = &"Alive"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=500493195]
+stream = ExtResource("7_ublxr")
+parameters/looping = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=84649249]
+offset_left = 339.0
+offset_top = 376.0
+offset_right = 489.0
+offset_bottom = 431.0
+bbcode_enabled = true
+text = "test [pop]test[/pop] 61"
+custom_effects = [SubResource("RichTextEffect_bc5cn")]

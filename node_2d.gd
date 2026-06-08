@@ -63,6 +63,7 @@ var shiftingbuttonsarray = []
 var AlliedHealthBars = []
 var AlliedHpIndicator = []
 var AlliedManaBars = []
+var damagelabels = []
 var targetenemy = 0
 var i = 0
 var recentaction = 0
@@ -97,7 +98,7 @@ func _ready() -> void:
 	Player.position = Vector2(830, 260)
 	add_child(Player)
 	
-	var Ally1 = get_parent().Ally
+	var Ally1 = get_parent().Beatrice
 	Ally1.set_sprite_frames(Ally1.get_meta("Animation"))
 	Ally1.position = Vector2(894, 260)
 	add_child(Ally1)
@@ -115,6 +116,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	print(totalenemiesup)
 	pass
 	
 	
@@ -125,7 +127,7 @@ func _calculate_total_enemies_buttons():
 		if is_instance_valid(enemy):
 			if enemy.get_meta("HP") <= 0:
 				enemy.queue_free()
-				if(!arrayenemies[i].get_meta("Status", "Downed")):
+				if(enemy.get_meta("Status") != "Downed"):
 					totalenemiesup = totalenemiesup - 1 # 1 LESS ENEMY NEEDED FOR AN ALL OUT ATTACK
 				arrayenemies.remove_at(i) # Removes it from the array so it's not checked next time
 	if(len(arrayenemies)==0):
@@ -287,6 +289,7 @@ func _back_button_pressed():
 	
 
 func _enemyturn():
+	
 	for i in range(len(shiftingbuttonsarray)):
 		_delete_self(shiftingbuttonsarray[i])
 	shiftingbuttonsarray.clear()
@@ -364,6 +367,7 @@ func _timer_moving_back():
 
 
 func _reset_ally_positions():
+	
 	for i in len(arrayalleati):
 		if(arrayalleati[i].get_meta("HP")>0):
 			arrayalleati[i].play("waiting")
@@ -399,7 +403,10 @@ func _on_timer_timeout():
 			itembuttons[i].queue_free()
 		itembuttons = []
 		Items.remove_at(currentuseditem)
-	
+	if(recentaction==7):
+		for i in range(len(alliedtarget)):
+			targetenemy = i
+			_calculate_damage(1, 10)  #ARCANE SO NO ONE RESISTS THEM
 	
 	_calculate_total_enemies_buttons()
 	recentaction = 0
@@ -413,6 +420,7 @@ func _on_timer_timeout():
 			currentpartymember = currentturn
 			if(cangetalloutattack==true):
 				_delete_self(alloutattackbutton)
+				cangetalloutattack=false
 			if(recentaction!=7):
 				for i in range(len(shiftingbuttonsarray)):
 					_delete_self(shiftingbuttonsarray[i])
@@ -435,6 +443,9 @@ func _on_timer_timeout():
 		ONEMORE = ONEMORE - 1
 
 func _create_targeting_buttons():
+	for i in range(len(damagelabels)):
+		damagelabels[i].queue_free()
+	damagelabels = []
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		if(movetype < 11):
@@ -512,6 +523,7 @@ func _show_button():
 	
 	
 func _start_le_timer():
+	
 	timer.start()
 
 
@@ -529,16 +541,29 @@ func _create_shifting_button():
 func _shifting_button_pressed(index, ShiftingButton):
 	if(recentaction==0):
 		currentpartymember = index
-		cangetalloutattack = false
-		_delete_self(alloutattackbutton)
+		if(cangetalloutattack==true):
+			cangetalloutattack = false
+			_delete_self(alloutattackbutton)
 		for i in range(len(shiftingbuttonsarray)):
 			_delete_self(shiftingbuttonsarray[i])
 		shiftingbuttonsarray.clear()
 		_show_button()
 
 func _calculate_damage(attackbonus,attacktype):
+	
 	var newhp = 0
 	damagethatwillbedone = int(damagethatwillbedone * rng.randf_range(0.8, 1.2))
+	var Labelfordamage = RichTextLabel.new()
+	add_child(Labelfordamage)
+	Labelfordamage.bbcode_enabled = true
+	Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
+	Labelfordamage.custom_minimum_size = Vector2(200, 50)
+	Labelfordamage.clip_contents = false
+	Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32, alliedtarget[targetenemy].position.y - 32)
+	Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
+	Labelfordamage.text = "[pop]" + str(damagethatwillbedone) + "[/pop]"
+	damagelabels.append(Labelfordamage)
+	
 	if(alliedtarget == arrayenemies):
 		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
 	
@@ -607,19 +632,20 @@ func _create_all_out_attack_button():
 
 func _all_out_attack_pressed(buttontodelete):
 	if(recentaction==0 and cangetalloutattack == true):
+		cangetalloutattack = false
 		alliedtarget = arrayenemies
-		for i in range(len(alliedtarget)):
-			targetenemy = i
-			damagethatwillbedone = 100
-			_calculate_damage(1, 10)  #ARCANE SO NO ONE RESISTS THEM
+		damagethatwillbedone = 0
+		for i in range(len(alliedtarget)-1):
+			damagethatwillbedone = damagethatwillbedone + arrayalleati[i].get_meta("Weapon").get_meta("Damage")
+		damagethatwillbedone = damagethatwillbedone * len(arrayalleati) * 2
 		var AllOutAttack = AnimatedSprite2D.new()
 		add_child(AllOutAttack)
 		AllOutAttack.position = Vector2(862, 160)
 		AllOutAttack.set_sprite_frames(AllOutAttackTexture)
 		AllOutAttack.play("default")
 		enemytargetbuttons.append(AllOutAttack)
-		cangetalloutattack==false
 		recentaction=7
+		buttontodelete.queue_free()
 		for i in range(len(shiftingbuttonsarray)):
 			_delete_self(shiftingbuttonsarray[i])
 		shiftingbuttonsarray.clear()
