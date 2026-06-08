@@ -33,6 +33,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var Rebirth = Node.new()
 @export var GreenFlower = Node.new()
 @export var Mishinobu = Node.new()
+@export var Meshinobu = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
 @export var Potion = Node.new()
@@ -45,7 +46,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu],
+	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu, Meshinobu],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -123,6 +124,15 @@ func _ready() -> void:
 	Mishinobu.set_meta("Targets", "OneAlly")
 	Mishinobu.set_meta("AnimationTime", 0.5)
 	Mishinobu.set_meta("Image", RebirthTexture)
+	
+	Meshinobu.set_meta("Name", "Meshinobu")
+	Meshinobu.set_meta("Description", "Increase's an ally's Defence for 3 Turns")
+	Meshinobu.set_meta("Damage", standardTurnBuffLenght)
+	Meshinobu.set_meta("Cost", 7)
+	Meshinobu.set_meta("Type", 13)
+	Meshinobu.set_meta("Targets", "OneAlly")
+	Meshinobu.set_meta("AnimationTime", 0.5)
+	Meshinobu.set_meta("Image", RebirthTexture)
 	
 	OlympusPunch.set_meta("Name", "Olympus Punch")
 	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")

@@ -51,8 +51,8 @@ var HealingTexture = load("res://Healing.png")
 var StatusEffectsTexture = load("res://StatusEffects.png")
 
 
-##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Status Effect
-var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, StatusEffectsTexture]
+##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Attack Bonus	13 Defense Bonus
+var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, StatusEffectsTexture, StatusEffectsTexture]
 var arrayenemies = []
 var arrayalleati = []
 var skillbuttons = []
@@ -163,7 +163,7 @@ func _target_button_pressed(pulsanteid):
 				if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
 					attackbonus = 1.5
 				_calculate_damage(attackbonus, movetype)
-			elif(movetype==12):
+			elif(movetype>=12):
 				alliedtarget = arrayalleati
 				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
 				_calculate_damage(1, movetype)
@@ -405,6 +405,9 @@ func _reset_ally_positions():
 	if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
 		var boostedattackturnsleft = arrayalleati[currentpartymember].get_meta("Attack") - 1
 		arrayalleati[currentpartymember].set_meta("Attack", boostedattackturnsleft)
+	if(arrayalleati[currentpartymember].get_meta("Defense") > 0):
+		var boosteddefenseturnsleft = arrayalleati[currentpartymember].get_meta("Defense") - 1
+		arrayalleati[currentpartymember].set_meta("Defense", boosteddefenseturnsleft)
 	for i in len(arrayalleati):
 		if(arrayalleati[i].get_meta("HP")>0):
 			arrayalleati[i].play("waiting")
@@ -457,7 +460,9 @@ func _on_timer_timeout():
 			if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
 				var boostedattackturnsleft = arrayalleati[currentpartymember].get_meta("Attack") - 1
 				arrayalleati[currentpartymember].set_meta("Attack", boostedattackturnsleft)
-				
+			if(arrayalleati[currentpartymember].get_meta("Defense") > 0):
+				var boosteddefenseturnsleft = arrayalleati[currentpartymember].get_meta("Defense") - 1
+				arrayalleati[currentpartymember].set_meta("Defense", boosteddefenseturnsleft)
 				
 			if(cangetalloutattack==true):
 				_delete_self(alloutattackbutton)
@@ -603,7 +608,10 @@ func _calculate_damage(attackbonus,attacktype):
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 		
 		if(alliedtarget == arrayalleati):
-			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying")  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
+			var standarddefence = 1
+			if(arrayalleati[currentpartymember].get_meta("Defense") > 0):
+				standarddefence = 1.5
+			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying") / standarddefence  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 	
 		var Labelfordamage = RichTextLabel.new()
@@ -646,8 +654,9 @@ func _calculate_damage(attackbonus,attacktype):
 			if(alliedtarget[0].get_meta("HP")<=0):
 				_losing_the_battle()
 		elif(attacktype==12):
-			alliedtarget[targetenemy].set_meta("Attack", 3)
-
+			alliedtarget[targetenemy].set_meta("Attack", damagethatwillbedone)
+		elif(attacktype==13):
+			alliedtarget[targetenemy].set_meta("Defense", damagethatwillbedone)
 	
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
 		if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
