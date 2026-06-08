@@ -32,6 +32,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var LightFlash = Node.new()
 @export var Rebirth = Node.new()
 @export var GreenFlower = Node.new()
+@export var Mishinobu = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
 @export var Potion = Node.new()
@@ -44,7 +45,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower],
+	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -64,6 +65,9 @@ var standardHighDamage = 150
 var standardSevereDamage = 200
 var standardColossalDamage = 250
 var standardUltimateDamage = 300
+
+var standardTurnBuffLenght = 4
+
 func _ready() -> void:
 	## MOVES
 	ThunderSwords.set_meta("Name", "ThunderSwords")
@@ -111,6 +115,15 @@ func _ready() -> void:
 	GreenFlower.set_meta("AnimationTime", 0.5)
 	GreenFlower.set_meta("Image", RebirthTexture)
 	
+	Mishinobu.set_meta("Name", "Mishinobu")
+	Mishinobu.set_meta("Description", "Increase's an ally's Attack for 3 Turns")
+	Mishinobu.set_meta("Damage", standardTurnBuffLenght)
+	Mishinobu.set_meta("Cost", 7)
+	Mishinobu.set_meta("Type", 12)
+	Mishinobu.set_meta("Targets", "OneAlly")
+	Mishinobu.set_meta("AnimationTime", 0.5)
+	Mishinobu.set_meta("Image", RebirthTexture)
+	
 	OlympusPunch.set_meta("Name", "Olympus Punch")
 	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
 	OlympusPunch.set_meta("Damage", standardLowDamage)
@@ -135,8 +148,9 @@ func _ready() -> void:
 	Giocatore.set_meta("maxHP", 135)
 	Giocatore.set_meta("maxSP", 65)
 	Giocatore.set_meta("Weapon", ShortSword)
-	Giocatore.set_meta("Defense", 1.0)
-	Giocatore.set_meta("Attack", 1.0)
+	Giocatore.set_meta("DefenseFromParrying", 1.0)
+	Giocatore.set_meta("Defense", 0)
+	Giocatore.set_meta("Attack", 0)
 	Giocatore.set_meta("Status", "Alive")
 	Giocatore.set_meta("Name", "Ren")
 	Giocatore.set_meta("Animation", PlayerAnim)
@@ -147,8 +161,9 @@ func _ready() -> void:
 	Beatrice.set_meta("maxHP", 100)
 	Beatrice.set_meta("maxSP", 80)
 	Beatrice.set_meta("Weapon", Shuriken)
-	Beatrice.set_meta("Defense", 1.0)
-	Beatrice.set_meta("Attack", 1.0)
+	Beatrice.set_meta("DefenseFromParrying", 1.0)
+	Beatrice.set_meta("Defense", 0)
+	Beatrice.set_meta("Attack", 0)
 	Beatrice.set_meta("Status", "Alive")
 	Beatrice.set_meta("Name", "Loki")
 	Beatrice.set_meta("Animation", AllyAnim)

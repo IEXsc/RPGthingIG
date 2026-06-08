@@ -48,11 +48,11 @@ var ChthonicTexture = load("res://Chthonic.png")
 var HolyTexture = load("res://Holy.png")
 var ArcaneTexture = load("res://Arcane.png")
 var HealingTexture = load("res://Healing.png")
+var StatusEffectsTexture = load("res://StatusEffects.png")
 
 
-
-##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing
-var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture]
+##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Status Effect
+var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, StatusEffectsTexture]
 var arrayenemies = []
 var arrayalleati = []
 var skillbuttons = []
@@ -140,7 +140,10 @@ func _target_button_pressed(pulsanteid):
 	if(recentaction==1):
 		alliedtarget = arrayenemies
 		damagethatwillbedone = arrayalleati[currentpartymember].get_meta("Weapon").get_meta("Damage")
-		_calculate_damage(1, arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType"))
+		var attackbonus = 1
+		if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+			attackbonus = 1.5
+		_calculate_damage(attackbonus, arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType"))
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
@@ -149,15 +152,22 @@ func _target_button_pressed(pulsanteid):
 		arrayalleati[currentpartymember].set_meta("SP", newsp)
 		AlliedManaBars[currentpartymember].set_value(newsp)
 		if(targets == "One" or targets == "OneAlly"):
-			if(movetype<11):
-				alliedtarget = arrayenemies
-				
-			elif(movetype==11):
+			if(movetype<12):
+				if(movetype<11):
+					alliedtarget = arrayenemies
+					
+				elif(movetype==11):
+					alliedtarget = arrayalleati
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				var attackbonus = 1
+				if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+					attackbonus = 1.5
+				_calculate_damage(attackbonus, movetype)
+			elif(movetype==12):
 				alliedtarget = arrayalleati
-			
-			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
-			_calculate_damage(1, movetype)
-			
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				_calculate_damage(1, movetype)
+				
 			var SkillBeingUsed = AnimatedSprite2D.new()
 			add_child(SkillBeingUsed)
 			SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
@@ -178,7 +188,10 @@ func _target_button_pressed(pulsanteid):
 				SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
 				SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
 				SkillBeingUsed.play("default")
-				_calculate_damage(1, movetype)
+				var attackbonus = 1
+				if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+					attackbonus = 1.5
+				_calculate_damage(attackbonus, movetype)
 				
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
@@ -196,6 +209,8 @@ func _target_button_pressed(pulsanteid):
 	enemytargetbuttons = []
 	_start_le_timer()
 
+
+
 func _delete_self(Self):
 	Self.queue_free()
 
@@ -209,8 +224,8 @@ func _attack_button_pressed():
 	
 func _defend_button_pressed():
 	if(recentaction==0):
-		var newdefence = arrayalleati[currentpartymember].get_meta("Defense") + 0.5 
-		arrayalleati[currentpartymember].set_meta("Defense", newdefence) 
+		var newdefence = arrayalleati[currentpartymember].get_meta("DefenseFromParrying") + 0.5 
+		arrayalleati[currentpartymember].set_meta("DefenseFromParrying", newdefence) 
 		arrayalleati[currentpartymember].set_meta("Status", "Defending")
 		recentaction = 2
 		timer.wait_time = 0.2
@@ -387,14 +402,15 @@ func _timer_moving_back():
 
 
 func _reset_ally_positions():
-	
+	if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+		var boostedattackturnsleft = arrayalleati[currentpartymember].get_meta("Attack") - 1
+		arrayalleati[currentpartymember].set_meta("Attack", boostedattackturnsleft)
 	for i in len(arrayalleati):
 		if(arrayalleati[i].get_meta("HP")>0):
 			arrayalleati[i].play("waiting")
 		else:
 			arrayalleati[i].play("Faint")
-		arrayalleati[i].set_meta("Defense", 1)
-		arrayalleati[i].set_meta("Attack", 1)
+		arrayalleati[i].set_meta("DefenseFromParrying", 1)
 	arrayalleati[0].play("waiting")
 	arrayalleati[0].set_meta("Status", "Alive")
 	_show_button()
@@ -438,6 +454,11 @@ func _on_timer_timeout():
 		while currentturn < len(arrayalleati) - 1:
 			currentturn += 1
 			currentpartymember = currentturn
+			if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+				var boostedattackturnsleft = arrayalleati[currentpartymember].get_meta("Attack") - 1
+				arrayalleati[currentpartymember].set_meta("Attack", boostedattackturnsleft)
+				
+				
 			if(cangetalloutattack==true):
 				_delete_self(alloutattackbutton)
 				cangetalloutattack=false
@@ -574,54 +595,58 @@ func _shifting_button_pressed(index, ShiftingButton):
 func _calculate_damage(attackbonus,attacktype):
 	
 	var newhp = 0
-	damagethatwillbedone = damagethatwillbedone * rng.randf_range(0.8, 1.2)
-	
-	if(alliedtarget == arrayenemies):
-		damagethatwillbedone = int(round(damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype] ) )
-		newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
-	
-	if(alliedtarget == arrayalleati):
-		damagethatwillbedone = int(round(damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
-		newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
-	
-	var Labelfordamage = RichTextLabel.new()
-	add_child(Labelfordamage)
-	Labelfordamage.bbcode_enabled = true
-	Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
-	Labelfordamage.custom_minimum_size = Vector2(200, 50)
-	Labelfordamage.clip_contents = false
-	Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x , alliedtarget[targetenemy].position.y - 32)
-	Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
-	Labelfordamage.text = "[pop]" + str(damagethatwillbedone) + "[/pop]"
-	damagelabels.append(Labelfordamage)
-	
-	if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
-		newhp = alliedtarget[targetenemy].get_meta("maxHP")
-		alliedtarget[targetenemy].set_meta("HP", newhp)
-	
-	elif(newhp<=0):          ## WILL ONLY TRIGGER FOR PLAYABLE CHARACTERS
-		alliedtarget[targetenemy].set_meta("HP", 0)
+	if(attacktype<12):
+		damagethatwillbedone = damagethatwillbedone * rng.randf_range(0.8, 1.2)
+		
+		if(alliedtarget == arrayenemies):
+			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("Defense") * alliedtarget[targetenemy].get_meta("Affinities")[attacktype] ) )
+			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 		
 		if(alliedtarget == arrayalleati):
-			AlliedHpIndicator[targetenemy].play("Dead")
-			alliedtarget[targetenemy].play("Faint")
-	else:
-		alliedtarget[targetenemy].set_meta("HP", newhp)
-		if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
+			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying")  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
+			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+	
+		var Labelfordamage = RichTextLabel.new()
+		add_child(Labelfordamage)
+		Labelfordamage.bbcode_enabled = true
+		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
+		Labelfordamage.custom_minimum_size = Vector2(200, 50)
+		Labelfordamage.clip_contents = false
+		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x , alliedtarget[targetenemy].position.y - 32)
+		Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
+		Labelfordamage.text = "[pop]" + str(damagethatwillbedone) + "[/pop]"
+		damagelabels.append(Labelfordamage)
+	
+		if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
+			newhp = alliedtarget[targetenemy].get_meta("maxHP")
+			alliedtarget[targetenemy].set_meta("HP", newhp)
+		
+		elif(newhp<=0):          ## WILL ONLY TRIGGER FOR PLAYABLE CHARACTERS
+			alliedtarget[targetenemy].set_meta("HP", 0)
 			
-			AlliedHpIndicator[targetenemy].play("Alive")
-			alliedtarget[targetenemy].play("waiting")
+			if(alliedtarget == arrayalleati):
+				AlliedHpIndicator[targetenemy].play("Dead")
+				alliedtarget[targetenemy].play("Faint")
+		else:
+			alliedtarget[targetenemy].set_meta("HP", newhp)
+			if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
+				
+				AlliedHpIndicator[targetenemy].play("Alive")
+				alliedtarget[targetenemy].play("waiting")
 			
-	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING
-		AlliedHealthBars[targetenemy].set_value(newhp)
-		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
-			alliedtarget[targetenemy].play("downed")
-			if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
-				enemytimer.wait_time = enemytimer.wait_time + 1
-				ONEMORE = 1 
-				alliedtarget[targetenemy].set_meta("Status", "Downed")
-		if(alliedtarget[0].get_meta("HP")<=0):
-			_losing_the_battle()
+	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING  // WE ARE HEALING
+		if(attacktype<12):
+			AlliedHealthBars[targetenemy].set_value(newhp)
+			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
+				alliedtarget[targetenemy].play("downed")
+				if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
+					enemytimer.wait_time = enemytimer.wait_time + 1
+					ONEMORE = 1 
+					alliedtarget[targetenemy].set_meta("Status", "Downed")
+			if(alliedtarget[0].get_meta("HP")<=0):
+				_losing_the_battle()
+		elif(attacktype==12):
+			alliedtarget[targetenemy].set_meta("Attack", 3)
 
 	
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
