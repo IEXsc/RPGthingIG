@@ -38,7 +38,13 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 @export var Messiah = Node.new()
 @export var Zeus = Node.new()
-@export var movesets = [ [OlympusPunch, LightBlind] , [Rebirth] , [TestOlympusPunch] ]
+
+enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
+var movesets: Dictionary = {
+	MovesetID.MOVESETMESSIAH: [OlympusPunch, LightBlind],
+	MovesetID.MOVESETZEUS: [Rebirth],
+	MovesetID.TEST_MOVESET: [TestOlympusPunch]
+}
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
 @export var TungTung = AnimatedSprite2D.new()
@@ -49,11 +55,18 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 @export var ShortSword = Node.new()
 @export var Shuriken = Node.new()
+
+var standardLowDamage = 50
+var standardAvarageDamage = 100
+var standardHighDamage = 150
+var standardSevereDamage = 200
+var standardColossalDamage = 250
+var standardUltimateDamage = 300
 func _ready() -> void:
 	## MOVES
 	ThunderSwords.set_meta("Name", "ThunderSwords")
 	ThunderSwords.set_meta("Description", "Small Arcane Damage To One Enemy")
-	ThunderSwords.set_meta("Damage", 35)
+	ThunderSwords.set_meta("Damage", standardLowDamage)
 	ThunderSwords.set_meta("Cost", 12)
 	ThunderSwords.set_meta("Type", 10)
 	ThunderSwords.set_meta("AnimationTime", 1)
@@ -61,7 +74,7 @@ func _ready() -> void:
 	
 	LightBlind.set_meta("Name", "LightBlind")
 	LightBlind.set_meta("Description", "Small Holy Damage To One Enemy")
-	LightBlind.set_meta("Damage", 35)
+	LightBlind.set_meta("Damage", standardLowDamage)
 	LightBlind.set_meta("Cost", 8)
 	LightBlind.set_meta("Type", 9)
 	LightBlind.set_meta("AnimationTime", 0.5)
@@ -69,7 +82,7 @@ func _ready() -> void:
 	
 	Rebirth.set_meta("Name", "Rebirth")
 	Rebirth.set_meta("Description", "Slightly Heals One Ally")
-	Rebirth.set_meta("Damage", -35)
+	Rebirth.set_meta("Damage", -standardLowDamage)
 	Rebirth.set_meta("Cost", 7)
 	Rebirth.set_meta("Type", 11)
 	Rebirth.set_meta("AnimationTime", 0.5)
@@ -77,7 +90,7 @@ func _ready() -> void:
 	
 	OlympusPunch.set_meta("Name", "Olympus Punch")
 	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
-	OlympusPunch.set_meta("Damage", 35)
+	OlympusPunch.set_meta("Damage", standardLowDamage)
 	OlympusPunch.set_meta("Cost", 15)
 	OlympusPunch.set_meta("Type", 0)
 	OlympusPunch.set_meta("AnimationTime", 0.5)
@@ -126,12 +139,12 @@ func _ready() -> void:
 	## GODS? I HAVE TO COME UP WITH A NAME DAMN
 	Messiah.set_meta("Name", "Messiah")
 	Messiah.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
-	Messiah.set_meta("SpecialMoves", movesets[0])
+	Messiah.set_meta("SpecialMoves", movesets[MovesetID.MOVESETMESSIAH])
 	Messiah.set_meta("Animation", MessiahAnim)
 	
 	Zeus.set_meta("Name", "Zeus")
 	Zeus.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
-	Zeus.set_meta("SpecialMoves", movesets[1])
+	Zeus.set_meta("SpecialMoves", movesets[MovesetID.MOVESETZEUS])
 	Zeus.set_meta("Animation", ZeusAnim)
 	
 	## ITEMS
@@ -164,7 +177,7 @@ func _ready() -> void:
 	TungTung.set_meta("Defense", 1.0)
 	TungTung.set_meta("Attack", 1.0)
 	TungTung.set_meta("Status", "Alive")
-	TungTung.set_meta("SpecialMoves", movesets[2])
+	TungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
 	TungTung.set_sprite_frames(TungTungAnim)
 	
@@ -176,7 +189,7 @@ func _ready() -> void:
 	AngelTungTung.set_meta("Defense", 1.0)
 	AngelTungTung.set_meta("Attack", 1.0)
 	AngelTungTung.set_meta("Status", "Alive")
-	AngelTungTung.set_meta("SpecialMoves", movesets[2])
+	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	AngelTungTung.set_meta("Affinities", [2,1,-1,2,1,1,1,1,1,0.5,1,1] )
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	

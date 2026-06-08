@@ -312,7 +312,6 @@ func _singleenemyturn():
 			targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
 			
 		if(currentenemymove<len(arrayenemies)):
-			print("Enemy index ", currentenemymove, " is taking a turn! ONEMORE value is: ", ONEMORE)
 			if(arrayenemies[currentenemymove].get_meta("Status") == "Downed"):
 				arrayenemies[currentenemymove].play("waiting")
 				arrayenemies[currentenemymove].set_meta("Status", "Alive")
