@@ -31,6 +31,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var LightBlind = Node.new()
 @export var LightFlash = Node.new()
 @export var Rebirth = Node.new()
+@export var GreenFlower = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
 @export var Potion = Node.new()
@@ -43,7 +44,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Rebirth],
+	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -100,6 +101,15 @@ func _ready() -> void:
 	Rebirth.set_meta("Targets", "OneAlly")
 	Rebirth.set_meta("AnimationTime", 0.5)
 	Rebirth.set_meta("Image", RebirthTexture)
+	
+	GreenFlower.set_meta("Name", "GreenFlower")
+	GreenFlower.set_meta("Description", "Slightly Heals Every Ally")
+	GreenFlower.set_meta("Damage", -standardLowDamage)
+	GreenFlower.set_meta("Cost", 7)
+	GreenFlower.set_meta("Type", 11)
+	GreenFlower.set_meta("Targets", "AllAllies")
+	GreenFlower.set_meta("AnimationTime", 0.5)
+	GreenFlower.set_meta("Image", RebirthTexture)
 	
 	OlympusPunch.set_meta("Name", "Olympus Punch")
 	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
@@ -185,7 +195,7 @@ func _ready() -> void:
 	## ENEMIES
 	
 	TungTung.set_meta("HP", 165)
-	TungTung.set_meta("maxHP", 50)
+	TungTung.set_meta("maxHP", 165)
 	TungTung.set_meta("Name", "TTT")
 	TungTung.set_meta("Damage", 5)
 	TungTung.set_meta("DamageType", 0)
@@ -197,7 +207,7 @@ func _ready() -> void:
 	TungTung.set_sprite_frames(TungTungAnim)
 	
 	AngelTungTung.set_meta("HP", 125)
-	AngelTungTung.set_meta("maxHP", 75)
+	AngelTungTung.set_meta("maxHP", 125)
 	AngelTungTung.set_meta("Name", "Angel TTT")
 	AngelTungTung.set_meta("Damage", 10)
 	AngelTungTung.set_meta("DamageType", 0)

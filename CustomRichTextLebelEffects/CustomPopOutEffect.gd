@@ -9,7 +9,7 @@ func _process_custom_fx(char_fx):
 	var speed = char_fx.env.get("speed", 2.0)
 	
 	# 2. Calculate the scale factor based on time (1.0 down to 0.0)
-	var scale_factor = 1.0 - (char_fx.elapsed_time * speed)
+	var scale_factor = 2.0 - (char_fx.elapsed_time * speed) / 2
 	scale_factor = max(scale_factor, 0.0) # Prevent it from going negative
 	
 	# 3. Define a pivot point (adjust the Y value if characters shift weirdly)
