@@ -15,6 +15,8 @@ var AllOutAttackAnim = load("res://Cutaways/AllOutAttackButton/AllOutAttackButto
 
 var alloutattackbutton = Button.new()
 var timer = Timer.new()
+var enemytimer = Timer.new()
+
 ### TEXTURES
 
 var EmptyBar = load("res://AlliesorYourself/HPindicators/HPbar(s)/HPBAREMPTY.png")
@@ -85,6 +87,9 @@ func _ready() -> void:
 	
 	add_child(timer)
 	timer.timeout.connect(_on_timer_timeout)
+	
+	add_child(enemytimer)
+	enemytimer.timeout.connect(_timer_moving_back)
 	_setting_up_enemies()
 	
 	var Player = get_parent().Giocatore
@@ -306,7 +311,6 @@ func _singleenemyturn():
 		while(alliedtarget[targetenemy].get_meta("HP")<=0):
 			targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
 			
-		var enemytimer = Timer.new()
 		if(currentenemymove<len(arrayenemies)):
 			print("Enemy index ", currentenemymove, " is taking a turn! ONEMORE value is: ", ONEMORE)
 			arrayenemies[currentenemymove].play("waiting")
@@ -336,18 +340,15 @@ func _singleenemyturn():
 				
 				
 				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
-			add_child(enemytimer)
-			enemytimer.timeout.connect(_timer_moving_back.bind(enemytimer))
 			enemytimer.start()	
 		else:
 			_reset_ally_positions()
-			enemytimer.queue_free()
 			currentusedskill = 0
 			currentenemymove = 0
 	elif(atleastonecharalive==false):
 		_losing_the_battle()
 		
-func _timer_moving_back(timerx):
+func _timer_moving_back():
 	#for i in len(arrayenemies):
 	if(enemyaction==1):
 		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
@@ -358,7 +359,7 @@ func _timer_moving_back(timerx):
 	else:
 		ONEMORE = ONEMORE - 1
 	_singleenemyturn()
-	timerx.queue_free()
+	enemytimer.stop()
 
 
 func _reset_ally_positions():
@@ -565,6 +566,7 @@ func _calculate_damage(attackbonus,attacktype):
 		if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
 			alliedtarget[targetenemy].play("downed")
 			if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
+				enemytimer.wait_time = enemytimer.wait_time + 1
 				ONEMORE = 1 
 				alliedtarget[targetenemy].set_meta("Status", "Downed")
 		if(alliedtarget[0].get_meta("HP")<=0):
