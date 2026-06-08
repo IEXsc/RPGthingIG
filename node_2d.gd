@@ -116,7 +116,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	print(totalenemiesup)
+
 	pass
 	
 	
@@ -144,22 +144,39 @@ func _target_button_pressed(pulsanteid):
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
 		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
+		var targets = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Targets")
+		#elif(targets == "AllEnemies" or targets == "AllAllies"):
 		arrayalleati[currentpartymember].set_meta("SP", newsp)
 		AlliedManaBars[currentpartymember].set_value(newsp)
-		if(movetype<11):
-			alliedtarget = arrayenemies
-			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
-			_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), movetype)
-		elif(movetype==11):
-			alliedtarget = arrayalleati
-			damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
-			_calculate_damage(1, movetype)
-		var SkillBeingUsed = AnimatedSprite2D.new()
-		add_child(SkillBeingUsed)
-		SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
-		SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
-		SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
-		SkillBeingUsed.play("default")
+		if(targets == "One" or targets == "OneAlly"):
+			if(movetype<11):
+				alliedtarget = arrayenemies
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), movetype)
+			elif(movetype==11):
+				alliedtarget = arrayalleati
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				_calculate_damage(1, movetype)
+			var SkillBeingUsed = AnimatedSprite2D.new()
+			add_child(SkillBeingUsed)
+			SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
+			SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+			SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
+			SkillBeingUsed.play("default")
+		elif(targets == "AllEnemies" or targets == "AllAllies"):
+			if(movetype<11):
+				alliedtarget = arrayenemies
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				for i in range(len(alliedtarget)):
+					targetenemy = i
+					var SkillBeingUsed = AnimatedSprite2D.new()
+					add_child(SkillBeingUsed)
+					SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
+					SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+					SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
+					SkillBeingUsed.play("default")
+					_calculate_damage(arrayalleati[currentpartymember].get_meta("Attack"), movetype)
+				
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
 			alliedtarget = arrayalleati
@@ -448,12 +465,14 @@ func _create_targeting_buttons():
 	damagelabels = []
 	if(recentaction==4):
 		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
-		if(movetype < 11):
+		var targets = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Targets")
+		if(targets == "One" or targets == "AllEnemies"):
 			for i in len(arrayenemies):
 				_create_target_button_enemies(i, movetype)
-		if(movetype == 11):
+		if(targets == "OneAlly" or targets == "AllAllies"):
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
+		
 	elif(recentaction==6):
 		var itemtype = Items[currentuseditem].get_meta("Type")
 		if(itemtype == 0):
@@ -553,6 +572,15 @@ func _calculate_damage(attackbonus,attacktype):
 	
 	var newhp = 0
 	damagethatwillbedone = int(damagethatwillbedone * rng.randf_range(0.8, 1.2))
+	
+	if(alliedtarget == arrayenemies):
+		damagethatwillbedone = ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
+		newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+	
+	if(alliedtarget == arrayalleati):
+		damagethatwillbedone = ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype])
+		newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+	
 	var Labelfordamage = RichTextLabel.new()
 	add_child(Labelfordamage)
 	Labelfordamage.bbcode_enabled = true
@@ -563,12 +591,6 @@ func _calculate_damage(attackbonus,attacktype):
 	Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
 	Labelfordamage.text = "[pop]" + str(damagethatwillbedone) + "[/pop]"
 	damagelabels.append(Labelfordamage)
-	
-	if(alliedtarget == arrayenemies):
-		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("Affinities")[attacktype])
-	
-	if(alliedtarget == arrayalleati):
-		newhp = alliedtarget[targetenemy].get_meta("HP") - ( damagethatwillbedone / alliedtarget[targetenemy].get_meta("Defense") * attackbonus * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype])
 	
 	if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
 		newhp = alliedtarget[targetenemy].get_meta("maxHP")
@@ -635,9 +657,11 @@ func _all_out_attack_pressed(buttontodelete):
 		cangetalloutattack = false
 		alliedtarget = arrayenemies
 		damagethatwillbedone = 0
-		for i in range(len(alliedtarget)-1):
+		
+		for i in range(len(arrayalleati)):
 			damagethatwillbedone = damagethatwillbedone + arrayalleati[i].get_meta("Weapon").get_meta("Damage")
 		damagethatwillbedone = damagethatwillbedone * len(arrayalleati) * 2
+		
 		var AllOutAttack = AnimatedSprite2D.new()
 		add_child(AllOutAttack)
 		AllOutAttack.position = Vector2(862, 160)

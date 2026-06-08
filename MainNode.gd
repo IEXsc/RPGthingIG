@@ -29,6 +29,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 @export var ThunderSwords = Node.new()
 @export var LightBlind = Node.new()
+@export var LightFlash = Node.new()
 @export var Rebirth = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
@@ -41,7 +42,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
-	MovesetID.MOVESETMESSIAH: [OlympusPunch, LightBlind],
+	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
 	MovesetID.MOVESETZEUS: [Rebirth],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
@@ -69,6 +70,7 @@ func _ready() -> void:
 	ThunderSwords.set_meta("Damage", standardLowDamage)
 	ThunderSwords.set_meta("Cost", 12)
 	ThunderSwords.set_meta("Type", 10)
+	ThunderSwords.set_meta("Targets", "One")
 	ThunderSwords.set_meta("AnimationTime", 1)
 	ThunderSwords.set_meta("Image", ThunderSwordsTexture)
 	
@@ -77,14 +79,25 @@ func _ready() -> void:
 	LightBlind.set_meta("Damage", standardLowDamage)
 	LightBlind.set_meta("Cost", 8)
 	LightBlind.set_meta("Type", 9)
+	LightBlind.set_meta("Targets", "One")
 	LightBlind.set_meta("AnimationTime", 0.5)
 	LightBlind.set_meta("Image", LightBlindTexture)
+	
+	LightFlash.set_meta("Name", "LightFlash")
+	LightFlash.set_meta("Description", "Small Holy Damage To Every Enemy")
+	LightFlash.set_meta("Damage", standardLowDamage)
+	LightFlash.set_meta("Cost", 8)
+	LightFlash.set_meta("Type", 9)
+	LightFlash.set_meta("Targets", "AllEnemies")
+	LightFlash.set_meta("AnimationTime", 0.5)
+	LightFlash.set_meta("Image", LightBlindTexture)
 	
 	Rebirth.set_meta("Name", "Rebirth")
 	Rebirth.set_meta("Description", "Slightly Heals One Ally")
 	Rebirth.set_meta("Damage", -standardLowDamage)
 	Rebirth.set_meta("Cost", 7)
 	Rebirth.set_meta("Type", 11)
+	Rebirth.set_meta("Targets", "OneAlly")
 	Rebirth.set_meta("AnimationTime", 0.5)
 	Rebirth.set_meta("Image", RebirthTexture)
 	
@@ -93,6 +106,7 @@ func _ready() -> void:
 	OlympusPunch.set_meta("Damage", standardLowDamage)
 	OlympusPunch.set_meta("Cost", 15)
 	OlympusPunch.set_meta("Type", 0)
+	OlympusPunch.set_meta("Targets", "One")
 	OlympusPunch.set_meta("AnimationTime", 0.5)
 	OlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
@@ -101,6 +115,7 @@ func _ready() -> void:
 	TestOlympusPunch.set_meta("Damage", 10)
 	TestOlympusPunch.set_meta("Cost", 0)
 	TestOlympusPunch.set_meta("Type", 0)
+	TestOlympusPunch.set_meta("Targets", "One")
 	TestOlympusPunch.set_meta("AnimationTime", 0.5)
 	TestOlympusPunch.set_meta("Image", OlympusPunchAnim)
 	
