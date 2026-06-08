@@ -38,7 +38,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 @export var Messiah = Node.new()
 @export var Zeus = Node.new()
-@export var movesets = [ [Rebirth, LightBlind] , [ThunderSwords, LightBlind, OlympusPunch] , [TestOlympusPunch] ]
+@export var movesets = [ [OlympusPunch, LightBlind] , [Rebirth] , [TestOlympusPunch] ]
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
 @export var TungTung = AnimatedSprite2D.new()

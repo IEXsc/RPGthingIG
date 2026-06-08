@@ -313,9 +313,10 @@ func _singleenemyturn():
 			
 		if(currentenemymove<len(arrayenemies)):
 			print("Enemy index ", currentenemymove, " is taking a turn! ONEMORE value is: ", ONEMORE)
-			arrayenemies[currentenemymove].play("waiting")
-			arrayenemies[currentenemymove].set_meta("Status", "Alive")
-			totalenemiesup = totalenemiesup + 1
+			if(arrayenemies[currentenemymove].get_meta("Status") == "Downed"):
+				arrayenemies[currentenemymove].play("waiting")
+				arrayenemies[currentenemymove].set_meta("Status", "Alive")
+				totalenemiesup = totalenemiesup + 1
 			enemyaction = randi_range(1, 2) 
 			if(enemyaction== 1):
 				
@@ -340,6 +341,7 @@ func _singleenemyturn():
 				
 				
 				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
+			
 			enemytimer.start()	
 		else:
 			_reset_ally_positions()
@@ -358,8 +360,8 @@ func _timer_moving_back():
 		currentenemymove = currentenemymove + 1
 	else:
 		ONEMORE = ONEMORE - 1
-	_singleenemyturn()
 	enemytimer.stop()
+	_singleenemyturn()
 
 
 func _reset_ally_positions():
@@ -640,7 +642,7 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	var TungTungEnemy = get_parent().TungTung
 	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [TungTungEnemy]
+	var Enemies = [TungTungEnemy,AngelTungTung,AngelTungTung]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
