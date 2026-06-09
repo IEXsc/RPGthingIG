@@ -34,6 +34,8 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var GreenFlower = Node.new()
 @export var Mishinobu = Node.new()
 @export var Meshinobu = Node.new()
+@export var Mevinobu = Node.new()
+@export var Mivinobu = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
 @export var Potion = Node.new()
@@ -46,7 +48,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu, Meshinobu],
+	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -116,6 +118,15 @@ func _ready() -> void:
 	GreenFlower.set_meta("AnimationTime", 0.5)
 	GreenFlower.set_meta("Image", RebirthTexture)
 	
+	Mivinobu.set_meta("Name", "Mivinobu")
+	Mivinobu.set_meta("Description", "Decreases's a foe's Attack for 3 Turns")
+	Mivinobu.set_meta("Damage", -standardTurnBuffLenght)
+	Mivinobu.set_meta("Cost", 7)
+	Mivinobu.set_meta("Type", 14)
+	Mivinobu.set_meta("Targets", "One")
+	Mivinobu.set_meta("AnimationTime", 0.5)
+	Mivinobu.set_meta("Image", RebirthTexture)
+	
 	Mishinobu.set_meta("Name", "Mishinobu")
 	Mishinobu.set_meta("Description", "Increase's an ally's Attack for 3 Turns")
 	Mishinobu.set_meta("Damage", standardTurnBuffLenght)
@@ -124,6 +135,15 @@ func _ready() -> void:
 	Mishinobu.set_meta("Targets", "OneAlly")
 	Mishinobu.set_meta("AnimationTime", 0.5)
 	Mishinobu.set_meta("Image", RebirthTexture)
+	
+	Mevinobu.set_meta("Name", "Mevinobu")
+	Mevinobu.set_meta("Description", "Decreases's a foe's Defence for 3 Turns")
+	Mevinobu.set_meta("Damage", -standardTurnBuffLenght)
+	Mevinobu.set_meta("Cost", 7)
+	Mevinobu.set_meta("Type", 15)
+	Mevinobu.set_meta("Targets", "One")
+	Mevinobu.set_meta("AnimationTime", 0.5)
+	Mevinobu.set_meta("Image", RebirthTexture)
 	
 	Meshinobu.set_meta("Name", "Meshinobu")
 	Meshinobu.set_meta("Description", "Increase's an ally's Defence for 3 Turns")
@@ -224,8 +244,8 @@ func _ready() -> void:
 	TungTung.set_meta("Name", "TTT")
 	TungTung.set_meta("Damage", 5)
 	TungTung.set_meta("DamageType", 0)
-	TungTung.set_meta("Defense", 1.0)
-	TungTung.set_meta("Attack", 1.0)
+	TungTung.set_meta("Defense", 0)
+	TungTung.set_meta("Attack", 0)
 	TungTung.set_meta("Status", "Alive")
 	TungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
@@ -236,8 +256,8 @@ func _ready() -> void:
 	AngelTungTung.set_meta("Name", "Angel TTT")
 	AngelTungTung.set_meta("Damage", 10)
 	AngelTungTung.set_meta("DamageType", 0)
-	AngelTungTung.set_meta("Defense", 1.0)
-	AngelTungTung.set_meta("Attack", 1.0)
+	AngelTungTung.set_meta("Defense", 0)
+	AngelTungTung.set_meta("Attack", 0)
 	AngelTungTung.set_meta("Status", "Alive")
 	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	AngelTungTung.set_meta("Affinities", [1,2,-1,2,1,1,1,1,1,0.5,1,1] )
