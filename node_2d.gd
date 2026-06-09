@@ -251,6 +251,7 @@ func _defend_button_pressed():
 		var newdefence = arrayalleati[currentpartymember].get_meta("DefenseFromParrying") + 0.5 
 		arrayalleati[currentpartymember].set_meta("DefenseFromParrying", newdefence) 
 		arrayalleati[currentpartymember].set_meta("Status", "Defending")
+		AlliedHpIndicator[currentpartymember].play("Defending")
 		recentaction = 2
 		timer.wait_time = 0.2
 		_start_le_timer()
@@ -491,14 +492,11 @@ func _reset_stat_boosts(target):
 func _reset_ally_positions():
 	
 	_reset_stat_boosts(currentpartymember)
-	for i in len(arrayalleati):
-		if(arrayalleati[i].get_meta("HP")>0):
-			arrayalleati[i].play("waiting")
-		else:
-			arrayalleati[i].play("Faint")
-		arrayalleati[i].set_meta("DefenseFromParrying", 1)
+	
+	arrayalleati[0].set_meta("DefenseFromParrying", 1)
 	arrayalleati[0].play("waiting")
 	arrayalleati[0].set_meta("Status", "Alive")
+	AlliedHpIndicator[0].play("Alive")
 	_show_button()
 	
 	
@@ -526,6 +524,7 @@ func _on_timer_timeout():
 		itembuttons = []
 		Items.remove_at(currentuseditem)
 	if(recentaction==7):
+		_show_button()
 		for i in range(len(alliedtarget)):
 			targetenemy = i
 			_calculate_damage(1, 10)  #ARCANE SO NO ONE RESISTS THEM
@@ -542,6 +541,7 @@ func _on_timer_timeout():
 			currentpartymember = currentturn
 			_reset_stat_boosts(currentpartymember)
 			
+			
 			if(cangetalloutattack==true):
 				_delete_self(alloutattackbutton)
 				cangetalloutattack=false
@@ -557,6 +557,8 @@ func _on_timer_timeout():
 			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")])
 			arrayalleati[currentpartymember].play("waiting")
 			arrayalleati[currentpartymember].set_meta("Status", "Alive")
+			AlliedHpIndicator[currentpartymember].play("Alive")
+			arrayalleati[i].set_meta("DefenseFromParrying", 1)
 		else:
 			# No more living allies have a move this turn, pass to enemies
 			currentturn = 0
@@ -681,13 +683,14 @@ func _create_shifting_button():
 	for i in len(arrayalleati):
 		if(i!=currentpartymember):
 			if(arrayalleati[i].get_meta("HP") > 0):
-				var ShiftingButton = Button.new()
-				add_child(ShiftingButton)
-				shiftingbuttonsarray.append(ShiftingButton)
-				ShiftingButton.flat = true
-				ShiftingButton.position = Vector2(arrayalleati[i].position.x -36, arrayalleati[i].position.y - 36)
-				ShiftingButton.set_button_icon(SelectingAllyAnim)
-				ShiftingButton.pressed.connect(_shifting_button_pressed.bind(i, ShiftingButton))
+				if(arrayalleati[i].get_meta("Status") == "Alive"):
+					var ShiftingButton = Button.new()
+					add_child(ShiftingButton)
+					shiftingbuttonsarray.append(ShiftingButton)
+					ShiftingButton.flat = true
+					ShiftingButton.position = Vector2(arrayalleati[i].position.x -36, arrayalleati[i].position.y - 36)
+					ShiftingButton.set_button_icon(SelectingAllyAnim)
+					ShiftingButton.pressed.connect(_shifting_button_pressed.bind(i, ShiftingButton))
 
 func _shifting_button_pressed(index, ShiftingButton):
 	if(recentaction==0):
@@ -701,8 +704,9 @@ func _shifting_button_pressed(index, ShiftingButton):
 		_show_button()
 
 func _calculate_damage(attackbonus,attacktype):
-	
+	var is_a_crit = false
 	var newhp = 0
+	const crittreshold = 0.75
 	if(attacktype<12):
 		damagethatwillbedone = damagethatwillbedone * rng.randf_range(0.8, 1.2)
 		
@@ -713,8 +717,17 @@ func _calculate_damage(attackbonus,attacktype):
 			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):
 				standarddefence = 0.5
 			
-			
 			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / standarddefence * alliedtarget[targetenemy].get_meta("Affinities")[attacktype] ) )
+			
+			if(attacktype<=3):
+				var critchance = rng.randf_range(0, 1)
+				if(critchance>crittreshold):
+					is_a_crit = true
+					print("JUNPEI CRIT GOD " + str(damagethatwillbedone))
+					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
+					
+					
+			
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 		
 		if(alliedtarget == arrayalleati):
@@ -724,6 +737,14 @@ func _calculate_damage(attackbonus,attacktype):
 			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):
 				standarddefence = 0.5
 			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying") / standarddefence  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
+			
+			if(attacktype<=3):
+				var critchance = rng.randf_range(0, 1)
+				if(critchance>crittreshold):
+					is_a_crit = true
+					print("JUNPEI CRIT GOD " + str(damagethatwillbedone))
+					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
+			
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 	
 		var Labelfordamage = RichTextLabel.new()
@@ -757,15 +778,20 @@ func _calculate_damage(attackbonus,attacktype):
 	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING  // WE ARE HEALING
 		if(attacktype<12):
 			AlliedHealthBars[targetenemy].set_value(newhp)
-			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1 ):
+			
+			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1  or is_a_crit == true):
+				
 				alliedtarget[targetenemy].play("downed")
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
 					enemytimer.wait_time = enemytimer.wait_time + 1
 					ONEMORE = 1 
 					alliedtarget[targetenemy].set_meta("Status", "Downed")
+					
+				
 			if(alliedtarget[0].get_meta("HP")<=0):
 				_losing_the_battle()
 		elif(attacktype==12):
+			
 			alliedtarget[targetenemy].set_meta("Attack", damagethatwillbedone)
 			
 			if(alliedtarget[targetenemy].get_meta("Attack") > 0):   # he can get a buff
@@ -789,7 +815,7 @@ func _calculate_damage(attackbonus,attacktype):
 	
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
 		if(attacktype<12):
-			if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 ):
+			if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 or is_a_crit == true):
 				alliedtarget[targetenemy].play("downed")
 				
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
