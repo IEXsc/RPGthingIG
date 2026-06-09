@@ -28,6 +28,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 
 @export var ThunderSwords = Node.new()
+@export var Skeledeath = Node.new()
 @export var LightBlind = Node.new()
 @export var LightFlash = Node.new()
 @export var Rebirth = Node.new()
@@ -48,7 +49,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Rebirth, GreenFlower, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
+	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -73,6 +74,15 @@ var standardTurnBuffLenght = 4
 
 func _ready() -> void:
 	## MOVES
+	Skeledeath.set_meta("Name", "ThunderSwords")
+	Skeledeath.set_meta("Description", "Small Ruin Damage To One Enemy")
+	Skeledeath.set_meta("Damage", standardLowDamage)
+	Skeledeath.set_meta("Cost", 8)
+	Skeledeath.set_meta("Type", 3)
+	Skeledeath.set_meta("Targets", "One")
+	Skeledeath.set_meta("AnimationTime", 1)
+	Skeledeath.set_meta("Image", ThunderSwordsTexture)
+	
 	ThunderSwords.set_meta("Name", "ThunderSwords")
 	ThunderSwords.set_meta("Description", "Small Arcane Damage To One Enemy")
 	ThunderSwords.set_meta("Damage", standardLowDamage)

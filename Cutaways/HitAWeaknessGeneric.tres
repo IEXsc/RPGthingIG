@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cjkyax8wgsrj" path="res://Cutaways/HitAWeaknessScreen5.png" id="5_5b1ap"]
 [ext_resource type="Texture2D" uid="uid://bp1mgeyyu4r2l" path="res://Cutaways/HitAWeaknessScreen6.png" id="6_3dx46"]
 [ext_resource type="Texture2D" uid="uid://dqeh54s8fp5d7" path="res://Cutaways/HitAWeaknessScreen7.png" id="7_bm0du"]
+[ext_resource type="Texture2D" uid="uid://0kmx7l1cnbe7" path="res://Cutaways/HitAWeaknessScreen8.png" id="8_ueyg6"]
 
 [resource]
 animations = [{
@@ -20,7 +21,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("3_xg1uu")
 }, {
-"duration": 5.0,
+"duration": 1.0,
 "texture": ExtResource("4_djq4t")
 }, {
 "duration": 1.0,
@@ -31,8 +32,11 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("7_bm0du")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ueyg6")
 }],
 "loop": true,
 "name": &"default",
-"speed": 11.0
+"speed": 37.0
 }]
