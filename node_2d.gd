@@ -643,19 +643,19 @@ func _create_target_button_enemies(i, movetype):
 			defensestatchange.set_texture(DEF_DOWNexture)
 	if(movetype<12):
 		
-		if(arrayenemies[i].get_meta("Affinities")[movetype] > 1 ):
+		if(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] > 1 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
 			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
 			weak.set_texture(WeakTexture)
-		elif(arrayenemies[i].get_meta("Affinities")[movetype] < 0 ):
+		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] < 0 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
 			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
 			weak.set_texture(AbsorbsTexture)
-		elif(arrayenemies[i].get_meta("Affinities")[movetype] < 1 ):
+		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] < 1 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
@@ -706,8 +706,19 @@ func _shifting_button_pressed(index, ShiftingButton):
 func _calculate_damage(attackbonus,attacktype):
 	var is_a_crit = false
 	var newhp = 0
-	const crittreshold = 0.75
+	const crittreshold = 0.9
+	var Labelfordamage = RichTextLabel.new()
 	if(attacktype<12):
+		
+		
+		Labelfordamage.bbcode_enabled = true
+		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
+		Labelfordamage.custom_minimum_size = Vector2(200, 50)
+		Labelfordamage.clip_contents = false
+		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y - 32)
+		Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
+		Labelfordamage.text = "[pop]"
+		
 		damagethatwillbedone = damagethatwillbedone * rng.randf_range(0.8, 1.2)
 		
 		if(alliedtarget == arrayenemies):
@@ -723,7 +734,8 @@ func _calculate_damage(attackbonus,attacktype):
 				var critchance = rng.randf_range(0, 1)
 				if(critchance>crittreshold):
 					is_a_crit = true
-					print("JUNPEI CRIT GOD " + str(damagethatwillbedone))
+					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "CRIT" +"[/color]"
 					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
 					
 					
@@ -742,21 +754,13 @@ func _calculate_damage(attackbonus,attacktype):
 				var critchance = rng.randf_range(0, 1)
 				if(critchance>crittreshold):
 					is_a_crit = true
-					print("JUNPEI CRIT GOD " + str(damagethatwillbedone))
+					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "CRIT" +"[/color]"
 					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
 			
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 	
-		var Labelfordamage = RichTextLabel.new()
-		add_child(Labelfordamage)
-		Labelfordamage.bbcode_enabled = true
-		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
-		Labelfordamage.custom_minimum_size = Vector2(200, 50)
-		Labelfordamage.clip_contents = false
-		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x , alliedtarget[targetenemy].position.y - 32)
-		Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
-		Labelfordamage.text = "[pop]" + str(damagethatwillbedone) + "[/pop]"
-		damagelabels.append(Labelfordamage)
+		
 	
 		if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
 			newhp = alliedtarget[targetenemy].get_meta("maxHP")
@@ -774,6 +778,8 @@ func _calculate_damage(attackbonus,attacktype):
 				
 				AlliedHpIndicator[targetenemy].play("Alive")
 				alliedtarget[targetenemy].play("waiting")
+	
+		
 			
 	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING  // WE ARE HEALING
 		if(attacktype<12):
@@ -781,12 +787,15 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1  or is_a_crit == true):
 				
-				alliedtarget[targetenemy].play("downed")
+				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+				Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
+				
+				
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
 					enemytimer.wait_time = enemytimer.wait_time + 1
 					ONEMORE = 1 
 					alliedtarget[targetenemy].set_meta("Status", "Downed")
-					
+					alliedtarget[targetenemy].play("downed")
 				
 			if(alliedtarget[0].get_meta("HP")<=0):
 				_losing_the_battle()
@@ -815,10 +824,16 @@ func _calculate_damage(attackbonus,attacktype):
 	
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
 		if(attacktype<12):
+			alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] = alliedtarget[targetenemy].get_meta("Affinities")[attacktype]
 			if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 or is_a_crit == true):
 				alliedtarget[targetenemy].play("downed")
+				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+				Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
 				
+				
+				#DiscoveredAffinities
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
+					
 					_create_shifting_button()
 					_create_weakness_cutaway()
 					ONEMORE = 1 
@@ -833,10 +848,24 @@ func _calculate_damage(attackbonus,attacktype):
 					for i in range(len(shiftingbuttonsarray)):
 						_delete_self(shiftingbuttonsarray[i])
 					shiftingbuttonsarray = []
+			elif(alliedtarget[targetenemy].get_meta("Affinities")[attacktype] < 0):
+				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+				Labelfordamage.text = Labelfordamage.text + "[color=green]" + "ABSORBE" +"[/color]"
+				damagethatwillbedone = -damagethatwillbedone
+				
+			elif(alliedtarget[targetenemy].get_meta("Affinities")[attacktype] < 1):
+				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
+				Labelfordamage.text = Labelfordamage.text + "[color=orange]" + "RESIST" +"[/color]"
+				
+				
 		elif(attacktype==14):
 			alliedtarget[targetenemy].set_meta("Attack", damagethatwillbedone)
 		elif(attacktype==15):
 			alliedtarget[targetenemy].set_meta("Defense", damagethatwillbedone)
+	
+	add_child(Labelfordamage)
+	Labelfordamage.text = Labelfordamage.text + str(damagethatwillbedone) + "[/pop]"
+	damagelabels.append(Labelfordamage)
 
 func _create_all_out_attack_button():
 	if(cangetalloutattack == true):
@@ -904,6 +933,7 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.set_meta("Status", nemtype.get_meta("Status"))
 		nem.set_meta("SpecialMoves", nemtype.get_meta("SpecialMoves"))
 		nem.set_meta("Affinities", nemtype.get_meta("Affinities") )
+		nem.set_meta("DiscoveredAffinities", nemtype.get_meta("DiscoveredAffinities") )
 		nem.set_sprite_frames(nemtype.get_sprite_frames())
 		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
