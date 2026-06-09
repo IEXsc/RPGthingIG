@@ -259,7 +259,7 @@ func _ready() -> void:
 	TungTung.set_meta("Status", "Alive")
 	TungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
-	TungTung.set_meta("DiscoveredAffinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
+	TungTung.set_meta("DiscoveredAffinities", [3,3,3,3,3,3,3,3,3,3,3,3] )
 	TungTung.set_sprite_frames(TungTungAnim)
 	
 	AngelTungTung.set_meta("HP", 125)
@@ -272,7 +272,7 @@ func _ready() -> void:
 	AngelTungTung.set_meta("Status", "Alive")
 	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	AngelTungTung.set_meta("Affinities", [1,2,-1,2,1,1,1,1,1,0.5,1,1] )
-	AngelTungTung.set_meta("DiscoveredAffinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
+	AngelTungTung.set_meta("DiscoveredAffinities", [3,3,3,3,3,3,3,3,3,3,3,3] )
 	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
 	
 	

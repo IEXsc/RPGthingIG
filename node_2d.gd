@@ -29,7 +29,7 @@ var AllOutAttackTexture = load("res://Cutaways/AlloutAttackSprite.tres")
 var AbsorbsTexture = load("res://Enemies/HealthBars/Absorbe.png")
 var ResistsTexture = load("res://Enemies/HealthBars/Resists.png")
 var WeakTexture = load("res://Enemies/HealthBars/Weak.png")
-
+var UnknownTexture = load("res://Enemies/HealthBars/Unknown.png")
 var ATK_DOWNTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/ATK_DOWN.png")
 var ATK_UPTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/ATK_UP.png")
 var ATK_NEUTRALTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/ATK_NEUTRAL.png")
@@ -643,7 +643,13 @@ func _create_target_button_enemies(i, movetype):
 			defensestatchange.set_texture(DEF_DOWNexture)
 	if(movetype<12):
 		
-		if(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] > 1 ):
+		if(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] == 3 ):
+			var weak = Sprite2D.new()
+			add_child(weak)
+			enemytargetbuttons.append(weak)
+			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
+			weak.set_texture(UnknownTexture)
+		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] > 1 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
