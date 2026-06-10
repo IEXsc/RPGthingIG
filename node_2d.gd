@@ -451,14 +451,15 @@ func _singleenemyturn():
 									break
 							if(anyenemybelow20percenthp == false):
 								usableskill = false
-						enemymovetargets = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Targets")
-						damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
-						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
-							_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
-						elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
-							for i in len(alliedtarget):
-								targetenemy = i
-								_calculate_damage(attackbonus, movetype)
+						if(usableskill==true):
+							enemymovetargets = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Targets")
+							damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
+							if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
+								_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
+							elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
+								for i in len(alliedtarget):
+									targetenemy = i
+									_calculate_damage(attackbonus, movetype)
 					elif(movetype==12 or movetype == 13):
 						usableskill = true
 						alliedtarget = arrayenemies
@@ -468,7 +469,14 @@ func _singleenemyturn():
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 							 
 						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
-						_calculate_damage(1, movetype)
+						
+						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
+							_calculate_damage(1, movetype)  ## This should lead to no problems, hopefully
+						elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
+							for i in len(alliedtarget):
+								targetenemy = i
+								_calculate_damage(1, movetype)
+								
 					elif(movetype==14 or movetype == 15):
 						usableskill = true
 						alliedtarget = arrayalleati
