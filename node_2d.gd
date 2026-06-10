@@ -423,6 +423,10 @@ func _singleenemyturn():
 						if(movetype<11):   #damaging moves
 							alliedtarget = arrayalleati
 							
+							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead allies
+							while(alliedtarget[targetenemy].get_meta("HP")<=0):
+								targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
+							
 							if(arrayenemies[currentenemymove].get_meta("Attack") > 0):
 								attackbonus = 1.5
 							if(arrayenemies[currentenemymove].get_meta("Attack") < 0):
@@ -431,17 +435,44 @@ func _singleenemyturn():
 								
 						elif(movetype==11):  #healing moves
 							alliedtarget = arrayenemies
-							var anyenemybelow20percenthp = false
-							for i in len(alliedtarget):
-								var currentenemyhealth = alliedtarget[targetenemy].get_meta("HP")
-								currentenemyhealth = currentenemyhealth / alliedtarget[targetenemy].get_meta("maxHP")
-								if(currentenemyhealth<0.25):
+							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead enemies ( they might not even exist )
+							while(alliedtarget[targetenemy].get_meta("HP")<=0):   # but better be safe than sorry
+								targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
+							
+							var anyenemybelow20percenthp = false    ## ok so to put it bluntly, we don't want to heal enemies who are full cause that's dogshit game design
+							for i in len(alliedtarget):  ## nor do we want the healing to just erase the player progress so it's supposed to be close enough
+								var currentenemyhealth = alliedtarget[targetenemy].get_meta("HP") ## to an amount the player can simply one shot the enemy
+								currentenemyhealth = currentenemyhealth / alliedtarget[targetenemy].get_meta("maxHP")  ## TODO:ADD SOME SORT OF WAY TO TELL IT WHO TO HEAL
+								if(currentenemyhealth<0.20):
 									anyenemybelow20percenthp = true
 									usableskill = true
 									break
 							if(anyenemybelow20percenthp == false):
 								usableskill = false
-					
+						damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
+						_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
+						
+					elif(movetype==12 or movetype == 13):
+						usableskill = true
+						alliedtarget = arrayenemies
+						
+						targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead enemies ( they might not even exist )
+						while(alliedtarget[targetenemy].get_meta("HP")<=0):   # but better be safe than sorry
+							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
+							 
+						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
+						_calculate_damage(1, movetype)
+					elif(movetype==14 or movetype == 15):
+						usableskill = true
+						alliedtarget = arrayalleati
+						
+						targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead allies
+						while(alliedtarget[targetenemy].get_meta("HP")<=0):
+							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
+						
+						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
+						_calculate_damage(1, movetype)
+						
 				var SkillBeingUsed = AnimatedSprite2D.new()
 				currentusedskill = SkillBeingUsed
 				add_child(SkillBeingUsed)
@@ -450,8 +481,7 @@ func _singleenemyturn():
 				SkillBeingUsed.play("default")
 				
 				
-				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
-				_calculate_damage(attackbonus, movetype)
+				
 				
 				
 				
@@ -759,6 +789,7 @@ func _calculate_damage(attackbonus,attacktype):
 		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
 		Labelfordamage.custom_minimum_size = Vector2(200, 50)
 		Labelfordamage.clip_contents = false
+		print(alliedtarget[targetenemy])
 		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y - 32)
 		Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
 		Labelfordamage.text = "[pop]"
@@ -844,9 +875,9 @@ func _calculate_damage(attackbonus,attacktype):
 				
 			if(alliedtarget[0].get_meta("HP")<=0):
 				_losing_the_battle()
-		elif(attacktype==12):
+		elif(attacktype==12 or attacktype==14):       # the player buffs his own attack / enemy nerfs player's attack
 			
-			alliedtarget[targetenemy].set_meta("Attack", damagethatwillbedone)
+			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
 			
 			if(alliedtarget[targetenemy].get_meta("Attack") > 0):   # he can get a buff
 				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_UPTexture)
@@ -856,8 +887,8 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			if(alliedtarget[targetenemy].get_meta("Attack") == 0): # if they equal out
 				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_NEUTRALTexture)
-		elif(attacktype==13):
-			alliedtarget[targetenemy].set_meta("Defense", damagethatwillbedone)
+		elif(attacktype==13 or attacktype==15):   # the player buffs his own defense / enemy nerfs allied defense
+			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
 			if(alliedtarget[targetenemy].get_meta("Defense") > 0):   # he can get a buff
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_UPTexture)
 					
@@ -867,7 +898,7 @@ func _calculate_damage(attackbonus,attacktype):
 			if(alliedtarget[targetenemy].get_meta("Defense") == 0): # if they equal out
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_NEUTRALTexture)
 	
-	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
+	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING OR ENEMIES ARE HEALING / APPLYING BUFFS
 		
 		if(attacktype<12):
 			var unusedtype = false
@@ -908,11 +939,14 @@ func _calculate_damage(attackbonus,attacktype):
 				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
 				Labelfordamage.text = Labelfordamage.text + "[color=orange]" + "RESIST" +"[/color]"
 				
-				
-		elif(attacktype==14):
-			alliedtarget[targetenemy].set_meta("Attack", damagethatwillbedone)
-		elif(attacktype==15):
-			alliedtarget[targetenemy].set_meta("Defense", damagethatwillbedone)
+		elif(attacktype==12):       # enemy buffs himself ( attack )
+			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
+		elif(attacktype==13):      # enemy buffs himself ( defense )
+			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
+		elif(attacktype==14):     # player debuffs enemy attack
+			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
+		elif(attacktype==15):     # player debuffs enemy defense
+			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
 	
 	add_child(Labelfordamage)
 	Labelfordamage.text = Labelfordamage.text + str(damagethatwillbedone) + "[/pop]"

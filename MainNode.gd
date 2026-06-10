@@ -50,7 +50,7 @@ enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
 	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
-	MovesetID.TEST_MOVESET: [TestOlympusPunch]
+	MovesetID.TEST_MOVESET: [TestOlympusPunch, Mishinobu]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
@@ -138,11 +138,11 @@ func _ready() -> void:
 	Mivinobu.set_meta("Image", RebirthTexture)
 	
 	Mishinobu.set_meta("Name", "Mishinobu")
-	Mishinobu.set_meta("Description", "Increase's an ally's Attack for 3 Turns")
+	Mishinobu.set_meta("Description", "Increase's every ally's ally's Attack for 3 Turns")
 	Mishinobu.set_meta("Damage", standardTurnBuffLenght)
 	Mishinobu.set_meta("Cost", 7)
 	Mishinobu.set_meta("Type", 12)
-	Mishinobu.set_meta("Targets", "OneAlly")
+	Mishinobu.set_meta("Targets", "AllAllies")
 	Mishinobu.set_meta("AnimationTime", 0.5)
 	Mishinobu.set_meta("Image", RebirthTexture)
 	
