@@ -74,6 +74,7 @@ var AlliedHealthBars = []
 var AlliedHpIndicator = []
 var AlliedManaBars = []
 var damagelabels = []
+
 var targetenemy = 0
 var i = 0
 var recentaction = 0
@@ -415,6 +416,7 @@ func _singleenemyturn():
 				var currentmove = 0
 				var movetype = 0
 				var attackbonus = 1
+				var enemymovetargets = ""
 				while usableskill == false:
 					
 					currentmove = randi_range(0, len(arrayenemies[currentenemymove].get_meta("SpecialMoves"))-1)
@@ -449,9 +451,14 @@ func _singleenemyturn():
 									break
 							if(anyenemybelow20percenthp == false):
 								usableskill = false
+						enemymovetargets = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Targets")
 						damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
-						_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
-						
+						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
+							_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
+						elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
+							for i in len(alliedtarget):
+								targetenemy = i
+								_calculate_damage(attackbonus, movetype)
 					elif(movetype==12 or movetype == 13):
 						usableskill = true
 						alliedtarget = arrayenemies
@@ -472,23 +479,23 @@ func _singleenemyturn():
 						
 						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
 						_calculate_damage(1, movetype)
+				if(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
+					for i in len(alliedtarget):
+						var SkillBeingUsed = AnimatedSprite2D.new()
+						add_child(SkillBeingUsed)
+						SkillBeingUsed.position = Vector2(alliedtarget[i].position.x, alliedtarget[i].position.y)
+						SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
+						SkillBeingUsed.play("default")
+						SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
 						
-				var SkillBeingUsed = AnimatedSprite2D.new()
-				currentusedskill = SkillBeingUsed
-				add_child(SkillBeingUsed)
-				SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
-				SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
-				SkillBeingUsed.play("default")
-				
-				
-				
-				
-				
-				
+				else:
+					var SkillBeingUsed = AnimatedSprite2D.new()
+					add_child(SkillBeingUsed)
+					SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
+					SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
+					SkillBeingUsed.play("default")
+					SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
 				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
-			
-			
-			
 			
 			if(arrayenemies[currentenemymove].get_meta("Attack") > 0):   # decreasing when it's a buff
 				var boostedattackturnsleft = arrayenemies[currentenemymove].get_meta("Attack") - 1
@@ -516,8 +523,6 @@ func _timer_moving_back():
 	#for i in len(arrayenemies):
 	if(enemyaction==1):
 		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
-	elif(enemyaction==2):
-		currentusedskill.queue_free()
 	if(ONEMORE == 0):
 		currentenemymove = currentenemymove + 1
 	else:
@@ -789,7 +794,6 @@ func _calculate_damage(attackbonus,attacktype):
 		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
 		Labelfordamage.custom_minimum_size = Vector2(200, 50)
 		Labelfordamage.clip_contents = false
-		print(alliedtarget[targetenemy])
 		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y - 32)
 		Labelfordamage.install_effect(load("res://CustomRichTextLebelEffects/ShakeEffect.tres"))
 		Labelfordamage.text = "[pop]"

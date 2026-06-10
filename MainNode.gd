@@ -50,7 +50,7 @@ enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
 	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
-	MovesetID.TEST_MOVESET: [TestOlympusPunch, Mishinobu]
+	MovesetID.TEST_MOVESET: [TestOlympusPunch, GreenFlower]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
