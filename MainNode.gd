@@ -31,14 +31,19 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 @export var Skeledeath = Node.new()
 @export var LightBlind = Node.new()
 @export var LightFlash = Node.new()
+
 @export var Rebirth = Node.new()
 @export var GreenFlower = Node.new()
+
 @export var Mishinobu = Node.new()
 @export var Meshinobu = Node.new()
 @export var Mevinobu = Node.new()
 @export var Mivinobu = Node.new()
+@export var CritBoost = Node.new()
 @export var OlympusPunch = Node.new()
 @export var TestOlympusPunch = Node.new()
+
+
 @export var Potion = Node.new()
 @export var BigPotion = Node.new()
 @export var WeirdPotion = Node.new()
@@ -48,9 +53,9 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
-	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
+	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind, CritBoost],
 	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
-	MovesetID.TEST_MOVESET: [TestOlympusPunch, GreenFlower]
+	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
 
@@ -164,6 +169,15 @@ func _ready() -> void:
 	Meshinobu.set_meta("AnimationTime", 0.5)
 	Meshinobu.set_meta("Image", RebirthTexture)
 	
+	CritBoost.set_meta("Name", "CritBoost")
+	CritBoost.set_meta("Description", "Increase's self Crit Chance for 7 Turns")
+	CritBoost.set_meta("Damage", 8)
+	CritBoost.set_meta("Cost", 7)
+	CritBoost.set_meta("Type", 16)
+	CritBoost.set_meta("Targets", "Self")
+	CritBoost.set_meta("AnimationTime", 0.5)
+	CritBoost.set_meta("Image", RebirthTexture)
+	
 	OlympusPunch.set_meta("Name", "Olympus Punch")
 	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
 	OlympusPunch.set_meta("Damage", standardLowDamage)
@@ -191,6 +205,7 @@ func _ready() -> void:
 	Giocatore.set_meta("DefenseFromParrying", 1.0)
 	Giocatore.set_meta("Defense", 0)
 	Giocatore.set_meta("Attack", 0)
+	Giocatore.set_meta("CritChance", 0)
 	Giocatore.set_meta("Status", "Alive")
 	Giocatore.set_meta("Name", "Ren")
 	Giocatore.set_meta("Animation", PlayerAnim)
@@ -204,6 +219,7 @@ func _ready() -> void:
 	Beatrice.set_meta("DefenseFromParrying", 1.0)
 	Beatrice.set_meta("Defense", 0)
 	Beatrice.set_meta("Attack", 0)
+	Beatrice.set_meta("CritChance", 0)
 	Beatrice.set_meta("Status", "Alive")
 	Beatrice.set_meta("Name", "Loki")
 	Beatrice.set_meta("Animation", AllyAnim)
@@ -256,6 +272,7 @@ func _ready() -> void:
 	TungTung.set_meta("DamageType", 0)
 	TungTung.set_meta("Defense", 0)
 	TungTung.set_meta("Attack", 0)
+	TungTung.set_meta("CritChance", 0)
 	TungTung.set_meta("Status", "Alive")
 	TungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
@@ -269,6 +286,7 @@ func _ready() -> void:
 	AngelTungTung.set_meta("DamageType", 0)
 	AngelTungTung.set_meta("Defense", 0)
 	AngelTungTung.set_meta("Attack", 0)
+	AngelTungTung.set_meta("CritChance", 0)
 	AngelTungTung.set_meta("Status", "Alive")
 	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
 	AngelTungTung.set_meta("Affinities", [1,2,-1,2,1,1,1,1,1,0.5,1,1] )

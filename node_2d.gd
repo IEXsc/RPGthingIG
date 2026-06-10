@@ -36,6 +36,10 @@ var ATK_NEUTRALTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/ATK_NEUTR
 var DEF_DOWNexture = load("res://Enemies/HealthBars/BuffsorDebuffs/DEF_DOWN.png")
 var DEF_UPTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/DEF_UP.png")
 var DEF_NEUTRALTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/DEF_NEUTRAL.png")
+var CRIT_DOWNexture = load("res://Enemies/HealthBars/BuffsorDebuffs/CRI_DOWN.png")
+var CRIT_UPTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/CRI_UP.png")
+var CRIT_NEUTRALTexture = load("res://Enemies/HealthBars/BuffsorDebuffs/CRI_NEUTRAL.png")
+
 
 ##var TypeTextures = [AbsorbsTexture, ResistsTexture, WeakTexture]
 
@@ -55,14 +59,13 @@ var ChthonicTexture = load("res://Chthonic.png")
 var HolyTexture = load("res://Holy.png")
 var ArcaneTexture = load("res://Arcane.png")
 var HealingTexture = load("res://Healing.png")
-
 var AttackBonusTexture = load("res://AttackBuff.png")
 var DefenseBonusTexture = load("res://DefenseBonus.png")
 var AttackDebuffTexture = load("res://AttackDeBuff.png")
 var DefenseDebuffTexture = load("res://DefenseDebuff.png")
-
+var CritMovesTexture = load("res://CritMoves.png")
 ##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Attack Bonus	13 Defense Bonus	14 attack debuff	15 defense debuff
-var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, AttackBonusTexture, DefenseBonusTexture , AttackDebuffTexture , DefenseDebuffTexture]
+var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, AttackBonusTexture, DefenseBonusTexture , AttackDebuffTexture , DefenseDebuffTexture, CritMovesTexture]
 var arrayenemies = []
 var arrayalleati = []
 var skillbuttons = []
@@ -225,7 +228,18 @@ func _target_button_pressed(pulsanteid):
 				
 				
 				_calculate_damage(attackbonus, movetype)
-				
+		if(targets == "Self"):
+			if(movetype==16):
+				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				alliedtarget = arrayalleati
+			
+			var SkillBeingUsed = AnimatedSprite2D.new()
+			add_child(SkillBeingUsed)
+			SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
+			SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+			SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
+			SkillBeingUsed.play("default")
+			_calculate_damage(1, movetype)
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
 			alliedtarget = arrayalleati
@@ -443,7 +457,7 @@ func _singleenemyturn():
 							
 							var anyenemybelow20percenthp = false    ## ok so to put it bluntly, we don't want to heal enemies who are full cause that's dogshit game design
 							for i in len(alliedtarget):  ## nor do we want the healing to just erase the player progress so it's supposed to be close enough
-								var currentenemyhealth = alliedtarget[targetenemy].get_meta("HP") ## to an amount the player can simply one shot the enemy
+								var currentenemyhealth = float(alliedtarget[targetenemy].get_meta("HP")) ## to an amount the player can simply one shot the enemy
 								currentenemyhealth = currentenemyhealth / alliedtarget[targetenemy].get_meta("maxHP")  ## TODO:ADD SOME SORT OF WAY TO TELL IT WHO TO HEAL
 								if(currentenemyhealth<0.20):
 									anyenemybelow20percenthp = true
@@ -486,7 +500,14 @@ func _singleenemyturn():
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 						
 						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
-						_calculate_damage(1, movetype)
+						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
+							_calculate_damage(1, movetype)  ## This should lead to no problems, hopefully
+						elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
+							for i in len(alliedtarget):
+								targetenemy = i
+								_calculate_damage(1, movetype)
+						
+						
 				if(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
 					for i in len(alliedtarget):
 						var SkillBeingUsed = AnimatedSprite2D.new()
@@ -553,8 +574,7 @@ func _reset_stat_boosts(target):
 			AlliedHpIndicator[target].get_child(0).set_texture(ATK_DOWNTexture)
 	
 	if(arrayalleati[target].get_meta("Attack") == 0):
-		AlliedHpIndicator[target].get_child(0).set_texture(ATK_NEUTRALTexture)
-		
+		AlliedHpIndicator[target].get_child(0).set_texture(ATK_NEUTRALTexture)	
 		
 	## defense
 	if(arrayalleati[target].get_meta("Defense") > 0):  #decreasing when it's a buff
@@ -569,7 +589,24 @@ func _reset_stat_boosts(target):
 			AlliedHpIndicator[target].get_child(1).set_texture(DEF_DOWNexture)
 	if(arrayalleati[target].get_meta("Defense") == 0):
 		AlliedHpIndicator[target].get_child(1).set_texture(DEF_NEUTRALTexture)
-
+	
+	## CRIT CHANCE
+	if(arrayalleati[target].get_meta("CritChance") > 0):  #decreasing when it's a buff
+		var boosteddefenseturnsleft = arrayalleati[target].get_meta("CritChance") - 1
+		arrayalleati[target].set_meta("CritChance", boosteddefenseturnsleft)
+		if(arrayalleati[target].get_meta("CritChance") > 0):
+			AlliedHpIndicator[target].get_child(2).set_texture(CRIT_UPTexture)
+			
+	if(arrayalleati[target].get_meta("CritChance") < 0):
+		var boosteddefenseturnsleft = arrayalleati[target].get_meta("CritChance") + 1 #increasing when it's a debuff
+		arrayalleati[target].set_meta("CritChance", boosteddefenseturnsleft)
+		if(arrayalleati[target].get_meta("CritChance") < 0):
+			AlliedHpIndicator[target].get_child(2).set_texture(CRIT_DOWNexture)
+			
+	if(arrayalleati[target].get_meta("CritChance") == 0):
+		AlliedHpIndicator[target].get_child(2).set_texture(CRIT_NEUTRALTexture)
+	
+	
 func _reset_ally_positions():
 	
 	_reset_stat_boosts(currentpartymember)
@@ -662,7 +699,8 @@ func _create_targeting_buttons():
 		if(targets == "OneAlly" or targets == "AllAllies"):
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
-		
+		if(targets == "Self"):
+			_create_target_button_allies(currentpartymember)
 	elif(recentaction==6):
 		var itemtype = Items[currentuseditem].get_meta("Type")
 		if(itemtype == 0):
@@ -817,9 +855,13 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / standarddefence * alliedtarget[targetenemy].get_meta("Affinities")[attacktype] ) )
 			
-			if(attacktype<=2):
+			if(attacktype<=2):  # you will never use one of the standard 3 attacks on yours = this has to be an ally attacking ( hopefully )
+				var standardcritchance = 0
+				if(arrayalleati[currentpartymember].get_meta("CritChance") > 0):
+					standardcritchance = 0.25
+				
 				var critchance = rng.randf_range(0, 1)
-				if(critchance>crittreshold):
+				if(critchance>crittreshold - standardcritchance):
 					is_a_crit = true
 					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
 					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "CRIT" +"[/color]"
@@ -837,7 +879,11 @@ func _calculate_damage(attackbonus,attacktype):
 				standarddefence = 0.5
 			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying") / standarddefence  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
 			
-			if(attacktype<=2):
+			if(attacktype<=2):    # you will never use one of the standard 3 attacks on yours = this has to be an enemy attacking ( hopefully )
+				var standardcritchance = 0
+				if(arrayenemies[currentenemymove].get_meta("CritChance") > 0): ##He tryina ignore it
+					standardcritchance = 0.25
+				
 				var critchance = rng.randf_range(0, 1)
 				if(critchance>crittreshold):
 					is_a_crit = true
@@ -847,7 +893,7 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
 	
-		
+	
 	
 		if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
 			newhp = alliedtarget[targetenemy].get_meta("maxHP")
@@ -899,17 +945,32 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			if(alliedtarget[targetenemy].get_meta("Attack") == 0): # if they equal out
 				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_NEUTRALTexture)
+				
+				
 		elif(attacktype==13 or attacktype==15):   # the player buffs his own defense / enemy nerfs allied defense
 			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
 			if(alliedtarget[targetenemy].get_meta("Defense") > 0):   # he can get a buff
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_UPTexture)
 					
-			if(alliedtarget[targetenemy].get_meta("Defense") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
+			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_DOWNexture)
 			
-			if(alliedtarget[targetenemy].get_meta("Defense") == 0): # if they equal out
+			elif(alliedtarget[targetenemy].get_meta("Defense") == 0): # if they equal out
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_NEUTRALTexture)
 	
+		elif(attacktype==16):   # the X buffs his own crit chance
+			alliedtarget[targetenemy].set_meta("CritChance", alliedtarget[targetenemy].get_meta("CritChance")  + damagethatwillbedone)
+			if(alliedtarget[targetenemy].get_meta("CritChance") > 0):   # he can get a buff
+				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_UPTexture)
+					
+			elif(alliedtarget[targetenemy].get_meta("CritChance") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
+				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_DOWNexture)
+			
+			elif(alliedtarget[targetenemy].get_meta("CritChance") == 0): # if they equal out
+				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_NEUTRALTexture)
+		
+		
+		
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING OR ENEMIES ARE HEALING / APPLYING BUFFS
 		
 		if(attacktype<12):
@@ -950,15 +1011,13 @@ func _calculate_damage(attackbonus,attacktype):
 			elif(alliedtarget[targetenemy].get_meta("Affinities")[attacktype] < 1):
 				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
 				Labelfordamage.text = Labelfordamage.text + "[color=orange]" + "RESIST" +"[/color]"
-				
-		elif(attacktype==12):       # enemy buffs himself ( attack )
+		
+		elif(attacktype==12 or attacktype == 14):       # enemy buffs himself ( attack ) or gets lowered
 			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
-		elif(attacktype==13):      # enemy buffs himself ( defense )
+		elif(attacktype==13 or attacktype == 15):      # enemy buffs himself ( defense ) or gets lowered
 			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
-		elif(attacktype==14):     # player debuffs enemy attack
-			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
-		elif(attacktype==15):     # player debuffs enemy defense
-			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
+		elif(attacktype==16):      # the x buffs thier own crit chance
+			alliedtarget[targetenemy].set_meta("CritChance", alliedtarget[targetenemy].get_meta("CritChance")  + damagethatwillbedone)
 	
 	add_child(Labelfordamage)
 	Labelfordamage.text = Labelfordamage.text + str(damagethatwillbedone) + "[/pop]"
@@ -1027,6 +1086,7 @@ func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE TH
 		nem.set_meta("DamageType", nemtype.get_meta("DamageType"))
 		nem.set_meta("Defense", nemtype.get_meta("Defense"))
 		nem.set_meta("Attack",nemtype.get_meta("Attack"))
+		nem.set_meta("CritChance",nemtype.get_meta("CritChance"))
 		nem.set_meta("Status", nemtype.get_meta("Status"))
 		nem.set_meta("SpecialMoves", nemtype.get_meta("SpecialMoves"))
 		nem.set_meta("Affinities", nemtype.get_meta("Affinities") )
@@ -1077,6 +1137,12 @@ func _create_health_bars():
 		DEFneutral.position = Vector2(-18, 0)
 		DEFneutral.set_texture(DEF_NEUTRALTexture)
 		DEFneutral.name = "DEFbuff"
+		var CRITneutral = Sprite2D.new()
+		AlliedHpIndicator[i].add_child(CRITneutral)
+		CRITneutral.position = Vector2(-15, 16)
+		CRITneutral.set_texture(CRIT_NEUTRALTexture)
+		CRITneutral.name = "DEFbuff"
+		
 	PlayerHealthBar.set_max(arrayalleati[0].get_meta("maxHP"))
 	PlayerHealthBar.set_value(arrayalleati[0].get_meta("HP"))
 	
