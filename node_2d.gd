@@ -55,11 +55,14 @@ var ChthonicTexture = load("res://Chthonic.png")
 var HolyTexture = load("res://Holy.png")
 var ArcaneTexture = load("res://Arcane.png")
 var HealingTexture = load("res://Healing.png")
-var StatusEffectsTexture = load("res://StatusEffects.png")
 
+var AttackBonusTexture = load("res://AttackBuff.png")
+var DefenseBonusTexture = load("res://DefenseBonus.png")
+var AttackDebuffTexture = load("res://AttackDeBuff.png")
+var DefenseDebuffTexture = load("res://DefenseDebuff.png")
 
 ##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Attack Bonus	13 Defense Bonus	14 attack debuff	15 defense debuff
-var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, StatusEffectsTexture, StatusEffectsTexture , StatusEffectsTexture , StatusEffectsTexture]
+var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, AttackBonusTexture, DefenseBonusTexture , AttackDebuffTexture , DefenseDebuffTexture]
 var arrayenemies = []
 var arrayalleati = []
 var skillbuttons = []
@@ -793,8 +796,9 @@ func _calculate_damage(attackbonus,attacktype):
 			
 			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1  or is_a_crit == true):
 				
-				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-				Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
+				if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1):
+					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)	
+					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
 				
 				
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
@@ -829,19 +833,25 @@ func _calculate_damage(attackbonus,attacktype):
 				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_NEUTRALTexture)
 	
 	elif(alliedtarget == arrayenemies):      ## WE ARE ATTACKING
+		
 		if(attacktype<12):
-			alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] = alliedtarget[targetenemy].get_meta("Affinities")[attacktype]
+			var unusedtype = false
+			if(alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] !=alliedtarget[targetenemy].get_meta("Affinities")[attacktype]):
+				alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] = alliedtarget[targetenemy].get_meta("Affinities")[attacktype]
+				unusedtype = true
+				
 			if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 or is_a_crit == true):
 				alliedtarget[targetenemy].play("downed")
-				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-				Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
-				
-				
+				if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1):
+					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)	
+					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
+				if(unusedtype == true):
+					_create_weakness_cutaway()
 				#DiscoveredAffinities
 				if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
 					
 					_create_shifting_button()
-					_create_weakness_cutaway()
+					
 					ONEMORE = 1 
 					totalenemiesup = totalenemiesup - 1
 					cangetalloutattack = false ## you can't always all out attack, you either take you chance or you dont, retard
