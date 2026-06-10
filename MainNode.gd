@@ -49,7 +49,7 @@ var WeirdPotionTexture = load("res://PotionWeird.png")
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
 var movesets: Dictionary = {
 	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind],
-	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu],
+	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
 	MovesetID.TEST_MOVESET: [TestOlympusPunch]
 }
 @export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
@@ -129,11 +129,11 @@ func _ready() -> void:
 	GreenFlower.set_meta("Image", RebirthTexture)
 	
 	Mivinobu.set_meta("Name", "Mivinobu")
-	Mivinobu.set_meta("Description", "Decreases's a foe's Attack for 3 Turns")
+	Mivinobu.set_meta("Description", "Decreases's every foe's Attack for 3 Turns")
 	Mivinobu.set_meta("Damage", -standardTurnBuffLenght)
 	Mivinobu.set_meta("Cost", 7)
 	Mivinobu.set_meta("Type", 14)
-	Mivinobu.set_meta("Targets", "One")
+	Mivinobu.set_meta("Targets", "AllEnemies")
 	Mivinobu.set_meta("AnimationTime", 0.5)
 	Mivinobu.set_meta("Image", RebirthTexture)
 	
