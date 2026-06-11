@@ -1,0 +1,34 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bxwatxp0s1jy2"]
+
+[ext_resource type="Texture2D" uid="uid://bm8aqc7adbkp2" path="res://Assets/GFX/MovesSprites/OlympusPunch1.png" id="1_hh20n"]
+[ext_resource type="Texture2D" uid="uid://jml1x83xj5mw" path="res://Assets/GFX/MovesSprites/OlympusPunch2.png" id="2_mx7ms"]
+[ext_resource type="Texture2D" uid="uid://dagfefjonq0im" path="res://Assets/GFX/MovesSprites/OlympusPunch3.png" id="3_4wpkf"]
+[ext_resource type="Texture2D" uid="uid://dd5y2s1bdi2mc" path="res://Assets/GFX/MovesSprites/OlympusPunch4.png" id="4_dbbsh"]
+[ext_resource type="Texture2D" uid="uid://boldtl7akqigr" path="res://Assets/GFX/MovesSprites/OlympusPunch5.png" id="5_kvh2a"]
+[ext_resource type="Texture2D" uid="uid://cdhe7tg3neysn" path="res://Assets/GFX/MovesSprites/OlympusPunch6.png" id="6_u7ghn"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_hh20n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_mx7ms")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_4wpkf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dbbsh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_kvh2a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_u7ghn")
+}],
+"loop": true,
+"name": &"default",
+"speed": 12.0
+}]

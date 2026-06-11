@@ -1,0 +1,42 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dk14kfvvv71mb"]
+
+[ext_resource type="Texture2D" uid="uid://bdll6wnpx7qn" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen1.png" id="1_k6ars"]
+[ext_resource type="Texture2D" uid="uid://di6t6ohuydkg6" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen2.png" id="2_ueyg6"]
+[ext_resource type="Texture2D" uid="uid://cqot7jnqjvcun" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen3.png" id="3_xg1uu"]
+[ext_resource type="Texture2D" uid="uid://dpyalb11esm5k" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen4.png" id="4_djq4t"]
+[ext_resource type="Texture2D" uid="uid://cjkyax8wgsrj" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen5.png" id="5_5b1ap"]
+[ext_resource type="Texture2D" uid="uid://bp1mgeyyu4r2l" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen6.png" id="6_3dx46"]
+[ext_resource type="Texture2D" uid="uid://dqeh54s8fp5d7" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen7.png" id="7_bm0du"]
+[ext_resource type="Texture2D" uid="uid://0kmx7l1cnbe7" path="res://Assets/GFX/Cutaways/HitAWeaknessScreen8.png" id="8_ueyg6"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_k6ars")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ueyg6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_xg1uu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_djq4t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_5b1ap")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_3dx46")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_bm0du")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_ueyg6")
+}],
+"loop": true,
+"name": &"default",
+"speed": 37.0
+}]

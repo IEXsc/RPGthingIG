@@ -1,0 +1,18 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://baax8alyki0g2"]
+
+[ext_resource type="Texture2D" uid="uid://ditnydhsuqwif" path="res://Assets/GFX/AlliesorYourself/Gods/God1.png" id="1_0ntq0"]
+[ext_resource type="Texture2D" uid="uid://2ms2e48ch53m" path="res://Assets/GFX/AlliesorYourself/Gods/God2.png" id="2_ciqib"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_0ntq0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ciqib")
+}],
+"loop": true,
+"name": &"waiting",
+"speed": 5.0
+}]

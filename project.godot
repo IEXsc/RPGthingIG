@@ -13,7 +13,6 @@ config_version=5
 config/name="Nuovo progetto di gioco"
 run/main_scene="uid://cadmoamodlc43"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
 
 [physics]
 
