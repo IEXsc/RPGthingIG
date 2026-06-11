@@ -26,281 +26,329 @@ var FatPotionTexture = load("res://Assets/GFX/Items/PotionObese.png")
 var WeirdPotionTexture = load("res://Assets/GFX/Items/PotionWeird.png")
 
 
-
-@export var ThunderSwords = Node.new()
-@export var Skeledeath = Node.new()
-@export var LightBlind = Node.new()
-@export var LightFlash = Node.new()
-
-@export var Rebirth = Node.new()
-@export var GreenFlower = Node.new()
-
-@export var Mishinobu = Node.new()
-@export var Meshinobu = Node.new()
-@export var Mevinobu = Node.new()
-@export var Mivinobu = Node.new()
-@export var CritBoost = Node.new()
-@export var OlympusPunch = Node.new()
-@export var TestOlympusPunch = Node.new()
-
-
-@export var Potion = Node.new()
-@export var BigPotion = Node.new()
-@export var WeirdPotion = Node.new()
-
-@export var Messiah = Node.new()
-@export var Zeus = Node.new()
-
 enum MovesetID { MOVESETMESSIAH, MOVESETZEUS, TEST_MOVESET }
-var movesets: Dictionary = {
-	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind, CritBoost],
-	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth, Mishinobu, Meshinobu, Mevinobu, Mivinobu],
-	MovesetID.TEST_MOVESET: [TestOlympusPunch]
-}
-@export var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
+
+
 
 @export var TungTung = AnimatedSprite2D.new()
 @export var AngelTungTung = AnimatedSprite2D.new()
 
-@export var Giocatore = AnimatedSprite2D.new()
-@export var Beatrice = AnimatedSprite2D.new()
 
-@export var ShortSword = Node.new()
-@export var Shuriken = Node.new()
 
-var standardLowDamage = 50
-var standardAvarageDamage = 100
-var standardHighDamage = 150
-var standardSevereDamage = 200
-var standardColossalDamage = 250
-var standardUltimateDamage = 300
+const standardLowDamage = 50
+const standardAvarageDamage = 100
+const standardHighDamage = 150
+const standardSevereDamage = 200
+const standardColossalDamage = 250
+const standardUltimateDamage = 300
 
-var standardTurnBuffLenght = 4
+const standardTurnBuffLenght = 4
+
+var Skeledeath: Move
+var ThunderSwords: Move
+var LightBlind: Move
+var LightFlash: Move
+var Rebirth: Move
+var GreenFlower: Move
+var AtkNerfMulti: Move
+var AtkBuffMulti: Move
+var DefNerf: Move
+var DefBuff: Move
+var CritBoost: Move
+var OlympusPunch: Move
+var TestOlympusPunch: Move
+
+var ShortSword: Weapon
+var Shuriken: Weapon
+
+var MonsterFist: Weapon
+
+var Messiah: Souls
+var Zeus: Souls
+var Minotaur: Souls
+
+var Giocatore: Character
+var Beatrice: Character
+var MinotaurEnemy: Character
+
+var BigPotion: Item
+var WeirdPotion: Item
+var Potion: Item
+
+var Items = [BigPotion,BigPotion,BigPotion, WeirdPotion, Potion, Potion, Potion]
+
+var movesets: Dictionary = {
+	MovesetID.MOVESETMESSIAH: [LightFlash, LightBlind, CritBoost] as Array[Move],
+	MovesetID.MOVESETZEUS: [Skeledeath, Rebirth] as Array[Move],
+	MovesetID.TEST_MOVESET: [TestOlympusPunch] as Array[Move]
+}
 
 func _ready() -> void:
 	## MOVES
-	Skeledeath.set_meta("Name", "ThunderSwords")
-	Skeledeath.set_meta("Description", "Small Ruin Damage To One Enemy")
-	Skeledeath.set_meta("Damage", standardLowDamage)
-	Skeledeath.set_meta("Cost", 8)
-	Skeledeath.set_meta("Type", 3)
-	Skeledeath.set_meta("Targets", "One")
-	Skeledeath.set_meta("AnimationTime", 1)
-	Skeledeath.set_meta("Image", ThunderSwordsTexture)
 	
-	ThunderSwords.set_meta("Name", "ThunderSwords")
-	ThunderSwords.set_meta("Description", "Small Arcane Damage To One Enemy")
-	ThunderSwords.set_meta("Damage", standardLowDamage)
-	ThunderSwords.set_meta("Cost", 12)
-	ThunderSwords.set_meta("Type", 10)
-	ThunderSwords.set_meta("Targets", "One")
-	ThunderSwords.set_meta("AnimationTime", 1)
-	ThunderSwords.set_meta("Image", ThunderSwordsTexture)
+	Skeledeath = Move.new(
+		"Skele Death", #name
+		"Small Ruin Damage To One Enemy",#description
+		standardLowDamage, #damage
+		8, #cost
+		3, #type
+		"One", #targets
+		1, #animation_time
+		ThunderSwordsTexture #image
+	)
 	
-	LightBlind.set_meta("Name", "LightBlind")
-	LightBlind.set_meta("Description", "Small Holy Damage To One Enemy")
-	LightBlind.set_meta("Damage", standardLowDamage)
-	LightBlind.set_meta("Cost", 8)
-	LightBlind.set_meta("Type", 9)
-	LightBlind.set_meta("Targets", "One")
-	LightBlind.set_meta("AnimationTime", 0.5)
-	LightBlind.set_meta("Image", LightBlindTexture)
+	ThunderSwords = Move.new(
+		"ThunderSwords", #name
+		"Small Arcane Damage To One Enemy",#description
+		standardLowDamage, #damage
+		12, #cost
+		10, #type
+		"One", #targets
+		1, #animation_time
+		ThunderSwordsTexture #image
+	)
 	
-	LightFlash.set_meta("Name", "LightFlash")
-	LightFlash.set_meta("Description", "Small Holy Damage To Every Enemy")
-	LightFlash.set_meta("Damage", standardLowDamage)
-	LightFlash.set_meta("Cost", 8)
-	LightFlash.set_meta("Type", 9)
-	LightFlash.set_meta("Targets", "AllEnemies")
-	LightFlash.set_meta("AnimationTime", 0.5)
-	LightFlash.set_meta("Image", LightBlindTexture)
+	LightBlind = Move.new(
+		"LightBlind", #name
+		"Small Holy Damage To One Enemy",#description
+		standardLowDamage, #damage
+		8, #cost
+		9, #type
+		"One", #targets
+		0.5, #animation_time
+		LightBlindTexture #image
+	)
 	
-	Rebirth.set_meta("Name", "Rebirth")
-	Rebirth.set_meta("Description", "Slightly Heals One Ally")
-	Rebirth.set_meta("Damage", -standardLowDamage)
-	Rebirth.set_meta("Cost", 7)
-	Rebirth.set_meta("Type", 11)
-	Rebirth.set_meta("Targets", "OneAlly")
-	Rebirth.set_meta("AnimationTime", 0.5)
-	Rebirth.set_meta("Image", RebirthTexture)
+	LightFlash = Move.new(
+		"LightFlash", #name
+		"Small Holy Damage To Every Enemy",#description
+		standardLowDamage, #damage
+		8, #cost
+		9, #type
+		"AllEnemies", #targets
+		0.5, #animation_time
+		LightBlindTexture #image
+	)
 	
-	GreenFlower.set_meta("Name", "GreenFlower")
-	GreenFlower.set_meta("Description", "Slightly Heals Every Ally")
-	GreenFlower.set_meta("Damage", -standardLowDamage)
-	GreenFlower.set_meta("Cost", 7)
-	GreenFlower.set_meta("Type", 11)
-	GreenFlower.set_meta("Targets", "AllAllies")
-	GreenFlower.set_meta("AnimationTime", 0.5)
-	GreenFlower.set_meta("Image", RebirthTexture)
+	Rebirth = Move.new(
+		"Rebirth", #name
+		"Slightly Heals One Ally",#description
+		-standardLowDamage, #damage
+		7, #cost
+		11, #type
+		"OneAlly", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	Mivinobu.set_meta("Name", "Mivinobu")
-	Mivinobu.set_meta("Description", "Decreases's every foe's Attack for 3 Turns")
-	Mivinobu.set_meta("Damage", -standardTurnBuffLenght)
-	Mivinobu.set_meta("Cost", 7)
-	Mivinobu.set_meta("Type", 14)
-	Mivinobu.set_meta("Targets", "AllEnemies")
-	Mivinobu.set_meta("AnimationTime", 0.5)
-	Mivinobu.set_meta("Image", RebirthTexture)
+	GreenFlower = Move.new(
+		"Green Flower", #name
+		"Slightly Heals Every Ally",#description
+		-standardLowDamage, #damage
+		7, #cost
+		11, #type
+		"AllAllies", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	Mishinobu.set_meta("Name", "Mishinobu")
-	Mishinobu.set_meta("Description", "Increase's every ally's ally's Attack for 3 Turns")
-	Mishinobu.set_meta("Damage", standardTurnBuffLenght)
-	Mishinobu.set_meta("Cost", 7)
-	Mishinobu.set_meta("Type", 12)
-	Mishinobu.set_meta("Targets", "AllAllies")
-	Mishinobu.set_meta("AnimationTime", 0.5)
-	Mishinobu.set_meta("Image", RebirthTexture)
+	AtkNerfMulti = Move.new(
+		"Attack Nerf Multi", #name
+		"Decreases's every foe's Attack for 3 Turns",#description
+		-standardTurnBuffLenght, #damage
+		7, #cost
+		14, #type
+		"AllEnemies", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	Mevinobu.set_meta("Name", "Mevinobu")
-	Mevinobu.set_meta("Description", "Decreases's a foe's Defence for 3 Turns")
-	Mevinobu.set_meta("Damage", -standardTurnBuffLenght)
-	Mevinobu.set_meta("Cost", 7)
-	Mevinobu.set_meta("Type", 15)
-	Mevinobu.set_meta("Targets", "One")
-	Mevinobu.set_meta("AnimationTime", 0.5)
-	Mevinobu.set_meta("Image", RebirthTexture)
+	AtkBuffMulti = Move.new(
+		"Attack Buff Multi", #name
+		"Increase's every ally's Attack for 3 Turns",#description
+		standardTurnBuffLenght, #damage
+		7, #cost
+		12, #type
+		"AllAllies", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	Meshinobu.set_meta("Name", "Meshinobu")
-	Meshinobu.set_meta("Description", "Increase's an ally's Defence for 3 Turns")
-	Meshinobu.set_meta("Damage", standardTurnBuffLenght)
-	Meshinobu.set_meta("Cost", 7)
-	Meshinobu.set_meta("Type", 13)
-	Meshinobu.set_meta("Targets", "OneAlly")
-	Meshinobu.set_meta("AnimationTime", 0.5)
-	Meshinobu.set_meta("Image", RebirthTexture)
+	DefNerf = Move.new(
+		"Defense Buff", #name
+		"Decreases's a foe's Defence for 3 Turns",#description
+		-standardTurnBuffLenght, #damage
+		7, #cost
+		15, #type
+		"One", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	CritBoost.set_meta("Name", "CritBoost")
-	CritBoost.set_meta("Description", "Increase's self Crit Chance for 7 Turns")
-	CritBoost.set_meta("Damage", 8)
-	CritBoost.set_meta("Cost", 7)
-	CritBoost.set_meta("Type", 16)
-	CritBoost.set_meta("Targets", "Self")
-	CritBoost.set_meta("AnimationTime", 0.5)
-	CritBoost.set_meta("Image", RebirthTexture)
+	DefBuff = Move.new(
+		"Defense Buff", #name
+		"Increase's an ally's Defence for 3 Turns",#description
+		standardTurnBuffLenght, #damage
+		7, #cost
+		13, #type
+		"OneAlly", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	OlympusPunch.set_meta("Name", "Olympus Punch")
-	OlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
-	OlympusPunch.set_meta("Damage", standardLowDamage)
-	OlympusPunch.set_meta("Cost", 15)
-	OlympusPunch.set_meta("Type", 0)
-	OlympusPunch.set_meta("Targets", "One")
-	OlympusPunch.set_meta("AnimationTime", 0.5)
-	OlympusPunch.set_meta("Image", OlympusPunchAnim)
+	CritBoost = Move.new(
+		"Critical Boost", #name
+		"Increase's self Crit Chance for 7 Turns",#description
+		8, #damage
+		7, #cost
+		16, #type
+		"Self", #targets
+		0.5, #animation_time
+		RebirthTexture #image
+	)
 	
-	TestOlympusPunch.set_meta("Name", "Olympus Punch")  # MADE FOR ENEMIES SO THEY DON'T INSTANTLY RAPE THE PLAYER
-	TestOlympusPunch.set_meta("Description", "Small Blunt Damage To One Enemy")
-	TestOlympusPunch.set_meta("Damage", 10)
-	TestOlympusPunch.set_meta("Cost", 0)
-	TestOlympusPunch.set_meta("Type", 0)
-	TestOlympusPunch.set_meta("Targets", "One")
-	TestOlympusPunch.set_meta("AnimationTime", 0.5)
-	TestOlympusPunch.set_meta("Image", OlympusPunchAnim)
+	OlympusPunch = Move.new(
+		"Olympus Punch", #name
+		"Small Blunt Damage To One Enemy",#description
+		standardLowDamage, #damage
+		15, #cost
+		0, #type
+		"One", #targets
+		0.5, #animation_time
+		OlympusPunchAnim #image
+	)
 	
-	## ALLIES
-	Giocatore.set_meta("HP", 135)
-	Giocatore.set_meta("SP", 65)
-	Giocatore.set_meta("maxHP", 135)
-	Giocatore.set_meta("maxSP", 65)
-	Giocatore.set_meta("Weapon", ShortSword)
-	Giocatore.set_meta("DefenseFromParrying", 1.0)
-	Giocatore.set_meta("Defense", 0)
-	Giocatore.set_meta("Attack", 0)
-	Giocatore.set_meta("CritChance", 0)
-	Giocatore.set_meta("Status", "Alive")
-	Giocatore.set_meta("Name", "Ren")
-	Giocatore.set_meta("Animation", PlayerAnim)
-	Giocatore.set_meta("CharacterGod", Messiah)
 	
-	Beatrice.set_meta("HP", 100)
-	Beatrice.set_meta("SP", 80)
-	Beatrice.set_meta("maxHP", 100)
-	Beatrice.set_meta("maxSP", 80)
-	Beatrice.set_meta("Weapon", Shuriken)
-	Beatrice.set_meta("DefenseFromParrying", 1.0)
-	Beatrice.set_meta("Defense", 0)
-	Beatrice.set_meta("Attack", 0)
-	Beatrice.set_meta("CritChance", 0)
-	Beatrice.set_meta("Status", "Alive")
-	Beatrice.set_meta("Name", "Loki")
-	Beatrice.set_meta("Animation", AllyAnim)
-	Beatrice.set_meta("CharacterGod", Zeus)
+	
+	
+	
 	
 	## WEAPONS
-	ShortSword.set_meta("Damage", 10)
-	ShortSword.set_meta("DamageType", 2)
-	Shuriken.set_meta("Damage", 5)
-	Shuriken.set_meta("DamageType", 1)
 	
 	
-	## GODS? I HAVE TO COME UP WITH A NAME DAMN
-	Messiah.set_meta("Name", "Messiah")
-	Messiah.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
-	Messiah.set_meta("SpecialMoves", movesets[MovesetID.MOVESETMESSIAH])
-	Messiah.set_meta("Animation", MessiahAnim)
+	## SOULS
+	Messiah = Souls.new(
+		"Messiah", #name
+		"God whos death freed the souls of everyone on earth",#description
+		[1,1,1,1,1,1,1,1,1,1,1,1], #affinities
+		[1,1,1,1,1,1,1,1,1,1,1,1], #discovered affinities ( should be equal to the one above for allies )
+		movesets[MovesetID.MOVESETMESSIAH], #specialmoves
+		MessiahAnim, #animation
+	)
+	Zeus = Souls.new(
+		"Zeus", #name
+		"God whom is king of every other god",#description
+		[1,1,1,1,1,1,1,1,1,1,1,1], #affinities
+		[1,1,1,1,1,1,1,1,1,1,1,1], #discovered affinities ( should be equal to the one above for allies )
+		movesets[MovesetID.MOVESETZEUS], #specialmoves
+		ZeusAnim, #animation
+	)
 	
-	Zeus.set_meta("Name", "Zeus")
-	Zeus.set_meta("Affinities", [1,1,1,1,1,1,1,1,1,1,1,1] )
-	Zeus.set_meta("SpecialMoves", movesets[MovesetID.MOVESETZEUS])
-	Zeus.set_meta("Animation", ZeusAnim)
+	Minotaur = Souls.new(
+		"Minotaur", #name
+		"Disgusting Creature Trapped in a labyrinth",#description
+		[-1,1,2,1,1,1,1,1,1,1,1,1], #affinities
+		[3,3,3,3,3,3,3,3,3,3,3,3], #discovered affinities ( should be equal to the one above for allies )
+		movesets[MovesetID.TEST_MOVESET], #specialmoves
+		TungTungAnim, #animation
+	)
+	
+	## ALLIES
+	
+	Giocatore = Character.new(
+		"Zisk", #name
+		"Fatso useful for nothing, deserves to die",#description
+		
+		135, #max_hp
+		65, #max_sp
+		135, #hp
+		65, #sp 
+		
+		ShortSword, #weapon
+		Messiah, #soul 
+		
+		0,  #attack   / ONLY CHANGES DURING BATTLE
+		0,	#defense  / ONLY CHANGES DURING BATTLE
+		0,	#crit_chance  / ONLY CHANGES DURING BATTLE
+		1.0,	#defense_from_parrying / ONLY CHANGES DURING BATTLE
+		"Alive", #status  / ONLY CHANGES DURING BATTLE
+		PlayerAnim #animation_frames
+	)
+	
+	Beatrice = Character.new(
+		"Beatrice", #name
+		"Standard girl character n.2123123",#description
+		
+		100, #max_hp
+		80, #max_sp
+		100, #hp
+		80, #sp 
+		
+		Shuriken, #weapon
+		Zeus, #soul 
+		
+		0,  #attack   / ONLY CHANGES DURING BATTLE
+		0,	#defense  / ONLY CHANGES DURING BATTLE
+		0,	#crit_chance  / ONLY CHANGES DURING BATTLE
+		1.0,	#defense_from_parrying / ONLY CHANGES DURING BATTLE
+		"Alive", #status  / ONLY CHANGES DURING BATTLE
+		AllyAnim #animation_frames
+	)
+	
 	
 	## ITEMS
 	
-	Potion.set_meta("Name", "Small Potion")
-	Potion.set_meta("Description", "Slightly Heals One Ally")
-	Potion.set_meta("Damage", -35)
-	Potion.set_meta("Type", 0)
-	Potion.set_meta("Image", PotionTexture)
+	Potion = Item.new(
+		"Small Potion", #name
+		"Slightly Heals One Ally",#description
+		-standardLowDamage, #damage
+		0, #type
+		PotionTexture, #image
+	)
 	
-	BigPotion.set_meta("Name", "Big Potion")
-	BigPotion.set_meta("Description", "Decently Heals One Ally")
-	BigPotion.set_meta("Damage", -85)
-	BigPotion.set_meta("Type", 0)
-	BigPotion.set_meta("Image", FatPotionTexture)
+	BigPotion = Item.new(
+		"Big Potion", #name
+		"Decently Heals One Ally",#description
+		-standardAvarageDamage, #damage
+		0, #type
+		FatPotionTexture, #image
+	)
 	
-	WeirdPotion.set_meta("Name", "Weird Potion")
-	WeirdPotion.set_meta("Description", "Slightly Heals the whole Team")
-	WeirdPotion.set_meta("Damage", -35)
-	WeirdPotion.set_meta("Type", 1)
-	WeirdPotion.set_meta("Image", WeirdPotionTexture)
+	WeirdPotion = Item.new(
+		"Weird Potion", #name
+		"Slightly Heals the whole Team",#description
+		-standardLowDamage, #damage
+		1, #type
+		WeirdPotionTexture, #image
+	)
+	
+	
 	
 	## ENEMIES
-	
-	TungTung.set_meta("HP", 165)
-	TungTung.set_meta("maxHP", 165)
-	TungTung.set_meta("Name", "TTT")
-	TungTung.set_meta("Damage", 5)
-	TungTung.set_meta("DamageType", 0)
-	TungTung.set_meta("Defense", 0)
-	TungTung.set_meta("Attack", 0)
-	TungTung.set_meta("CritChance", 0)
-	TungTung.set_meta("Status", "Alive")
-	TungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
-	TungTung.set_meta("Affinities", [-1,1,2,1,1,1,1,1,1,1,1,1] )
-	TungTung.set_meta("DiscoveredAffinities", [3,3,3,3,3,3,3,3,3,3,3,3] )
-	TungTung.set_sprite_frames(TungTungAnim)
-	
-	AngelTungTung.set_meta("HP", 125)
-	AngelTungTung.set_meta("maxHP", 125)
-	AngelTungTung.set_meta("Name", "Angel TTT")
-	AngelTungTung.set_meta("Damage", 10)
-	AngelTungTung.set_meta("DamageType", 0)
-	AngelTungTung.set_meta("Defense", 0)
-	AngelTungTung.set_meta("Attack", 0)
-	AngelTungTung.set_meta("CritChance", 0)
-	AngelTungTung.set_meta("Status", "Alive")
-	AngelTungTung.set_meta("SpecialMoves", movesets[MovesetID.TEST_MOVESET])
-	AngelTungTung.set_meta("Affinities", [1,2,-1,2,1,1,1,1,1,0.5,1,1] )
-	AngelTungTung.set_meta("DiscoveredAffinities", [3,3,3,3,3,3,3,3,3,3,3,3] )
-	AngelTungTung.set_sprite_frames(AngelTungTungAnim)
-	
+	MinotaurEnemy = Character.new(
+		"Minotaur", #name
+		"Disgusting creature",#description
+		
+		165, #max_hp
+		100, #max_sp
+		165, #hp
+		100, #sp 
+		
+		MonsterFist, #weapon
+		Minotaur, #soul 
+		
+		0,  #attack   / ONLY CHANGES DURING BATTLE
+		0,	#defense  / ONLY CHANGES DURING BATTLE
+		0,	#crit_chance  / ONLY CHANGES DURING BATTLE
+		1.0,	#defense_from_parrying / ONLY CHANGES DURING BATTLE
+		"Alive", #status  / ONLY CHANGES DURING BATTLE
+		TungTungAnim #animation_frames
+	)
 	
 	
 	
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
+	
 
 func _on_start_game_pressed() -> void:
 	StartGame.queue_free()

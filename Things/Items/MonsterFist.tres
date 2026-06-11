@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Weapon" format=3 uid="uid://ch2bpvlblr58b"]
+
+[ext_resource type="Script" uid="uid://1sko2b4yeyb3" path="res://Code/Constructors/Weapon.gd" id="1_qvutd"]
+
+[resource]
+script = ExtResource("1_qvutd")
+name = "MonsterFist"
+description = "IFEQUIPPEDTOTHEPLAYERBUGSPOTTED"
+damage = 5
+type = 1
+metadata/_custom_type_script = "uid://1sko2b4yeyb3"

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Weapon" format=3 uid="uid://drf3jb6bxc5kx"]
+
+[ext_resource type="Script" uid="uid://1sko2b4yeyb3" path="res://Code/Constructors/Weapon.gd" id="1_w8gkd"]
+
+[resource]
+script = ExtResource("1_w8gkd")
+name = "Shuriken"
+description = "Throwable japanese weapon, it kinda hurts"
+damage = 5
+type = 1
+metadata/_custom_type_script = "uid://1sko2b4yeyb3"

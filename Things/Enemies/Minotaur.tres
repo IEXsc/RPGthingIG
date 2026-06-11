@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="Character" format=3 uid="uid://cgj8567ybgwd5"]
+
+[ext_resource type="Script" uid="uid://c2xail46oaeb5" path="res://Code/Constructors/CharacterStats.gd" id="1_citb4"]
+[ext_resource type="SpriteFrames" uid="uid://180e7l3q0dky" path="res://Assets/GFX/Enemies/TungTungAnim.tres" id="1_fenc2"]
+[ext_resource type="Resource" uid="uid://d0eik75dpcew0" path="res://Things/Souls/Minotaur.tres" id="3_56th7"]
+[ext_resource type="Resource" uid="uid://ch2bpvlblr58b" path="res://Things/Items/MonsterFist.tres" id="3_k400h"]
+
+[resource]
+script = ExtResource("1_citb4")
+name = "Minotaur"
+description = "Useless Saddening Thing"
+max_hp = 165
+max_sp = 100
+hp = 165
+sp = 100
+weapon = ExtResource("3_k400h")
+soul = ExtResource("3_56th7")
+animation_frames = ExtResource("1_fenc2")
+metadata/_custom_type_script = "uid://c2xail46oaeb5"

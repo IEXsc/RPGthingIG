@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Weapon" format=3 uid="uid://csepr5tqeiwsv"]
+
+[ext_resource type="Script" uid="uid://1sko2b4yeyb3" path="res://Code/Constructors/Weapon.gd" id="1_xu6l1"]
+
+[resource]
+script = ExtResource("1_xu6l1")
+name = "Shortsword"
+description = "Short sword made of Steel"
+damage = 10
+type = 2
+metadata/_custom_type_script = "uid://1sko2b4yeyb3"

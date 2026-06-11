@@ -118,13 +118,13 @@ func _ready() -> void:
 	enemytimer.timeout.connect(_timer_moving_back)
 	_setting_up_enemies()
 	
-	var Player = get_parent().Giocatore
-	Player.set_sprite_frames(Player.get_meta("Animation"))
+	var Player = AnimatedSprite2D.new()
+	Player.set_sprite_frames(get_parent().Giocatore.animation_frames) # here i want to access Giocatore, which is in the script of the parent of this script
 	Player.position = Vector2(830, 260)
 	add_child(Player)
 	
-	var Ally1 = get_parent().Beatrice
-	Ally1.set_sprite_frames(Ally1.get_meta("Animation"))
+	var Ally1 = AnimatedSprite2D.new()
+	Ally1.set_sprite_frames(get_parent().Beatrice.animation_frames)
 	Ally1.position = Vector2(894, 260)
 	add_child(Ally1)
 	

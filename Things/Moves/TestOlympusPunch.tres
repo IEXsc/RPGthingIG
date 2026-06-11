@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://1hl450hrmlcd"]
+
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_53hgs"]
+[ext_resource type="SpriteFrames" uid="uid://bxwatxp0s1jy2" path="res://Assets/GFX/MovesSprites/OlympusPunchAnim.tres" id="1_g127b"]
+
+[resource]
+script = ExtResource("1_53hgs")
+name = "(TEST) Olympus Punch"
+description = "( TEST ) 10 dmg"
+damage = 10
+image = ExtResource("1_g127b")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"
