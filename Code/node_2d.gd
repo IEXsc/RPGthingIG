@@ -81,12 +81,12 @@ var minotaur = preload("res://Things/Enemies/Minotaur.tres")
 
 ##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Attack Bonus	13 Defense Bonus	14 attack debuff	15 defense debuff
 var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, AttackBonusTexture, DefenseBonusTexture , AttackDebuffTexture , DefenseDebuffTexture, CritMovesTexture]
-var arrayenemies = []
-var arrayalleati = []
+var arrayenemies: Array[Character] = []
+var arrayalleati: Array[Character] = []
 var skillbuttons = []
 var itembuttons = []
 var enemytargetbuttons = []
-var Items = []
+var Items: Array[Item] = []
 var shiftingbuttonsarray = []
 var AlliedHealthBars = []
 var AlliedHpIndicator = []
@@ -98,9 +98,9 @@ var i = 0
 var recentaction = 0
 var currentenemymove = 0
 var currentpartymember = 0
-var currentusedskill = 0
+var currentusedskill: int = 0
 var currentturn = 0
-var alliedtarget = 0
+var alliedtarget: Array[Character] = []
 var currentuseditem = 0
 var enemyaction = 0
 var damagethatwillbedone = 0
@@ -132,7 +132,7 @@ func _ready() -> void:
 	Ally1.position = Vector2(894, 260)
 	add_child(Ally1)
 	
-	arrayalleati = [Player, Ally1]
+	arrayalleati = [player, beatrice]
 	Player.play("waiting")
 	Ally1.play("waiting")
 	
@@ -152,11 +152,11 @@ func _process(delta: float) -> void:
 		
 func _calculate_total_enemies_buttons():
 	for i in range(arrayenemies.size() - 1, -1, -1):
-		var enemy = arrayenemies[i]
+		var enemy: Character = arrayenemies[i]
 		if is_instance_valid(enemy):
-			if enemy.get_meta("HP") <= 0:
+			if enemy.hp <= 0:
 				enemy.queue_free()
-				if(enemy.get_meta("Status") != "Downed"):
+				if(enemy.status != "Downed"):
 					totalenemiesup = totalenemiesup - 1 # 1 LESS ENEMY NEEDED FOR AN ALL OUT ATTACK
 				arrayenemies.remove_at(i) # Removes it from the array so it's not checked next time
 	if(len(arrayenemies)==0):
@@ -166,61 +166,62 @@ func _calculate_total_enemies_buttons():
 		
 func _target_button_pressed(pulsanteid):
 	targetenemy = pulsanteid
+	var actiontaker = arrayalleati[currentpartymember]
 	if(recentaction==1):
 		alliedtarget = arrayenemies
-		damagethatwillbedone = arrayalleati[currentpartymember].get_meta("Weapon").get_meta("Damage")
+		damagethatwillbedone = actiontaker.weapon.damage
 		var attackbonus = 1
-		if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+		if(actiontaker.attack > 0):
 			attackbonus = 1.5
-		elif(arrayalleati[currentpartymember].get_meta("Attack") < 0):
+		elif(actiontaker.attack < 0):
 			attackbonus = 0.5
-		_calculate_damage(attackbonus, arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType"))
+		_calculate_damage(attackbonus, actiontaker.weapon.type)
 	if(recentaction==4):
-		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
-		var newsp = arrayalleati[currentpartymember].get_meta("SP") - arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Cost")
-		var targets = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Targets")
+		var movetype = actiontaker.soul.specialmoves[currentusedskill].type
+		var newsp = actiontaker.sp - actiontaker.soul.specialmoves[currentusedskill].cost
+		var targets = actiontaker.soul.specialmoves[currentusedskill].targets
 		#elif(targets == "AllEnemies" or targets == "AllAllies"):
-		arrayalleati[currentpartymember].set_meta("SP", newsp)
+		actiontaker.sp = newsp
 		AlliedManaBars[currentpartymember].set_value(newsp)
 		if(targets == "One" or targets == "OneAlly"):
 			if(movetype<12):
 				var attackbonus = 1
 				if(movetype<11):   # damaging moves
 					alliedtarget = arrayenemies
-					if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+					if(actiontaker.attack > 0):
 						attackbonus = 1.5
-					elif(arrayalleati[currentpartymember].get_meta("Attack") < 0):
+					elif(actiontaker.attack < 0):
 						attackbonus = 0.5
 						
 				elif(movetype==11):  #healing should not be affected by attack boosts
 					alliedtarget = arrayalleati
 					
-				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				damagethatwillbedone = actiontaker.soul.specialmoves[currentusedskill].damage
 				
 				
 				_calculate_damage(attackbonus, movetype)
 			elif(movetype==12 or movetype == 13):
 				alliedtarget = arrayalleati
-				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				damagethatwillbedone = actiontaker.soul.specialmoves[currentusedskill].damage
 				_calculate_damage(1, movetype)
 			elif(movetype==14 or movetype == 15):
 				alliedtarget = arrayenemies
-				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				damagethatwillbedone = actiontaker.soul.specialmoves[currentusedskill].damage
 				_calculate_damage(1, movetype)
 			
 			var SkillBeingUsed = AnimatedSprite2D.new()
 			add_child(SkillBeingUsed)
 			SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
-			SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+			SkillBeingUsed.set_sprite_frames(actiontaker.soul.specialmoves[currentusedskill].image)
 			SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
 			SkillBeingUsed.play("default")
 		elif(targets == "AllEnemies" or targets == "AllAllies"):
 			var attackbonus = 1
 			if(movetype<11):
 				alliedtarget = arrayenemies
-				if(arrayalleati[currentpartymember].get_meta("Attack") > 0):
+				if(actiontaker.attack > 0):
 					attackbonus = 1.5
-				if(arrayalleati[currentpartymember].get_meta("Attack") < 0):
+				elif(actiontaker.attack < 0):
 					attackbonus = 0.5
 			if(movetype==11):
 				alliedtarget = arrayalleati
@@ -232,12 +233,12 @@ func _target_button_pressed(pulsanteid):
 				alliedtarget = arrayenemies
 				
 			for i in range(len(alliedtarget)):
-				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				damagethatwillbedone = actiontaker.soul.specialmoves[currentusedskill].damage
 				targetenemy = i
 				var SkillBeingUsed = AnimatedSprite2D.new()
 				add_child(SkillBeingUsed)
 				SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
-				SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+				SkillBeingUsed.set_sprite_frames(actiontaker.soul.specialmoves[currentusedskill].image)
 				SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
 				SkillBeingUsed.play("default")
 				
@@ -245,26 +246,26 @@ func _target_button_pressed(pulsanteid):
 				_calculate_damage(attackbonus, movetype)
 		if(targets == "Self"):
 			if(movetype==16):
-				damagethatwillbedone = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Damage")
+				damagethatwillbedone = actiontaker.soul.specialmoves[currentusedskill].damage
 				alliedtarget = arrayalleati
 			
 			var SkillBeingUsed = AnimatedSprite2D.new()
 			add_child(SkillBeingUsed)
 			SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
-			SkillBeingUsed.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Image"))
+			SkillBeingUsed.set_sprite_frames(actiontaker.soul.specialmoves[currentusedskill].image)
 			SkillBeingUsed.animation_looped.connect(_delete_self.bind(SkillBeingUsed))
 			SkillBeingUsed.play("default")
 			_calculate_damage(1, movetype)
 	if(recentaction==6):
 		if(Items[currentuseditem].get_meta("Type")==0):
 			alliedtarget = arrayalleati
-			damagethatwillbedone = Items[currentuseditem].get_meta("Damage")
+			damagethatwillbedone = Items[currentuseditem].damage
 			_calculate_damage(1, 11)
 		elif(Items[currentuseditem].get_meta("Type")==1):
 			alliedtarget = arrayalleati
 			for i in range(len(alliedtarget)):
 				targetenemy = i
-				damagethatwillbedone = Items[currentuseditem].get_meta("Damage")
+				damagethatwillbedone = Items[currentuseditem].damage
 				_calculate_damage(1, 11)
 	for i in len(enemytargetbuttons):
 		enemytargetbuttons[i].queue_free()
@@ -285,10 +286,10 @@ func _attack_button_pressed():
 		_create_targeting_buttons()
 	
 func _defend_button_pressed():
+	var actiontaker = arrayalleati[currentpartymember]
 	if(recentaction==0):
-		var newdefence = arrayalleati[currentpartymember].get_meta("DefenseFromParrying") + 0.5 
-		arrayalleati[currentpartymember].set_meta("DefenseFromParrying", newdefence) 
-		arrayalleati[currentpartymember].set_meta("Status", "Defending")
+		actiontaker.defense_from_parrying += 2 
+		actiontaker.status = "Defending"
 		AlliedHpIndicator[currentpartymember].play("Defending")
 		recentaction = 2
 		timer.wait_time = 0.2
@@ -304,7 +305,7 @@ func _item_button_pressed():
 			itemList.position = Vector2(50, 320+(40*((i+1)*1.5)))
 			itemList.item_selected.connect(_on_itemList_item_selected)
 			for i in range(len(Items)):
-				itemList.add_item(Items[i].get_meta("Name") + "|" + Items[i].get_meta("Description"), Items[i].get_meta("Image"))
+				itemList.add_item(Items[i].name + "|" + Items[i].description, Items[i].image)
 			recentaction = 5
 		else:
 			_back_button_pressed()
@@ -315,7 +316,7 @@ func _on_itemList_item_selected(index):
 		currentuseditem = index
 		for i in range(itembuttons[0].get_item_count()):
 			itembuttons[0].set_item_selectable(i, false)
-		if(Items[currentuseditem].get_meta("Type")==0):
+		if(Items[currentuseditem].type==0):
 			recentaction = 6
 			_create_targeting_buttons()
 		else:
@@ -323,6 +324,7 @@ func _on_itemList_item_selected(index):
 			_target_button_pressed(0)
 
 func _skill_button_pressed():
+	var actiontaker = arrayalleati[currentpartymember]
 	if(recentaction==0):
 		var skillList = ItemList.new()
 		skillbuttons.append(skillList)
@@ -334,21 +336,20 @@ func _skill_button_pressed():
 		var PERSONA = AnimatedSprite2D.new()
 		skillbuttons.append(PERSONA)
 		add_child(PERSONA)
-		PERSONA.set_sprite_frames(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("Animation"))
+		PERSONA.set_sprite_frames(actiontaker.soul.animation)
 		PERSONA.play("waiting")
-		arrayalleati[currentpartymember].play("Charging")
-		PERSONA.position = Vector2(arrayalleati[currentpartymember].position.x+55, arrayalleati[currentpartymember].position.y+5)
-		for i in range(len(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves"))):
-			skillList.add_item(arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Name") + "|" + arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Description"), arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[i].get_meta("Type")])
+		for i in len(actiontaker.soul.specialmoves):
+			skillList.add_item(actiontaker.soul.specialmoves[i].name + "|" + actiontaker.soul.specialmoves[i].description, arrayAttackTypesIcons[actiontaker.soul.specialmoves[i].type] )
 		recentaction = 3
 
 func _on_skillList_item_selected(index):
+	var actiontaker = arrayalleati[currentpartymember]
 	if(recentaction==3):
-		timer.wait_time = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[index].get_meta("AnimationTime")
+		timer.wait_time = actiontaker.soul.specialmoves[index].animation_time
 		currentusedskill = index
 		for i in range(skillbuttons[0].get_item_count()):
 			skillbuttons[0].set_item_selectable(i, false)
-		if(arrayalleati[currentpartymember].get_meta("SP")>=arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[index].get_meta("Cost")):
+		if(actiontaker.sp>=actiontaker.soul.specialmoves[index].cost):
 			recentaction = 4
 			_create_targeting_buttons()
 		else:
@@ -406,7 +407,7 @@ func _singleenemyturn():
 	
 	
 	for i in range(len(arrayalleati)):
-		if(arrayalleati[i].get_meta("HP")>0):
+		if(arrayalleati[i].hp>0):
 			atleastonecharalive = true
 			break
 		else:
@@ -415,28 +416,26 @@ func _singleenemyturn():
 		
 			
 		if(currentenemymove<len(arrayenemies)):
-			if(arrayenemies[currentenemymove].get_meta("Status") == "Downed"):
-				arrayenemies[currentenemymove].play("waiting")
-				arrayenemies[currentenemymove].set_meta("Status", "Alive")
+			if(arrayenemies[currentenemymove].status == "Downed"):
+				arrayenemies[currentenemymove].status = "Alive"
 				totalenemiesup = totalenemiesup + 1
 			enemyaction = randi_range(1, 2) 
 			if(enemyaction== 1):
 				alliedtarget = arrayalleati
 				
 				targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
-				while(alliedtarget[targetenemy].get_meta("HP")<=0):
+				while(alliedtarget[targetenemy].hp<=0):
 					targetenemy =  rng.randi_range(0, len(arrayalleati)-1) 
 				
-				arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y + 50)
-				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("Damage"))))
+				damagethatwillbedone = int(round(( arrayenemies[currentenemymove].weapon.damage )))
 				
 				var attackbonus = 1
-				if(arrayenemies[currentenemymove].get_meta("Attack") > 0):
+				if(arrayenemies[currentenemymove].attack > 0):
 					attackbonus = 1.5
-				if(arrayenemies[currentenemymove].get_meta("Attack") < 0):
+				if(arrayenemies[currentenemymove].attack < 0):
 					attackbonus = 0.5
 				
-				_calculate_damage(attackbonus, arrayenemies[currentenemymove].get_meta("DamageType"))
+				_calculate_damage(attackbonus, arrayenemies[currentenemymove].weapon.type)
 				
 			
 				enemytimer.wait_time = 0.2
@@ -448,32 +447,32 @@ func _singleenemyturn():
 				var enemymovetargets = ""
 				while usableskill == false:
 					
-					currentmove = randi_range(0, len(arrayenemies[currentenemymove].get_meta("SpecialMoves"))-1)
-					movetype = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Type")
+					currentmove = randi_range(0, len( arrayenemies[currentenemymove].soul.specialmoves )-1)
+					movetype = arrayenemies[currentenemymove].soul.specialmoves[currentmove].type
 					if(movetype<12):
 						if(movetype<11):   #damaging moves
 							alliedtarget = arrayalleati
 							
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead allies
-							while(alliedtarget[targetenemy].get_meta("HP")<=0):
+							while(alliedtarget[targetenemy].hp<=0):
 								targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 							
-							if(arrayenemies[currentenemymove].get_meta("Attack") > 0):
+							if(arrayenemies[currentenemymove].attack > 0):
 								attackbonus = 1.5
-							if(arrayenemies[currentenemymove].get_meta("Attack") < 0):
+							if(arrayenemies[currentenemymove].attack < 0):
 								attackbonus = 0.5
 							usableskill = true  #there is no reason why he can't just attack, duh
 								
 						elif(movetype==11):  #healing moves
 							alliedtarget = arrayenemies
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead enemies ( they might not even exist )
-							while(alliedtarget[targetenemy].get_meta("HP")<=0):   # but better be safe than sorry
+							while(alliedtarget[targetenemy].hp<=0):   # but better be safe than sorry
 								targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 							
 							var anyenemybelow20percenthp = false    ## ok so to put it bluntly, we don't want to heal enemies who are full cause that's dogshit game design
 							for i in len(alliedtarget):  ## nor do we want the healing to just erase the player progress so it's supposed to be close enough
-								var currentenemyhealth = float(alliedtarget[targetenemy].get_meta("HP")) ## to an amount the player can simply one shot the enemy
-								currentenemyhealth = currentenemyhealth / alliedtarget[targetenemy].get_meta("maxHP")  ## TODO:ADD SOME SORT OF WAY TO TELL IT WHO TO HEAL
+								var currentenemyhealth = float(alliedtarget[targetenemy].hp) ## to an amount the player can simply one shot the enemy
+								currentenemyhealth = currentenemyhealth / alliedtarget[targetenemy].max_hp  ## TODO:ADD SOME SORT OF WAY TO TELL IT WHO TO HEAL
 								if(currentenemyhealth<0.20):
 									anyenemybelow20percenthp = true
 									usableskill = true
@@ -481,8 +480,8 @@ func _singleenemyturn():
 							if(anyenemybelow20percenthp == false):
 								usableskill = false
 						if(usableskill==true):
-							enemymovetargets = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Targets")
-							damagethatwillbedone = int(round(( arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Damage") )))
+							enemymovetargets = arrayenemies[currentenemymove].soul.specialmoves[currentmove].targets
+							damagethatwillbedone = int(round(( arrayenemies[currentenemymove].soul.specialmoves[currentmove].damage )))
 							if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
 								_calculate_damage(attackbonus, movetype)  ## This should lead to no problems, hopefully
 							elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
@@ -497,7 +496,7 @@ func _singleenemyturn():
 						while(alliedtarget[targetenemy].get_meta("HP")<=0):   # but better be safe than sorry
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 							 
-						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
+						damagethatwillbedone = arrayenemies[currentenemymove].soul.specialmoves[currentmove].damage
 						
 						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
 							_calculate_damage(1, movetype)  ## This should lead to no problems, hopefully
@@ -511,7 +510,7 @@ func _singleenemyturn():
 						alliedtarget = arrayalleati
 						
 						targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead allies
-						while(alliedtarget[targetenemy].get_meta("HP")<=0):
+						while(alliedtarget[targetenemy].hp<=0):
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 						
 						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
@@ -527,33 +526,25 @@ func _singleenemyturn():
 					for i in len(alliedtarget):
 						var SkillBeingUsed = AnimatedSprite2D.new()
 						add_child(SkillBeingUsed)
-						SkillBeingUsed.position = Vector2(alliedtarget[i].position.x, alliedtarget[i].position.y)
 						SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
-						SkillBeingUsed.play("default")
 						SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
 						
 				else:
 					var SkillBeingUsed = AnimatedSprite2D.new()
 					add_child(SkillBeingUsed)
-					SkillBeingUsed.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y)
 					SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
-					SkillBeingUsed.play("default")
 					SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
 				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
 			
-			if(arrayenemies[currentenemymove].get_meta("Attack") > 0):   # decreasing when it's a buff
-				var boostedattackturnsleft = arrayenemies[currentenemymove].get_meta("Attack") - 1
-				arrayenemies[currentenemymove].set_meta("Attack", boostedattackturnsleft)
+			if(arrayenemies[currentenemymove].attack > 0):   # decreasing when it's a buff
+				arrayenemies[currentenemymove].attack -= 1
 			if(arrayenemies[currentenemymove].get_meta("Defense") > 0):  #decreasing when it's a buff
-				var boosteddefenseturnsleft = arrayenemies[currentenemymove].get_meta("Defense") - 1
-				arrayenemies[currentenemymove].set_meta("Defense", boosteddefenseturnsleft)
+				arrayenemies[currentenemymove].defense -= 1
 			
 			if(arrayenemies[currentenemymove].get_meta("Attack") < 0):
-				var boostedattackturnsleft = arrayenemies[currentenemymove].get_meta("Attack") + 1 #increasing when it's a debuff
-				arrayenemies[currentenemymove].set_meta("Attack", boostedattackturnsleft)
+				arrayenemies[currentenemymove].defense += 1
 			if(arrayenemies[currentenemymove].get_meta("Defense") < 0):
-				var boosteddefenseturnsleft = arrayenemies[currentenemymove].get_meta("Defense") + 1 #increasing when it's a debuff
-				arrayenemies[currentenemymove].set_meta("Defense", boosteddefenseturnsleft)
+				arrayenemies[currentenemymove].defense += 1
 			
 			enemytimer.start()	
 		else:
@@ -566,14 +557,14 @@ func _singleenemyturn():
 func _timer_moving_back():
 	#for i in len(arrayenemies):
 	if(enemyaction==1):
-		arrayenemies[currentenemymove].position = Vector2(arrayenemies[currentenemymove].position.x, arrayenemies[currentenemymove].position.y - 50)
+		pass
 	if(ONEMORE == 0):
 		currentenemymove = currentenemymove + 1
 	else:
 		ONEMORE = ONEMORE - 1
 	enemytimer.stop()
 	_singleenemyturn()
-
+################################################################################################# TODO: CHANGING ALL GETMETAS STOPPED HERE !!!!!! 
 func _reset_stat_boosts(target):
 	if(arrayalleati[target].get_meta("Attack") > 0):   # decreasing when it's a buff
 		var boostedattackturnsleft = arrayalleati[target].get_meta("Attack") - 1
@@ -1088,7 +1079,7 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
 	
-	var Enemies = [minotaur]
+	var Enemies: Array[Character] = [minotaur]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()

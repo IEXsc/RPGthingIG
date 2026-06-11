@@ -7,8 +7,9 @@ var BattleScene = preload("res://Sceenes/Battle.tscn")
 var LosingScene = preload("res://Sceenes/failure_screen.tscn")
 var WinningScene = preload("res://Sceenes/victory_screen.tscn")
 
+var EnergyDrink = preload("res://Things/Items/EnergyDrink.tres")
 
-var Items = ["res://Things/Items/EnergyDrink.tres"]
+var Items: Array[Item] = [EnergyDrink]
 
 
 func _ready() -> void:
