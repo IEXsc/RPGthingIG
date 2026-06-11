@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://cag5uo0u2g85q"]
+
+[ext_resource type="SpriteFrames" uid="uid://bxwatxp0s1jy2" path="res://Assets/GFX/MovesSprites/OlympusPunchAnim.tres" id="1_l6urs"]
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_v20fx"]
+
+[resource]
+script = ExtResource("1_v20fx")
+name = "Olympus Punch"
+description = "Small Blunt Damage To One Enemy"
+damage = 50
+cost = 15
+image = ExtResource("1_l6urs")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

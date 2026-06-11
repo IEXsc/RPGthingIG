@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://b64wqp1dqh00p"]
+
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_tx18a"]
+[ext_resource type="SpriteFrames" uid="uid://c5b12rhicqwlj" path="res://Assets/GFX/MovesSprites/RebirthAnim.tres" id="1_yhtw4"]
+
+[resource]
+script = ExtResource("1_tx18a")
+name = "Critical Boost"
+description = "Increase's self Crit Chance for 7 Turns"
+damage = 8
+cost = 7
+type = 16
+targets = "Self"
+image = ExtResource("1_yhtw4")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

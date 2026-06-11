@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://bxe7a8hdafimp"]
+
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_qh8ni"]
+[ext_resource type="SpriteFrames" uid="uid://c5b12rhicqwlj" path="res://Assets/GFX/MovesSprites/RebirthAnim.tres" id="1_wf7p0"]
+
+[resource]
+script = ExtResource("1_qh8ni")
+name = "Rebirth"
+description = "Slightly Heals One Ally"
+damage = -50
+cost = 7
+type = 11
+targets = "OneAlly"
+image = ExtResource("1_wf7p0")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

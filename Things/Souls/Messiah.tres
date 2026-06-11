@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="Souls" format=3 uid="uid://owat77abpxyv"]
+
+[ext_resource type="SpriteFrames" uid="uid://baax8alyki0g2" path="res://Assets/GFX/AlliesorYourself/Gods/Messiah.tres" id="1_denvk"]
+[ext_resource type="Script" uid="uid://c4si7dbe87g2l" path="res://Code/Constructors/Souls.gd" id="1_p6dmg"]
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="2_vre2g"]
+[ext_resource type="Resource" uid="uid://ch4yd5u2j3okp" path="res://Things/Skills/LightBlind.tres" id="4_3n5j1"]
+[ext_resource type="Resource" uid="uid://bt5wirynt7jgv" path="res://Things/Skills/AttackNerfSingle.tres" id="5_denvk"]
+[ext_resource type="Resource" uid="uid://472vj1iriu6w" path="res://Things/Skills/DefenseNerfSingle.tres" id="6_3n5j1"]
+
+[resource]
+script = ExtResource("1_p6dmg")
+name = "Messiah"
+description = "God whos death freed the souls of everyone on earth"
+affinities = Array[float]([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+discoveredaffinities = Array[float]([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+specialmoves = Array[ExtResource("2_vre2g")]([ExtResource("4_3n5j1"), ExtResource("5_denvk"), ExtResource("6_3n5j1")])
+animation = ExtResource("1_denvk")
+metadata/_custom_type_script = "uid://c4si7dbe87g2l"

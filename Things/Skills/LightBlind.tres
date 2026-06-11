@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://ch4yd5u2j3okp"]
+
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_0ohav"]
+[ext_resource type="SpriteFrames" uid="uid://b851xj5x882tf" path="res://Assets/GFX/MovesSprites/LightBlindAnim.tres" id="1_p6g8e"]
+
+[resource]
+script = ExtResource("1_0ohav")
+name = "LightBlind"
+description = "Small Holy Damage To One Enemy"
+damage = 50
+cost = 8
+type = 9
+image = ExtResource("1_p6g8e")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

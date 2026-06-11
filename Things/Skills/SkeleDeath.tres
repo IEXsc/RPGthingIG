@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://bm2utvhqe45bw"]
+
+[ext_resource type="SpriteFrames" uid="uid://bqrnn1wrpnp85" path="res://Assets/GFX/MovesSprites/ThunderSwordsAnim.tres" id="1_3803s"]
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_blwqw"]
+
+[resource]
+script = ExtResource("1_blwqw")
+name = "Skele Death"
+description = "Small Ruin Damage To One Enemy"
+damage = 50
+cost = 8
+type = 3
+image = ExtResource("1_3803s")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

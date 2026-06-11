@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://bt5wirynt7jgv"]
+
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_5fqe5"]
+[ext_resource type="SpriteFrames" uid="uid://c5b12rhicqwlj" path="res://Assets/GFX/MovesSprites/RebirthAnim.tres" id="1_occpg"]
+
+[resource]
+script = ExtResource("1_5fqe5")
+name = "Attack Nerf"
+description = "Decreases's a foe's Attack for 3 Turns"
+damage = -4
+cost = 7
+type = 14
+image = ExtResource("1_occpg")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

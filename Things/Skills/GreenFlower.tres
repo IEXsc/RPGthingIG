@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Move" format=3 uid="uid://cby8x1gapwttf"]
+
+[ext_resource type="SpriteFrames" uid="uid://c5b12rhicqwlj" path="res://Assets/GFX/MovesSprites/RebirthAnim.tres" id="1_hmwbj"]
+[ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="1_qe2sx"]
+
+[resource]
+script = ExtResource("1_qe2sx")
+name = "Green Flower"
+description = "Slightly Heals Every Ally"
+damage = -50
+cost = 7
+type = 11
+targets = "AllAllies"
+image = ExtResource("1_hmwbj")
+metadata/_custom_type_script = "uid://b6rlspgo7vpub"

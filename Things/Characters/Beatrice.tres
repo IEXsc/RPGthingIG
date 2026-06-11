@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Character" format=3 uid="uid://cwc5uvpg4h0h4"]
+
+[ext_resource type="Script" uid="uid://c2xail46oaeb5" path="res://Code/Constructors/CharacterStats.gd" id="1_3oywq"]
+[ext_resource type="SpriteFrames" uid="uid://e4l3ittat4mr" path="res://Assets/GFX/AlliesorYourself/Sprites/Ally/AllyAnim.tres" id="1_sx6ls"]
+[ext_resource type="Resource" uid="uid://n2rnyupjq3jp" path="res://Things/BattleEquipment/Armors/FemaleShirt.tres" id="2_020fv"]
+[ext_resource type="Resource" uid="uid://djmkytw7owoae" path="res://Things/Souls/Zeus.tres" id="4_xw673"]
+[ext_resource type="Resource" uid="uid://drf3jb6bxc5kx" path="res://Things/BattleEquipment/Weapons/Shuriken.tres" id="5_ohji4"]
+
+[resource]
+script = ExtResource("1_3oywq")
+name = "Beatrice"
+description = "Standard girl character n.2123123"
+basesp = 80
+max_sp = 80
+sp = 80
+weapon = ExtResource("5_ohji4")
+armor = ExtResource("2_020fv")
+soul = ExtResource("4_xw673")
+animation_frames = ExtResource("1_sx6ls")
+metadata/_custom_type_script = "uid://c2xail46oaeb5"

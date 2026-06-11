@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Item" format=3 uid="uid://ygqtfnvi0ic"]
+
+[ext_resource type="Script" uid="uid://c62kwlqe7ydkg" path="res://Code/Constructors/Item.gd" id="1_ded7e"]
+[ext_resource type="Texture2D" uid="uid://c18h8rjw7i4vj" path="res://Assets/GFX/Items/PotionWeird.png" id="1_yiedc"]
+
+[resource]
+script = ExtResource("1_ded7e")
+name = "Split Sandwitch"
+description = "Slightly Heals the whole Team"
+damage = -50
+type = 1
+image = ExtResource("1_yiedc")
+metadata/_custom_type_script = "uid://c62kwlqe7ydkg"

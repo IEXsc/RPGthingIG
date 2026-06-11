@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Character" format=3 uid="uid://c5s8tyh7n54qh"]
+
+[ext_resource type="SpriteFrames" uid="uid://vlepjly4gvsj" path="res://Assets/GFX/AlliesorYourself/Sprites/Player/PlayerAnim.tres" id="1_0ar8e"]
+[ext_resource type="Script" uid="uid://c2xail46oaeb5" path="res://Code/Constructors/CharacterStats.gd" id="1_624b8"]
+[ext_resource type="Resource" uid="uid://dsrxmhv4fj1v0" path="res://Things/BattleEquipment/Armors/MaleShirt.tres" id="2_ku8qm"]
+[ext_resource type="Resource" uid="uid://owat77abpxyv" path="res://Things/Souls/Messiah.tres" id="4_bu0jw"]
+[ext_resource type="Resource" uid="uid://csepr5tqeiwsv" path="res://Things/BattleEquipment/Weapons/ShortSword.tres" id="5_rfog2"]
+
+[resource]
+script = ExtResource("1_624b8")
+name = "Ren"
+description = "Fatso useful for nothing, deserves to die"
+basehp = 135
+basesp = 65
+max_hp = 135
+max_sp = 65
+hp = 135
+sp = 65
+weapon = ExtResource("5_rfog2")
+armor = ExtResource("2_ku8qm")
+soul = ExtResource("4_bu0jw")
+animation_frames = ExtResource("1_0ar8e")
+metadata/_custom_type_script = "uid://c2xail46oaeb5"

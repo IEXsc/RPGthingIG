@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c4si7dbe87g2l" path="res://Code/Constructors/Souls.gd" id="1_bt6by"]
 [ext_resource type="Script" uid="uid://b6rlspgo7vpub" path="res://Code/Constructors/Move.gd" id="2_j71kt"]
-[ext_resource type="Resource" uid="uid://1hl450hrmlcd" path="res://Things/Moves/TestOlympusPunch.tres" id="3_j71kt"]
+[ext_resource type="Resource" uid="uid://1hl450hrmlcd" path="res://Things/Skills/TestOlympusPunch.tres" id="3_j71kt"]
 
 [resource]
 script = ExtResource("1_bt6by")

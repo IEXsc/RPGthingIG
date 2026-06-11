@@ -3,7 +3,7 @@ class_name Item
 
 @export var name: String = ""
 @export var description: String = ""
-@export var damage: int = 0 # (e.g. negative for healing)
+@export var damage: int = 0
 @export var type: int = 0
 @export var image: Texture2D
 

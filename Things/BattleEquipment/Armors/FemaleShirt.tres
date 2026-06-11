@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Armor" format=3 uid="uid://n2rnyupjq3jp"]
+
+[ext_resource type="Script" uid="uid://dc8u5k1nj6fof" path="res://Code/Constructors/Armors.gd" id="1_ky4gs"]
+
+[resource]
+script = ExtResource("1_ky4gs")
+name = "T-Shirt"
+description = "Shirt made for Women"
+protection = 3
+metadata/_custom_type_script = "uid://dc8u5k1nj6fof"

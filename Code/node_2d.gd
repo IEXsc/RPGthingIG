@@ -75,6 +75,10 @@ var AttackDebuffTexture = load("res://Assets/GFX/MoveTypes/BuffsorDebuffs/Attack
 var DefenseDebuffTexture = load("res://Assets/GFX/MoveTypes/BuffsorDebuffs/DefenseDebuff.png")
 var CritMovesTexture = load("res://Assets/GFX/MoveTypes/BuffsorDebuffs/CritMoves.png")
 
+var beatrice = preload("res://Things/Characters/Beatrice.tres")
+var player = preload("res://Things/Characters/Player.tres")
+var minotaur = preload("res://Things/Enemies/Minotaur.tres")
+
 ##0 Blunt	1Pierce	2Slash |	3Ruin	4Life	5Time	6Space	7Mind	8Chthonic	9Holy	10Arcane	11Healing	12 Attack Bonus	13 Defense Bonus	14 attack debuff	15 defense debuff
 var arrayAttackTypesIcons = [BluntTexture, PierceTexture, SlashTexture,RuinTexture, LifeTexture, TimeTexture,SpaceTexture, MindTexture, ChthonicTexture,HolyTexture, ArcaneTexture, HealingTexture, AttackBonusTexture, DefenseBonusTexture , AttackDebuffTexture , DefenseDebuffTexture, CritMovesTexture]
 var arrayenemies = []
@@ -119,12 +123,12 @@ func _ready() -> void:
 	_setting_up_enemies()
 	
 	var Player = AnimatedSprite2D.new()
-	Player.set_sprite_frames(get_parent().Giocatore.animation_frames) # here i want to access Giocatore, which is in the script of the parent of this script
+	Player.set_sprite_frames(player.animation_frames) # here i want to access Giocatore, which is in the script of the parent of this script
 	Player.position = Vector2(830, 260)
 	add_child(Player)
 	
 	var Ally1 = AnimatedSprite2D.new()
-	Ally1.set_sprite_frames(get_parent().Beatrice.animation_frames)
+	Ally1.set_sprite_frames(beatrice.animation_frames)
 	Ally1.position = Vector2(894, 260)
 	add_child(Ally1)
 	
@@ -1083,26 +1087,15 @@ func _deleteweaknesscutaway(WaeknessCutaway):
 	WaeknessCutaway.queue_free()
 
 func _setting_up_enemies(): ##CAUSE APPARENTLY CODE IN CHILDREN IS RAN BEFORE THE PARENTS, FUCKING BULLSHIT!!!
-	var TungTungEnemy = get_parent().TungTung
-	var AngelTungTung = get_parent().AngelTungTung
-	var Enemies = [TungTungEnemy,AngelTungTung,AngelTungTung]
+	
+	var Enemies = [minotaur]
 	for i in range(len(Enemies)):
 		var nemtype = Enemies[i]
 		var nem = AnimatedSprite2D.new()
+		var nem1 = nemtype.duplicate()
+		
 		add_child(nem)
-		nem.set_meta("HP", nemtype.get_meta("HP"))
-		nem.set_meta("maxHP", nemtype.get_meta("maxHP"))
-		nem.set_meta("Name", nemtype.get_meta("Name"))
-		nem.set_meta("Damage", nemtype.get_meta("Damage"))
-		nem.set_meta("DamageType", nemtype.get_meta("DamageType"))
-		nem.set_meta("Defense", nemtype.get_meta("Defense"))
-		nem.set_meta("Attack",nemtype.get_meta("Attack"))
-		nem.set_meta("CritChance",nemtype.get_meta("CritChance"))
-		nem.set_meta("Status", nemtype.get_meta("Status"))
-		nem.set_meta("SpecialMoves", nemtype.get_meta("SpecialMoves"))
-		nem.set_meta("Affinities", nemtype.get_meta("Affinities") )
-		nem.set_meta("DiscoveredAffinities", nemtype.get_meta("DiscoveredAffinities") )
-		nem.set_sprite_frames(nemtype.get_sprite_frames())
+		nem.set_sprite_frames( nem1.animation_frames )
 		nem.position = Vector2( 702 + ( (320 / (Enemies.size() + 1) * (i + 1) )  ) , 150)
 		nem.play("waiting")
 		arrayenemies.append(nem) 
@@ -1154,17 +1147,17 @@ func _create_health_bars():
 		CRITneutral.set_texture(CRIT_NEUTRALTexture)
 		CRITneutral.name = "DEFbuff"
 		
-	PlayerHealthBar.set_max(arrayalleati[0].get_meta("maxHP"))
-	PlayerHealthBar.set_value(arrayalleati[0].get_meta("HP"))
+	PlayerHealthBar.set_max(player.max_hp)
+	PlayerHealthBar.set_value(player.hp)
 	
-	PlayerManaBar.set_max(arrayalleati[0].get_meta("maxSP"))
-	PlayerManaBar.set_value(arrayalleati[0].get_meta("SP"))
+	PlayerManaBar.set_max(player.max_sp)
+	PlayerManaBar.set_value(player.sp)
 	
-	AllyHealthBar.set_max(arrayalleati[1].get_meta("maxHP"))
-	AllyHealthBar.set_value(arrayalleati[1].get_meta("HP"))
+	AllyHealthBar.set_max(beatrice.max_hp)
+	AllyHealthBar.set_value(beatrice.hp)
 	
-	AllyManaBar.set_max(arrayalleati[1].get_meta("maxSP"))
-	AllyManaBar.set_value(arrayalleati[1].get_meta("SP"))
+	AllyManaBar.set_max(beatrice.max_sp)
+	AllyManaBar.set_value(beatrice.sp)
 
 func _losing_the_battle():
 	var Losing = get_parent().LosingScene.instantiate()

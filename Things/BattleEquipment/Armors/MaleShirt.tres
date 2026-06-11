@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Armor" format=3 uid="uid://dsrxmhv4fj1v0"]
+
+[ext_resource type="Script" uid="uid://dc8u5k1nj6fof" path="res://Code/Constructors/Armors.gd" id="1_m51i3"]
+
+[resource]
+script = ExtResource("1_m51i3")
+name = "T-Shirt"
+description = "Shirt made for Men"
+protection = 3
+metadata/_custom_type_script = "uid://dc8u5k1nj6fof"
