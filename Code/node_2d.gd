@@ -46,6 +46,8 @@ func _ready() -> void:
 	Items = get_parent().Items
 	_setting_up_enemies()
 	arrayalleati = [player, beatrice]
+	
+	
 
 func _process(delta: float) -> void:
 	pass

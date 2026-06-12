@@ -22,7 +22,7 @@ func _hide_buttons():
 	ItemsButton.visible = false
 	DefendButton.visible = false 
 func _show_buttons():
-	AttackButton.set_button_icon(get_parent().arrayAttackTypesIcons[get_parent().player.weapon.type])
+	AttackButton.set_button_icon(find_parent("Node2D").arrayAttackTypesIcons[find_parent("BattleLogic").player.weapon.type])
 	AttackButton.visible = true
 	SkillButton.visible = true
 	DefendButton.visible = true

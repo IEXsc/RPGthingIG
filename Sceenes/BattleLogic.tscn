@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bshnon5umqxs1" path="res://Code/node_2d.gd" id="1_omu66"]
 [ext_resource type="Script" uid="uid://bva1n61vmw6rg" path="res://Code/ButtonConrainer.gd" id="2_1c0bk"]
+[ext_resource type="Script" uid="uid://x1je1u8m5u5i" path="res://Sceenes/node_2d.gd" id="2_mogan"]
 [ext_resource type="Texture2D" uid="uid://c5ej5io01jvj3" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicator.png" id="3_mogan"]
 [ext_resource type="Texture2D" uid="uid://do01fl225gtmo" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png" id="4_3cqjc"]
 [ext_resource type="Texture2D" uid="uid://56cahpijmsat" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicatorDefending.png" id="5_pta8v"]
@@ -85,6 +86,7 @@ animations = [{
 script = ExtResource("1_omu66")
 
 [node name="Node2D" type="Node2D" parent="." unique_id=1550113937]
+script = ExtResource("2_mogan")
 
 [node name="FlowContainer" type="FlowContainer" parent="Node2D" unique_id=2050133962]
 offset_left = 7.0
