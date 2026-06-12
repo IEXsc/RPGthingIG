@@ -133,8 +133,6 @@ func _ready() -> void:
 	add_child(Ally1)
 	
 	arrayalleati = [player, beatrice]
-	Player.play("waiting")
-	Ally1.play("waiting")
 	
 	
 	_create_health_bars()
@@ -257,11 +255,11 @@ func _target_button_pressed(pulsanteid):
 			SkillBeingUsed.play("default")
 			_calculate_damage(1, movetype)
 	if(recentaction==6):
-		if(Items[currentuseditem].get_meta("Type")==0):
+		if(Items[currentuseditem].type==0):
 			alliedtarget = arrayalleati
 			damagethatwillbedone = Items[currentuseditem].damage
 			_calculate_damage(1, 11)
-		elif(Items[currentuseditem].get_meta("Type")==1):
+		elif(Items[currentuseditem].type==1):
 			alliedtarget = arrayalleati
 			for i in range(len(alliedtarget)):
 				targetenemy = i
@@ -280,7 +278,6 @@ func _delete_self(Self):
 func _attack_button_pressed():
 	if(recentaction==0):
 			
-		arrayalleati[currentpartymember].position = Vector2(arrayalleati[currentpartymember].position.x, arrayalleati[currentpartymember].position.y - 50)
 		recentaction = 1
 		timer.wait_time = 0.2
 		_create_targeting_buttons()
@@ -365,9 +362,7 @@ func _back_button_pressed():
 		_show_button()
 		recentaction = 0
 	if(recentaction!=0):
-		arrayalleati[currentpartymember].play("waiting")
 		if(recentaction==1):
-			arrayalleati[currentpartymember].position.y = arrayalleati[currentpartymember].position.y + 50
 			recentaction = 0
 		if(recentaction==3):
 			for i in len(skillbuttons):
@@ -493,7 +488,7 @@ func _singleenemyturn():
 						alliedtarget = arrayenemies
 						
 						targetenemy =  rng.randi_range(0, len(alliedtarget)-1)    # we don't want them to use moves on dead enemies ( they might not even exist )
-						while(alliedtarget[targetenemy].get_meta("HP")<=0):   # but better be safe than sorry
+						while(alliedtarget[targetenemy].hp<=0):   # but better be safe than sorry
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 							 
 						damagethatwillbedone = arrayenemies[currentenemymove].soul.specialmoves[currentmove].damage
@@ -513,7 +508,7 @@ func _singleenemyturn():
 						while(alliedtarget[targetenemy].hp<=0):
 							targetenemy =  rng.randi_range(0, len(alliedtarget)-1)
 						
-						damagethatwillbedone = arrayenemies[currentpartymember].get_meta("SpecialMoves")[currentmove].get_meta("Damage")
+						damagethatwillbedone = arrayenemies[currentenemymove].soul.specialmoves[currentmove].damage
 						if(enemymovetargets=="One" or enemymovetargets == "OneAlly"):
 							_calculate_damage(1, movetype)  ## This should lead to no problems, hopefully
 						elif(enemymovetargets=="AllEnemies" or enemymovetargets == "AllAllies"):
@@ -526,24 +521,24 @@ func _singleenemyturn():
 					for i in len(alliedtarget):
 						var SkillBeingUsed = AnimatedSprite2D.new()
 						add_child(SkillBeingUsed)
-						SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
+						SkillBeingUsed.set_sprite_frames( arrayenemies[currentenemymove].soul.specialmoves[currentmove].image )
 						SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
 						
 				else:
 					var SkillBeingUsed = AnimatedSprite2D.new()
 					add_child(SkillBeingUsed)
-					SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("Image"))
+					SkillBeingUsed.set_sprite_frames(arrayenemies[currentenemymove].soul.specialmoves[currentmove].image)
 					SkillBeingUsed.animation_looped.connect(_deleteweaknesscutaway.bind(SkillBeingUsed))
-				enemytimer.wait_time = arrayenemies[currentenemymove].get_meta("SpecialMoves")[currentmove].get_meta("AnimationTime")
+				enemytimer.wait_time = arrayenemies[currentenemymove].soul.specialmoves[currentmove].animation_time
 			
 			if(arrayenemies[currentenemymove].attack > 0):   # decreasing when it's a buff
 				arrayenemies[currentenemymove].attack -= 1
-			if(arrayenemies[currentenemymove].get_meta("Defense") > 0):  #decreasing when it's a buff
+			if(arrayenemies[currentenemymove].attack > 0):  #decreasing when it's a buff
 				arrayenemies[currentenemymove].defense -= 1
 			
-			if(arrayenemies[currentenemymove].get_meta("Attack") < 0):
+			if(arrayenemies[currentenemymove].attack < 0):
 				arrayenemies[currentenemymove].defense += 1
-			if(arrayenemies[currentenemymove].get_meta("Defense") < 0):
+			if(arrayenemies[currentenemymove].defense < 0):
 				arrayenemies[currentenemymove].defense += 1
 			
 			enemytimer.start()	
@@ -566,50 +561,48 @@ func _timer_moving_back():
 	_singleenemyturn()
 ################################################################################################# TODO: CHANGING ALL GETMETAS STOPPED HERE !!!!!! 
 func _reset_stat_boosts(target):
-	if(arrayalleati[target].get_meta("Attack") > 0):   # decreasing when it's a buff
-		var boostedattackturnsleft = arrayalleati[target].get_meta("Attack") - 1
-		arrayalleati[target].set_meta("Attack", boostedattackturnsleft)
+	if(arrayalleati[target].attack > 0):   # decreasing when it's a buff
+		arrayalleati[target].attack -= 1
 		
-		if(arrayalleati[target].get_meta("Attack") > 0):
+		if(arrayalleati[target].attack > 0):
 			AlliedHpIndicator[target].get_child(0).set_texture(ATK_UPTexture)
 			
-	if(arrayalleati[target].get_meta("Attack") < 0):
-		var boostedattackturnsleft = arrayalleati[target].get_meta("Attack") + 1 #increasing when it's a debuff
-		arrayalleati[target].set_meta("Attack", boostedattackturnsleft)
-		if(arrayalleati[target].get_meta("Attack") < 0):
+	if(arrayalleati[target].attack < 0):
+		arrayalleati[target].attack += 1 #increasing when it's a debuff
+		if(arrayalleati[target].attack < 0):
 			AlliedHpIndicator[target].get_child(0).set_texture(ATK_DOWNTexture)
 	
-	if(arrayalleati[target].get_meta("Attack") == 0):
+	if(arrayalleati[target].attack == 0):
 		AlliedHpIndicator[target].get_child(0).set_texture(ATK_NEUTRALTexture)	
 		
 	## defense
-	if(arrayalleati[target].get_meta("Defense") > 0):  #decreasing when it's a buff
-		var boosteddefenseturnsleft = arrayalleati[target].get_meta("Defense") - 1
-		arrayalleati[target].set_meta("Defense", boosteddefenseturnsleft)
-		if(arrayalleati[target].get_meta("Defense") > 0):
+	if(arrayalleati[target].defense > 0):  #decreasing when it's a buff
+		arrayalleati[target].defense -=1
+		
+		if(arrayalleati[target].defense > 0):
 			AlliedHpIndicator[target].get_child(1).set_texture(DEF_UPTexture)
-	if(arrayalleati[target].get_meta("Defense") < 0):
-		var boosteddefenseturnsleft = arrayalleati[target].get_meta("Defense") + 1 #increasing when it's a debuff
-		arrayalleati[target].set_meta("Defense", boosteddefenseturnsleft)
-		if(arrayalleati[target].get_meta("Defense") < 0):
+			
+	if(arrayalleati[target].defense < 0):#increasing when it's a debuff
+		arrayalleati[target].defense +=1
+		
+		if(arrayalleati[target].defense < 0):
 			AlliedHpIndicator[target].get_child(1).set_texture(DEF_DOWNexture)
-	if(arrayalleati[target].get_meta("Defense") == 0):
+			
+	if(arrayalleati[target].defense == 0):
 		AlliedHpIndicator[target].get_child(1).set_texture(DEF_NEUTRALTexture)
 	
 	## CRIT CHANCE
-	if(arrayalleati[target].get_meta("CritChance") > 0):  #decreasing when it's a buff
-		var boosteddefenseturnsleft = arrayalleati[target].get_meta("CritChance") - 1
-		arrayalleati[target].set_meta("CritChance", boosteddefenseturnsleft)
-		if(arrayalleati[target].get_meta("CritChance") > 0):
+	if(arrayalleati[target].crit_chance > 0):  #decreasing when it's a buff
+		arrayalleati[target].crit_chance -= 1
+		if(arrayalleati[target].crit_chance > 0):
 			AlliedHpIndicator[target].get_child(2).set_texture(CRIT_UPTexture)
 			
-	if(arrayalleati[target].get_meta("CritChance") < 0):
-		var boosteddefenseturnsleft = arrayalleati[target].get_meta("CritChance") + 1 #increasing when it's a debuff
-		arrayalleati[target].set_meta("CritChance", boosteddefenseturnsleft)
-		if(arrayalleati[target].get_meta("CritChance") < 0):
+	if(arrayalleati[target].crit_chance < 0):
+		arrayalleati[target].crit_chance += 1 #increasing when it's a debuff
+		if(arrayalleati[target].crit_chance < 0):
 			AlliedHpIndicator[target].get_child(2).set_texture(CRIT_DOWNexture)
 			
-	if(arrayalleati[target].get_meta("CritChance") == 0):
+	if(arrayalleati[target].crit_chance == 0):
 		AlliedHpIndicator[target].get_child(2).set_texture(CRIT_NEUTRALTexture)
 	
 	
@@ -617,18 +610,14 @@ func _reset_ally_positions():
 	
 	_reset_stat_boosts(currentpartymember)
 	
-	arrayalleati[0].set_meta("DefenseFromParrying", 1)
-	arrayalleati[0].play("waiting")
-	arrayalleati[0].set_meta("Status", "Alive")
-	AlliedHpIndicator[0].play("Alive")
+	arrayalleati[0].defense_from_parrying = 1
+	arrayalleati[0].status = "Alive"
 	_show_button()
 	
 	
 	
 func _on_timer_timeout():
 	
-	if(arrayalleati[currentpartymember].get_meta("HP")>0):
-		arrayalleati[currentpartymember].play("waiting")
 	for i in len(enemytargetbuttons):
 		enemytargetbuttons[i].queue_free()
 	enemytargetbuttons = []
@@ -636,7 +625,7 @@ func _on_timer_timeout():
 		arrayalleati[currentpartymember].position = Vector2(arrayalleati[currentpartymember].position.x, arrayalleati[currentpartymember].position.y + 50)
 		
 	if(recentaction==2):
-		arrayalleati[currentpartymember].play("Defend")
+		pass
 		
 	if(recentaction==4):
 		for i in len(skillbuttons):
@@ -673,21 +662,19 @@ func _on_timer_timeout():
 				for i in range(len(shiftingbuttonsarray)):
 					_delete_self(shiftingbuttonsarray[i])
 				shiftingbuttonsarray.clear()
-			if arrayalleati[currentpartymember].get_meta("HP") > 0:
+			if arrayalleati[currentpartymember].hp > 0:
 				next_turn_found = true
 				break
 				
 		if next_turn_found:
-			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")])
-			arrayalleati[currentpartymember].play("waiting")
-			arrayalleati[currentpartymember].set_meta("Status", "Alive")
-			AlliedHpIndicator[currentpartymember].play("Alive")
-			arrayalleati[i].set_meta("DefenseFromParrying", 1)
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].weapon.type ])
+			arrayalleati[currentpartymember].status = "Alive"
+			arrayalleati[i].defense_from_parrying = 1
 		else:
 			# No more living allies have a move this turn, pass to enemies
 			currentturn = 0
 			currentpartymember = 0
-			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")])
+			$BoxContainer.AttackButton.set_button_icon(arrayAttackTypesIcons[arrayalleati[currentpartymember].weapon.type ])
 			_enemyturn()
 	else:
 		ONEMORE = ONEMORE - 1
@@ -697,8 +684,8 @@ func _create_targeting_buttons():
 		damagelabels[i].queue_free()
 	damagelabels = []
 	if(recentaction==4):
-		var movetype = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Type")
-		var targets = arrayalleati[currentpartymember].get_meta("CharacterGod").get_meta("SpecialMoves")[currentusedskill].get_meta("Targets")
+		var movetype = arrayalleati[currentpartymember].soul.specialmoves[currentusedskill].type
+		var targets = arrayalleati[currentpartymember].soul.specialmoves[currentusedskill].targets
 		if(targets == "One" or targets == "AllEnemies"):
 			for i in len(arrayenemies):
 				_create_target_button_enemies(i, movetype)
@@ -708,12 +695,12 @@ func _create_targeting_buttons():
 		if(targets == "Self"):
 			_create_target_button_allies(currentpartymember)
 	elif(recentaction==6):
-		var itemtype = Items[currentuseditem].get_meta("Type")
+		var itemtype = Items[currentuseditem].type
 		if(itemtype == 0):
 			for i in len(arrayalleati):
 				_create_target_button_allies(i)
 	else:
-		var movetype = arrayalleati[currentpartymember].get_meta("Weapon").get_meta("DamageType")
+		var movetype = arrayalleati[currentpartymember].weapon.type
 		for i in len(arrayenemies):
 			_create_target_button_enemies(i, movetype)
 
@@ -740,53 +727,53 @@ func _create_target_button_enemies(i, movetype):
 	hbr.position = Vector2(arrayenemies[i].position.x -36, arrayenemies[i].position.y - 36)
 	hbr.set_under_texture(EnemyHPEmpty)
 	hbr.set_progress_texture(EnemyHPFull) 
-	hbr.set_max(arrayenemies[i].get_meta("maxHP"))
-	hbr.set_value(arrayenemies[i].get_meta("HP"))
+	hbr.set_max(arrayenemies[i].max_hp)
+	hbr.set_value(arrayenemies[i].hp)
 	
 	var positioninfo = arrayenemies[i].position.x + 0
-	if(arrayenemies[i].get_meta("Attack") != 0):
+	if(arrayenemies[i].attack != 0):
 		var attackstatchange = Sprite2D.new()
 		add_child(attackstatchange)
 		enemytargetbuttons.append(attackstatchange)
 		attackstatchange.position = Vector2(positioninfo - 36, arrayenemies[i].position.y - 16)
 		attackstatchange.centered = false
-		var lenghtofattackbuffordebuff = arrayenemies[i].get_meta("Attack")
+		var lenghtofattackbuffordebuff = arrayenemies[i].attack
 		if(lenghtofattackbuffordebuff > 0):
 			attackstatchange.set_texture(ATK_UPTexture)
 		elif(lenghtofattackbuffordebuff < 0 ):
 			attackstatchange.set_texture(ATK_DOWNTexture)
-	if(arrayenemies[i].get_meta("Defense") != 0):
+	if(arrayenemies[i].defense != 0):
 		var defensestatchange = Sprite2D.new()
 		add_child(defensestatchange)
 		enemytargetbuttons.append(defensestatchange)
 		defensestatchange.position = Vector2(positioninfo - 36, arrayenemies[i].position.y )
 		defensestatchange.centered = false
-		var lenghtofdefensebuffordebuff = arrayenemies[i].get_meta("Defense")
+		var lenghtofdefensebuffordebuff = arrayenemies[i].defense
 		if(lenghtofdefensebuffordebuff > 0):
 			defensestatchange.set_texture(DEF_UPTexture)
 		elif(lenghtofdefensebuffordebuff < 0 ):
 			defensestatchange.set_texture(DEF_DOWNexture)
 	if(movetype<12):
 		
-		if(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] == 3 ):
+		if(arrayenemies[i].soul.discoveredaffinities[movetype] == 3 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
 			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
 			weak.set_texture(UnknownTexture)
-		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] > 1 ):
+		elif(arrayenemies[i].soul.discoveredaffinities[movetype] > 1 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
 			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
 			weak.set_texture(WeakTexture)
-		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] < 0 ):
+		elif(arrayenemies[i].soul.discoveredaffinities[movetype] < 0 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
 			weak.position = Vector2(positioninfo, arrayenemies[i].position.y - 36)
 			weak.set_texture(AbsorbsTexture)
-		elif(arrayenemies[i].get_meta("DiscoveredAffinities")[movetype] < 1 ):
+		elif(arrayenemies[i].soul.discoveredaffinities[movetype] < 1 ):
 			var weak = Sprite2D.new()
 			add_child(weak)
 			enemytargetbuttons.append(weak)
@@ -813,8 +800,8 @@ func _start_le_timer():
 func _create_shifting_button():
 	for i in len(arrayalleati):
 		if(i!=currentpartymember):
-			if(arrayalleati[i].get_meta("HP") > 0):
-				if(arrayalleati[i].get_meta("Status") == "Alive"):
+			if(arrayalleati[i].hp > 0):
+				if(arrayalleati[i].status == "Alive"):
 					var ShiftingButton = Button.new()
 					add_child(ShiftingButton)
 					shiftingbuttonsarray.append(ShiftingButton)
@@ -838,142 +825,126 @@ func _calculate_damage(attackbonus,attacktype):
 	var is_a_crit = false
 	var newhp = 0
 	const crittreshold = 0.9
-	var Labelfordamage = RichTextLabel.new()
 	if(attacktype<12):
-		
-		
-		Labelfordamage.bbcode_enabled = true
-		Labelfordamage.add_theme_font_size_override("normal_font_size", 16)
-		Labelfordamage.custom_minimum_size = Vector2(200, 50)
-		Labelfordamage.clip_contents = false
-		Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x, alliedtarget[targetenemy].position.y - 32)
-		Labelfordamage.install_effect(load("res://Assets/GFX/CustomRichTextLebelEffects/ShakeEffect.tres"))
-		Labelfordamage.text = "[pop]"
-		
+				
 		damagethatwillbedone = damagethatwillbedone * rng.randf_range(0.8, 1.2)
 		
 		if(alliedtarget == arrayenemies):
 			var standarddefence = 1
-			if(alliedtarget[targetenemy].get_meta("Defense") > 0):
+			if(alliedtarget[targetenemy].defense > 0):
 				standarddefence = 1.5
-			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):
+			elif(alliedtarget[targetenemy].defense < 0):
 				standarddefence = 0.5
 			
-			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / standarddefence * alliedtarget[targetenemy].get_meta("Affinities")[attacktype] ) )
+			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / standarddefence * alliedtarget[targetenemy].soul.affinities[attacktype] ) )
 			
 			if(attacktype<=2):  # you will never use one of the standard 3 attacks on yours = this has to be an ally attacking ( hopefully )
 				var standardcritchance = 0
-				if(arrayalleati[currentpartymember].get_meta("CritChance") > 0):
+				if(arrayalleati[currentpartymember].crit_chance > 0):
 					standardcritchance = 0.25
 				
 				var critchance = rng.randf_range(0, 1)
 				if(critchance>crittreshold - standardcritchance):
 					is_a_crit = true
-					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "CRIT" +"[/color]"
 					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
 					
 					
 			
-			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+			newhp = alliedtarget[targetenemy].hp - damagethatwillbedone
 		
 		if(alliedtarget == arrayalleati):
 			var standarddefence = 1
-			if(alliedtarget[targetenemy].get_meta("Defense") > 0):
+			if(alliedtarget[targetenemy].defense > 0):
 				standarddefence = 1.5
-			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):
+			elif(alliedtarget[targetenemy].defense < 0):
 				standarddefence = 0.5
-			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].get_meta("DefenseFromParrying") / standarddefence  * alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] ) ) 
+			damagethatwillbedone = int(round(damagethatwillbedone * attackbonus / alliedtarget[targetenemy].defense_from_parrying / standarddefence  * alliedtarget[targetenemy].soul.affinities[attacktype] ) ) 
 			
 			if(attacktype<=2):    # you will never use one of the standard 3 attacks on yours = this has to be an enemy attacking ( hopefully )
 				var standardcritchance = 0
-				if(arrayenemies[currentenemymove].get_meta("CritChance") > 0): ##He tryina ignore it
+				if(arrayenemies[currentenemymove].crit_chance > 0): ##He tryina ignore it
 					standardcritchance = 0.25
 				
 				var critchance = rng.randf_range(0, 1)
 				if(critchance>crittreshold):
 					is_a_crit = true
-					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "CRIT" +"[/color]"
 					damagethatwillbedone = int(round( damagethatwillbedone * 1.5 ) )
 			
-			newhp = alliedtarget[targetenemy].get_meta("HP") - damagethatwillbedone
+			newhp = alliedtarget[targetenemy].hp - damagethatwillbedone
 	
 	
 	
-		if(newhp>alliedtarget[targetenemy].get_meta("maxHP")):
-			newhp = alliedtarget[targetenemy].get_meta("maxHP")
-			alliedtarget[targetenemy].set_meta("HP", newhp)
+		if(newhp>alliedtarget[targetenemy].max_hp):
+			alliedtarget[targetenemy].hp = alliedtarget[targetenemy].max_hp
 		
 		elif(newhp<=0):          ## WILL ONLY TRIGGER FOR PLAYABLE CHARACTERS
-			alliedtarget[targetenemy].set_meta("HP", 0)
+			alliedtarget[targetenemy].hp = 0
 			
-			if(alliedtarget == arrayalleati):
-				AlliedHpIndicator[targetenemy].play("Dead")
-				alliedtarget[targetenemy].play("Faint")
+			#if(alliedtarget == arrayalleati):
+			#	AlliedHpIndicator[targetenemy].play("Dead")
+			#	alliedtarget[targetenemy].play("Faint")
 		else:
-			alliedtarget[targetenemy].set_meta("HP", newhp)
-			if(alliedtarget[targetenemy].get_meta("HP")>0 and !alliedtarget[targetenemy].get_meta("Status", "Downed")):
+			alliedtarget[targetenemy].hp = newhp
+			#if(alliedtarget[targetenemy].hp>0 and alliedtarget[targetenemy].status != "Downed"):
 				
-				AlliedHpIndicator[targetenemy].play("Alive")
-				alliedtarget[targetenemy].play("waiting")
+			#	AlliedHpIndicator[targetenemy].play("Alive")
+			#	alliedtarget[targetenemy].play("waiting")
 	
 		
 			
 	if(alliedtarget == arrayalleati):         ## ENEMIES ARE ATTACKING  // WE ARE HEALING
 		if(attacktype<12):
-			AlliedHealthBars[targetenemy].set_value(newhp)
+			#AlliedHealthBars[targetenemy].set_value(newhp)
 			
-			if(alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1  or is_a_crit == true):
+			if(alliedtarget[targetenemy].soul.affinities[attacktype] > 1  or is_a_crit == true):
 				
-				if (alliedtarget[targetenemy].get_meta("CharacterGod").get_meta("Affinities")[attacktype] > 1):
-					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)	
-					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
+				if (alliedtarget[targetenemy].soul.affinities[attacktype] > 1):
+					pass
 				
 				
-				if(alliedtarget[targetenemy].get_meta("Status") != "Downed" and alliedtarget[targetenemy].get_meta("Status") != "Defending"):
+				if(alliedtarget[targetenemy].status != "Downed" and alliedtarget[targetenemy].status != "Defending"):
 					enemytimer.wait_time = enemytimer.wait_time + 1
 					ONEMORE = 1 
-					alliedtarget[targetenemy].set_meta("Status", "Downed")
-					alliedtarget[targetenemy].play("downed")
+					alliedtarget[targetenemy].status = "Downed"
+					#alliedtarget[targetenemy].play("downed")
 				
-			if(alliedtarget[0].get_meta("HP")<=0):
+			if(alliedtarget[0].hp<=0):
 				_losing_the_battle()
 		elif(attacktype==12 or attacktype==14):       # the player buffs his own attack / enemy nerfs player's attack
 			
-			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
+			alliedtarget[targetenemy].attack += damagethatwillbedone 
 			
-			if(alliedtarget[targetenemy].get_meta("Attack") > 0):   # he can get a buff
-				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_UPTexture)
+			#if(alliedtarget[targetenemy].attack > 0):   # he can get a buff
+			#	AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_UPTexture)
 					
-			if(alliedtarget[targetenemy].get_meta("Attack") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
-				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_DOWNTexture)
+			#if(alliedtarget[targetenemy].attack < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
+			#	AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_DOWNTexture)
 			
-			if(alliedtarget[targetenemy].get_meta("Attack") == 0): # if they equal out
-				AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_NEUTRALTexture)
+			#if(alliedtarget[targetenemy].attack == 0): # if they equal out
+			#	AlliedHpIndicator[targetenemy].get_child(0).set_texture(ATK_NEUTRALTexture)
 				
 				
 		elif(attacktype==13 or attacktype==15):   # the player buffs his own defense / enemy nerfs allied defense
-			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
-			if(alliedtarget[targetenemy].get_meta("Defense") > 0):   # he can get a buff
-				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_UPTexture)
+			alliedtarget[targetenemy].defense += damagethatwillbedone
+			#if(alliedtarget[targetenemy].defense > 0):   # he can get a buff
+			#	AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_UPTexture)
 					
-			elif(alliedtarget[targetenemy].get_meta("Defense") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
-				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_DOWNexture)
+			#elif(alliedtarget[targetenemy].defense < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
+			#	AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_DOWNexture)
 			
-			elif(alliedtarget[targetenemy].get_meta("Defense") == 0): # if they equal out
-				AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_NEUTRALTexture)
+			#elif(alliedtarget[targetenemy].defense == 0): # if they equal out
+			#	AlliedHpIndicator[targetenemy].get_child(1).set_texture(DEF_NEUTRALTexture)
 	
 		elif(attacktype==16):   # the X buffs his own crit chance
-			alliedtarget[targetenemy].set_meta("CritChance", alliedtarget[targetenemy].get_meta("CritChance")  + damagethatwillbedone)
-			if(alliedtarget[targetenemy].get_meta("CritChance") > 0):   # he can get a buff
-				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_UPTexture)
+			alliedtarget[targetenemy].crit_chance += damagethatwillbedone
+			#if(alliedtarget[targetenemy].crit_chance > 0):   # he can get a buff
+			#	AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_UPTexture)
 					
-			elif(alliedtarget[targetenemy].get_meta("CritChance") < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
-				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_DOWNexture)
+			#elif(alliedtarget[targetenemy].crit_chance < 0):  # if he's somehow still debuffed ( allows for stacking debuffs for the enemy )
+			#	AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_DOWNexture)
 			
-			elif(alliedtarget[targetenemy].get_meta("CritChance") == 0): # if they equal out
-				AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_NEUTRALTexture)
+			#elif(alliedtarget[targetenemy].crit_chance == 0): # if they equal out
+			#	AlliedHpIndicator[targetenemy].get_child(2).set_texture(CRIT_NEUTRALTexture)
 		
 		
 		
@@ -981,19 +952,17 @@ func _calculate_damage(attackbonus,attacktype):
 		
 		if(attacktype<12):
 			var unusedtype = false
-			if(alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] !=alliedtarget[targetenemy].get_meta("Affinities")[attacktype]):
-				alliedtarget[targetenemy].get_meta("DiscoveredAffinities")[attacktype] = alliedtarget[targetenemy].get_meta("Affinities")[attacktype]
+			if(alliedtarget[targetenemy].soul.discoveredaffinities[attacktype] !=alliedtarget[targetenemy].soul.affinities[attacktype]):
+				alliedtarget[targetenemy].soul.discoveredaffinities[attacktype] = alliedtarget[targetenemy].soul.affinities[attacktype]
 				unusedtype = true
 				
-			if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1 or is_a_crit == true):
-				alliedtarget[targetenemy].play("downed")
-				if (alliedtarget[targetenemy].get_meta("Affinities")[attacktype] > 1):
-					Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)	
-					Labelfordamage.text = Labelfordamage.text + "[color=red]" + "WEAK" +"[/color]"
+			if (alliedtarget[targetenemy].soul.affinities[attacktype] > 1 or is_a_crit == true):
+				if (alliedtarget[targetenemy].soul.affinities[attacktype] > 1):
+					pass
 				if(unusedtype == true):
 					_create_weakness_cutaway()
 				#DiscoveredAffinities
-				if(alliedtarget[targetenemy].get_meta("Status") != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
+				if(alliedtarget[targetenemy].status != "Downed"):  ## ATTACKED A WEAK ENEMY NOT DOWNED
 					
 					_create_shifting_button()
 					
@@ -1003,31 +972,23 @@ func _calculate_damage(attackbonus,attacktype):
 					if(totalenemiesup == 0):
 						cangetalloutattack = true ## since you've recently killed downed someone, you can allout attack
 						_create_all_out_attack_button()
-					alliedtarget[targetenemy].set_meta("Status", "Downed")
+					alliedtarget[targetenemy].status = "Downed"
 					
 				elif(len(shiftingbuttonsarray)>0 and currentpartymember == currentturn):
 					for i in range(len(shiftingbuttonsarray)):
 						_delete_self(shiftingbuttonsarray[i])
 					shiftingbuttonsarray = []
-			elif(alliedtarget[targetenemy].get_meta("Affinities")[attacktype] < 0):
-				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-				Labelfordamage.text = Labelfordamage.text + "[color=green]" + "ABSORBE" +"[/color]"
+			elif(alliedtarget[targetenemy].soul.affinities[attacktype] < 0):
 				damagethatwillbedone = -damagethatwillbedone
-				
-			elif(alliedtarget[targetenemy].get_meta("Affinities")[attacktype] < 1):
-				Labelfordamage.position = Vector2(alliedtarget[targetenemy].position.x - 32 , alliedtarget[targetenemy].position.y - 32)
-				Labelfordamage.text = Labelfordamage.text + "[color=orange]" + "RESIST" +"[/color]"
 		
 		elif(attacktype==12 or attacktype == 14):       # enemy buffs himself ( attack ) or gets lowered
-			alliedtarget[targetenemy].set_meta("Attack", alliedtarget[targetenemy].get_meta("Attack")  + damagethatwillbedone)
+			alliedtarget[targetenemy].attack += damagethatwillbedone
 		elif(attacktype==13 or attacktype == 15):      # enemy buffs himself ( defense ) or gets lowered
-			alliedtarget[targetenemy].set_meta("Defense", alliedtarget[targetenemy].get_meta("Defense")  + damagethatwillbedone)
+			alliedtarget[targetenemy].defense += damagethatwillbedone
 		elif(attacktype==16):      # the x buffs thier own crit chance
-			alliedtarget[targetenemy].set_meta("CritChance", alliedtarget[targetenemy].get_meta("CritChance")  + damagethatwillbedone)
+			alliedtarget[targetenemy].crit_chance += damagethatwillbedone
 	
-	add_child(Labelfordamage)
-	Labelfordamage.text = Labelfordamage.text + str(damagethatwillbedone) + "[/pop]"
-	damagelabels.append(Labelfordamage)
+	
 
 func _create_all_out_attack_button():
 	if(cangetalloutattack == true):
@@ -1048,14 +1009,13 @@ func _all_out_attack_pressed(buttontodelete):
 		damagethatwillbedone = 0
 		
 		for i in range(len(arrayalleati)):
-			damagethatwillbedone = damagethatwillbedone + arrayalleati[i].get_meta("Weapon").get_meta("Damage")
+			damagethatwillbedone = damagethatwillbedone + arrayalleati[i].weapon.damage
 		damagethatwillbedone = damagethatwillbedone * len(arrayalleati) * 2
 		
 		var AllOutAttack = AnimatedSprite2D.new()
 		add_child(AllOutAttack)
 		AllOutAttack.position = Vector2(862, 160)
 		AllOutAttack.set_sprite_frames(AllOutAttackTexture)
-		AllOutAttack.play("default")
 		enemytargetbuttons.append(AllOutAttack)
 		recentaction=7
 		buttontodelete.queue_free()
