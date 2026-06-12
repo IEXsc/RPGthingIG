@@ -1,0 +1,127 @@
+[gd_scene format=3 uid="uid://uumpmn860rwi"]
+
+[ext_resource type="Script" uid="uid://bshnon5umqxs1" path="res://Code/node_2d.gd" id="1_omu66"]
+[ext_resource type="Script" uid="uid://bva1n61vmw6rg" path="res://Code/ButtonConrainer.gd" id="2_1c0bk"]
+[ext_resource type="Texture2D" uid="uid://c5ej5io01jvj3" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicator.png" id="3_mogan"]
+[ext_resource type="Texture2D" uid="uid://do01fl225gtmo" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicatorDEAD.png" id="4_3cqjc"]
+[ext_resource type="Texture2D" uid="uid://56cahpijmsat" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicatorDefending.png" id="5_pta8v"]
+[ext_resource type="Texture2D" uid="uid://c8aok1xn1ym0j" path="res://Assets/GFX/AlliesorYourself/HPindicators/PlayerHPIndicatorDowned.png" id="6_drx8m"]
+[ext_resource type="Texture2D" uid="uid://bm6gjmtckju85" path="res://Assets/GFX/AlliesorYourself/HPindicators/AllyHPIndicator.png" id="7_qb0kj"]
+[ext_resource type="Texture2D" uid="uid://cwinf8y5vh50x" path="res://Assets/GFX/AlliesorYourself/HPindicators/AllyHPIndicatorDEAD.png" id="8_nu5cu"]
+[ext_resource type="Texture2D" uid="uid://bxqvgyvcwtphu" path="res://Assets/GFX/AlliesorYourself/HPindicators/AllyHPIndicatorDefending.png" id="9_qi7hr"]
+[ext_resource type="Texture2D" uid="uid://c12pnc2n707ts" path="res://Assets/GFX/AlliesorYourself/HPindicators/AllyHPIndicatorDowned.png" id="10_frdt4"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ewjql"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_mogan")
+}],
+"loop": true,
+"name": &"Alive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_3cqjc")
+}],
+"loop": true,
+"name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_pta8v")
+}],
+"loop": true,
+"name": &"Defending",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_drx8m")
+}],
+"loop": true,
+"name": &"Downed",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pc3wx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_qb0kj")
+}],
+"loop": true,
+"name": &"Alive",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("8_nu5cu")
+}],
+"loop": true,
+"name": &"Dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("9_qi7hr")
+}],
+"loop": true,
+"name": &"Defending",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_frdt4")
+}],
+"loop": true,
+"name": &"Downed",
+"speed": 5.0
+}]
+
+[node name="BattleLogic" type="Node" unique_id=1264320975]
+script = ExtResource("1_omu66")
+
+[node name="Node2D" type="Node2D" parent="." unique_id=1550113937]
+
+[node name="FlowContainer" type="FlowContainer" parent="Node2D" unique_id=2050133962]
+offset_left = 7.0
+offset_top = 18.0
+offset_right = 236.0
+offset_bottom = 84.0
+alignment = 1
+last_wrap_alignment = 2
+reverse_fill = true
+script = ExtResource("2_1c0bk")
+
+[node name="Items" type="Button" parent="Node2D/FlowContainer" unique_id=2046476378]
+layout_mode = 2
+text = "Items"
+
+[node name="Attack" type="Button" parent="Node2D/FlowContainer" unique_id=642184820]
+layout_mode = 2
+text = "Attack"
+
+[node name="Skill" type="Button" parent="Node2D/FlowContainer" unique_id=903892274]
+layout_mode = 2
+text = "Skill"
+
+[node name="Defend" type="Button" parent="Node2D/FlowContainer" unique_id=1617136679]
+layout_mode = 2
+text = "Defend"
+
+[node name="Back" type="Button" parent="Node2D/FlowContainer" unique_id=39916853]
+layout_mode = 2
+text = "Back"
+
+[node name="PlayerHpIndicator" type="AnimatedSprite2D" parent="Node2D" unique_id=1686585899]
+position = Vector2(299, 75)
+sprite_frames = SubResource("SpriteFrames_ewjql")
+animation = &"Alive"
+
+[node name="AllyHpIndicator" type="AnimatedSprite2D" parent="Node2D" unique_id=1985460908]
+position = Vector2(363, 75)
+sprite_frames = SubResource("SpriteFrames_pc3wx")
+animation = &"Alive"

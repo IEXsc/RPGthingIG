@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://cadmoamodlc43"]
+
+[ext_resource type="Script" uid="uid://nq0lhgw6exn1" path="res://Code/MainNode.gd" id="1_gt76g"]
+
+[node name="Node" type="Node" unique_id=1097713036]
+script = ExtResource("1_gt76g")
+
+[node name="StartingLabel" type="Label" parent="." unique_id=870357382]
+offset_left = 1.0
+offset_top = 2.0
+offset_right = 1153.0
+offset_bottom = 112.0
+theme_override_font_sizes/font_size = 76
+text = "IEX'S RPG BATTLE THINGADOO"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartGame" type="Button" parent="." unique_id=1863618677]
+offset_left = 24.0
+offset_top = 108.0
+offset_right = 214.0
+offset_bottom = 178.0
+text = "Start the Game"
+
+[connection signal="pressed" from="StartGame" to="." method="_on_start_game_pressed"]

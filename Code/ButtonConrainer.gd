@@ -1,4 +1,4 @@
-extends BoxContainer
+extends FlowContainer
 
 @onready var AttackButton = $Attack
 @onready var SkillButton = $Skill
@@ -6,10 +6,10 @@ extends BoxContainer
 @onready var ItemsButton = $Items
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	AttackButton.pressed.connect(get_parent()._attack_button_pressed)
-	SkillButton.pressed.connect(get_parent()._skill_button_pressed)
-	DefendButton.pressed.connect(get_parent()._defend_button_pressed)
-	ItemsButton.pressed.connect(get_parent()._item_button_pressed)
+	AttackButton.pressed.connect(_attack_button_pressed)
+	#SkillButton.pressed.connect(get_parent()._skill_button_pressed)
+	#DefendButton.pressed.connect(get_parent()._defend_button_pressed)
+	#ItemsButton.pressed.connect(get_parent()._item_button_pressed)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -27,3 +27,8 @@ func _show_buttons():
 	SkillButton.visible = true
 	DefendButton.visible = true
 	ItemsButton.visible = true
+	
+func _attack_button_pressed():
+	
+	pass
+	

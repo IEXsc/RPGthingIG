@@ -3,7 +3,7 @@ extends Node
 @onready var StartingLabel = $StartingLabel
 @onready var StartGame = $StartGame
 
-var BattleScene = preload("res://Sceenes/Battle.tscn")
+var BattleScene = preload("res://Sceenes/BattleLogic.tscn")
 var LosingScene = preload("res://Sceenes/failure_screen.tscn")
 var WinningScene = preload("res://Sceenes/victory_screen.tscn")
 
